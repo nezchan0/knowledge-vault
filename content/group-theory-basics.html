@@ -1,0 +1,112 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260604-162045",
+  "slug": "group-theory-basics",
+  "title": "Group Theory Basics",
+  "date": "2026-06-04",
+  "timestamp": "2026-06-04T16:20:45Z",
+  "type": "learning",
+  "tags": [
+    "mathematics",
+    "algebra",
+    "group-theory",
+    "abstract-algebra"
+  ],
+  "summary": "Introduction to group theory — definitions, axioms, examples of groups, and why they matter across mathematics."
+}
+</script>
+
+<h1>Group Theory Basics</h1>
+
+<p>Group theory is the study of <strong>symmetry</strong> in mathematics. A group is an algebraic structure that captures the essence of symmetry operations — things you can do, undo, and combine.</p>
+
+<h2>Definition of a Group</h2>
+
+<p>A <strong>group</strong> is a set <em>G</em> together with a binary operation <em>·</em> that satisfies four axioms:</p>
+
+<ol>
+  <li><strong>Closure:</strong> For all <em>a, b</em> in <em>G</em>, the result <em>a · b</em> is also in <em>G</em>.</li>
+  <li><strong>Associativity:</strong> For all <em>a, b, c</em> in <em>G</em>, (<em>a · b</em>) <em>· c</em> = <em>a ·</em> (<em>b · c</em>).</li>
+  <li><strong>Identity:</strong> There exists an element <em>e</em> in <em>G</em> such that <em>e · a</em> = <em>a · e</em> = <em>a</em> for all <em>a</em>.</li>
+  <li><strong>Inverse:</strong> For each <em>a</em> in <em>G</em>, there exists <em>a⁻¹</em> in <em>G</em> such that <em>a · a⁻¹</em> = <em>a⁻¹ · a</em> = <em>e</em>.</li>
+</ol>
+
+<h2>Classic Examples</h2>
+
+<h3>The Integers under Addition (ℤ, +)</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Axiom</th>
+      <th>Check</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Closure</td>
+      <td>Sum of two integers is an integer ✓</td>
+    </tr>
+    <tr>
+      <td>Associativity</td>
+      <td>(a + b) + c = a + (b + c) ✓</td>
+    </tr>
+    <tr>
+      <td>Identity</td>
+      <td>0 is the identity element ✓</td>
+    </tr>
+    <tr>
+      <td>Inverse</td>
+      <td>−a is the inverse of a ✓</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Symmetries of a Triangle (D₃)</h3>
+
+<p>The <strong>dihedral group D₃</strong> consists of 6 symmetries of an equilateral triangle: 3 rotations and 3 reflections. This is a <em>non-abelian</em> group — the order of operations matters.</p>
+
+<ul>
+  <li><strong>Rotations:</strong> 0°, 120°, 240°</li>
+  <li><strong>Reflections:</strong> across each of the 3 axes of symmetry</li>
+</ul>
+
+<h3>Clock Arithmetic (ℤ/nℤ)</h3>
+
+<p>Integers modulo <em>n</em> form a group under addition. For example, ℤ/12ℤ is like a 12-hour clock:</p>
+
+<pre><code>10 + 5 ≡ 3 (mod 12)
+ 7 + 7 ≡ 2 (mod 12)
+</code></pre>
+
+<h2>Abelian vs Non-Abelian</h2>
+
+<p>A group is <strong>abelian</strong> (or commutative) if <em>a · b</em> = <em>b · a</em> for all elements. Integer addition is abelian. Matrix multiplication, in general, is not.</p>
+
+<blockquote>
+  <p>"The universe is an enormous direct product of representations of symmetry groups." — Steven Weinberg</p>
+</blockquote>
+
+<h2>Subgroups</h2>
+
+<p>A <strong>subgroup</strong> is a subset of a group that is itself a group under the same operation. For example, the even integers form a subgroup of (ℤ, +).</p>
+
+<p>A useful test: <em>H</em> is a subgroup of <em>G</em> if for all <em>a, b</em> in <em>H</em>, the element <em>a · b⁻¹</em> is also in <em>H</em>.</p>
+
+<h2>Why Groups Matter</h2>
+
+<ul>
+  <li><strong>Physics:</strong> Symmetry groups describe conservation laws (Noether's theorem).</li>
+  <li><strong>Chemistry:</strong> Molecular symmetry groups predict spectroscopic properties.</li>
+  <li><strong>Cryptography:</strong> Elliptic curve groups underpin modern public-key encryption.</li>
+  <li><strong>Computer Science:</strong> Permutation groups appear in algorithm analysis.</li>
+</ul>
+
+<h2>Key Takeaways</h2>
+
+<ol>
+  <li>A group is a set with an operation satisfying closure, associativity, identity, and inverse.</li>
+  <li>Groups capture the concept of symmetry abstractly.</li>
+  <li>Abelian groups have commutative operations; non-abelian ones do not.</li>
+  <li>Group theory connects algebra, geometry, physics, and computer science.</li>
+</ol>
