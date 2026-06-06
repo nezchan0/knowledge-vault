@@ -31,7 +31,7 @@ CACHE_FILE = DATA_DIR / "metadata_cache.json"
 REQUIRED_FIELDS = {"id", "slug", "title", "date", "timestamp", "type", "tags", "summary"}
 
 # Allowed type values
-ALLOWED_TYPES = {"learning", "journal", "project", "book", "question", "revision", "philosophy"}
+ALLOWED_TYPES = {"dsa","learning", "journal", "project", "book", "question", "revision", "philosophy"}
 
 # Regex to extract the metadata JSON block
 METADATA_PATTERN = re.compile(

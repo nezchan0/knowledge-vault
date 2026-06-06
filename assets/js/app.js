@@ -6,8 +6,9 @@
   'use strict';
 
   // ---- Constants ----
-  const TYPES = ['learning', 'journal', 'project', 'book', 'question', 'revision', 'philosophy'];
+  const TYPES = ['dsa','learning', 'journal', 'project', 'book', 'question', 'revision', 'philosophy'];
   const TYPE_LABELS = {
+    dsa: '🧠 DSA',
     learning: '📚 Learning',
     journal: '📓 Journal',
     project: '🚀 Project',
