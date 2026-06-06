@@ -1,0 +1,87 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260606-143025",
+  "slug": "django-authentication",
+  "title": "Django Authentication",
+  "date": "2026-06-06",
+  "timestamp": "2026-06-06T14:30:25Z",
+  "type": "learning",
+  "tags": [
+    "django",
+    "backend",
+    "authentication",
+    "python"
+  ],
+  "summary": "Deep dive into Django's built-in authentication system — sessions, middleware, and custom user models."
+}
+</script>
+
+<h1>Django Authentication</h1>
+
+<p>Today I explored Django's authentication system in depth. Django ships with a robust, batteries-included auth framework that handles user accounts, groups, permissions, and cookie-based sessions out of the box.</p>
+
+<h2>Session Authentication</h2>
+
+<p>Django uses <strong>session-based authentication</strong> by default. When a user logs in, the server creates a session and stores a session ID in a cookie. On subsequent requests, the browser sends this cookie, and Django uses it to look up the session and identify the user.</p>
+
+<p>The flow works like this:</p>
+
+<ol>
+  <li>User submits their credentials via a login form.</li>
+  <li>Django's <code>authenticate()</code> function verifies the credentials against the database.</li>
+  <li>If valid, <code>login()</code> creates a session and sets the session cookie.</li>
+  <li>The <code>AuthenticationMiddleware</code> attaches <code>request.user</code> on every request.</li>
+</ol>
+
+<h2>Key Components</h2>
+
+<h3>User Model</h3>
+
+<p>Django provides a default <code>User</code> model with fields like <code>username</code>, <code>email</code>, <code>password</code>, <code>is_staff</code>, and <code>is_superuser</code>. However, it's <strong>strongly recommended</strong> to create a custom user model at the start of a project:</p>
+
+<pre><code>from django.contrib.auth.models import AbstractUser
+
+class CustomUser(AbstractUser):
+    bio = models.TextField(blank=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True)
+</code></pre>
+
+<h3>Authentication Backends</h3>
+
+<p>Django supports multiple authentication backends. The default backend checks usernames and passwords against the database, but you can write custom backends to authenticate against LDAP, OAuth providers, or other systems.</p>
+
+<h3>Middleware Stack</h3>
+
+<p>Two key middleware classes make authentication work:</p>
+
+<ul>
+  <li><code>SessionMiddleware</code> — manages sessions across requests</li>
+  <li><code>AuthenticationMiddleware</code> — associates users with requests using sessions</li>
+</ul>
+
+<h2>Password Hashing</h2>
+
+<p>Django uses <strong>PBKDF2</strong> by default with a SHA256 hash. Passwords are never stored in plaintext. The framework supports pluggable password hashers, including bcrypt and Argon2.</p>
+
+<blockquote>
+  <p>Always use <code>make_password()</code> and <code>check_password()</code> for manual password operations. Never roll your own hashing.</p>
+</blockquote>
+
+<h2>Decorators and Mixins</h2>
+
+<p>For protecting views:</p>
+
+<ul>
+  <li><code>@login_required</code> — redirects unauthenticated users to a login page</li>
+  <li><code>@permission_required</code> — checks if the user has a specific permission</li>
+  <li><code>LoginRequiredMixin</code> — class-based view equivalent</li>
+</ul>
+
+<h2>Key Takeaways</h2>
+
+<ol>
+  <li>Always create a custom user model before running your first migration.</li>
+  <li>Use Django's built-in views for login, logout, and password management.</li>
+  <li>Never store passwords in plaintext — Django handles hashing automatically.</li>
+  <li>Session authentication is stateful; for APIs, consider token-based auth (DRF).</li>
+</ol>

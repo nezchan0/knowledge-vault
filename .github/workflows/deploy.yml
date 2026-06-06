@@ -1,0 +1,72 @@
+name: Deploy Knowledge Vault
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          pip install beautifulsoup4
+
+      - name: Generate Index
+        run: |
+          python scripts/generate_index.py
+
+      - name: Prepare Site
+        run: |
+          mkdir site
+
+          cp index.html site/
+          cp note.html site/
+
+          cp -r assets site/
+
+          mkdir -p site/content
+          mkdir -p site/data
+
+          cp -r content/* site/content/ || true
+          cp -r data/* site/data/ || true
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
