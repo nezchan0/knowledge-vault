@@ -1,0 +1,132 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260605-091510",
+  "slug": "python-generators",
+  "title": "Python Generators",
+  "date": "2026-06-05",
+  "timestamp": "2026-06-05T09:15:10Z",
+  "type": "learning",
+  "tags": [
+    "python",
+    "generators",
+    "iterators",
+    "performance"
+  ],
+  "summary": "Understanding Python generators — lazy evaluation, memory efficiency, and practical patterns for data pipelines."
+}
+</script>
+
+<h1>Python Generators</h1>
+
+<p>Generators are one of Python's most powerful features for working with large datasets and building memory-efficient data pipelines. Unlike regular functions that return a single value, generators <strong>yield</strong> a sequence of values lazily — one at a time.</p>
+
+<h2>Basic Generator Function</h2>
+
+<p>A generator function uses the <code>yield</code> keyword instead of <code>return</code>:</p>
+
+<pre><code>def countdown(n):
+    while n > 0:
+        yield n
+        n -= 1
+
+for num in countdown(5):
+    print(num)  # 5, 4, 3, 2, 1
+</code></pre>
+
+<p>When you call a generator function, it returns a <strong>generator object</strong> — it doesn't execute the function body immediately. Each call to <code>next()</code> runs the function until the next <code>yield</code>, then pauses.</p>
+
+<h2>Why Generators Matter</h2>
+
+<h3>Memory Efficiency</h3>
+
+<p>Consider reading a large file:</p>
+
+<pre><code># Bad — loads entire file into memory
+lines = open('huge_file.txt').readlines()
+
+# Good — processes one line at a time
+def read_lines(path):
+    with open(path) as f:
+        for line in f:
+            yield line.strip()
+</code></pre>
+
+<p>The generator version uses <strong>O(1) memory</strong> regardless of file size, while the list version uses O(n).</p>
+
+<h3>Infinite Sequences</h3>
+
+<p>Generators can represent infinite sequences naturally:</p>
+
+<pre><code>def fibonacci():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+# Take first 10 Fibonacci numbers
+from itertools import islice
+list(islice(fibonacci(), 10))
+# [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+</code></pre>
+
+<h2>Generator Expressions</h2>
+
+<p>Just like list comprehensions, but with parentheses:</p>
+
+<pre><code># List comprehension — builds entire list
+squares_list = [x**2 for x in range(1000000)]
+
+# Generator expression — lazy, no list built
+squares_gen = (x**2 for x in range(1000000))
+</code></pre>
+
+<h2>Chaining Generators — Data Pipelines</h2>
+
+<p>One of the most powerful patterns is chaining generators to create processing pipelines:</p>
+
+<pre><code>def read_csv(path):
+    with open(path) as f:
+        for line in f:
+            yield line.strip().split(',')
+
+def filter_active(rows):
+    for row in rows:
+        if row[3] == 'active':
+            yield row
+
+def extract_emails(rows):
+    for row in rows:
+        yield row[2]
+
+# Pipeline
+emails = extract_emails(filter_active(read_csv('users.csv')))
+</code></pre>
+
+<p>Each stage processes one item at a time. The entire pipeline uses constant memory.</p>
+
+<h2>send() and Generator Coroutines</h2>
+
+<p>Generators can also receive values via <code>send()</code>:</p>
+
+<pre><code>def accumulator():
+    total = 0
+    while True:
+        value = yield total
+        total += value
+
+acc = accumulator()
+next(acc)          # Prime the generator
+acc.send(10)       # Returns 10
+acc.send(20)       # Returns 30
+acc.send(5)        # Returns 35
+</code></pre>
+
+<h2>Key Takeaways</h2>
+
+<ol>
+  <li>Use generators when working with large or potentially infinite datasets.</li>
+  <li>Generator expressions are the lazy equivalent of list comprehensions.</li>
+  <li>Chain generators to build memory-efficient data processing pipelines.</li>
+  <li>Generators implement the iterator protocol — they work with <code>for</code> loops, <code>next()</code>, and <code>itertools</code>.</li>
+  <li>The <code>yield from</code> syntax (PEP 380) simplifies delegating to sub-generators.</li>
+</ol>
