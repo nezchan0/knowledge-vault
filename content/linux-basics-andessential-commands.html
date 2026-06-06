@@ -1,178 +1,377 @@
-<script id="metadata" type="application/json"> { "id": "20260606-180000", "slug": "linux-basics-andessential-commands", "title": "Linux Basics and Essential Commands", "date": "2026-06-06", "timestamp":
-"2026-06-06T18:00:00Z", "type": "learning", "tags": [ "linux", "terminal", "bash", "cli", "ubuntu", "commands",
-"filesystem" ], "summary": "Introduction to Linux terminal usage, filesystem navigation, file management,
-directory operations, and essential commands every developer should know." } </script>
+<script id="metadata" type="application/json">
+{
+  "id": "20260606-180000",
+  "slug": "linux-basics-andessential-commands",
+  "title": "Linux Basics and Essential Commands",
+  "date": "2026-06-06",
+  "timestamp": "2026-06-06T18:00:00Z",
+  "type": "learning",
+  "tags": [
+    "linux",
+    "terminal",
+    "bash",
+    "cli",
+    "ubuntu",
+    "commands",
+    "filesystem"
+  ],
+  "summary": "Introduction to Linux terminal usage, filesystem navigation, file management, directory operations, and essential commands every developer should know."
+}
+</script>
+
 <h1>Linux Basics and Essential Commands</h1>
-<p>Linux is an operating system built around a hierarchical filesystem and powerful command-line tools.
-Most development servers, cloud machines, containers, and DevOps environments run Linux, making
-terminal proficiency an important skill for developers.</p>
-<p>In Linux, almost everything is treated as a file, including devices, directories, and system resources. The
-command line allows users to interact with these resources efficiently.</p>
+
+<p>
+  Linux is an operating system built around a hierarchical filesystem and powerful
+  command-line tools. Most development servers, cloud machines, containers, and
+  DevOps environments run Linux, making terminal proficiency an important skill
+  for developers.
+</p>
+
+<p>
+  In Linux, almost everything is treated as a file, including devices,
+  directories, and system resources. The command line allows users to interact
+  with these resources efficiently.
+</p>
+
 <h2>Understanding the Filesystem</h2>
+
 <p>The Linux filesystem starts at the root directory:</p>
+
 <pre><code>/</code></pre>
+
 <p>Common directories:</p>
-<ul> <li><code>/home</code> — user home directories</li> <li><code>/etc</code> — configuration files</
-li> <li><code>/var</code> — logs and variable data</li> <li><code>/usr</code> — installed programs and
-libraries</li> <li><code>/tmp</code> — temporary files</li> <li><code>/root</code> — home directory of
-the root user</li> </ul>
+
+<ul>
+  <li><code>/home</code> — user home directories</li>
+  <li><code>/etc</code> — configuration files</li>
+  <li><code>/var</code> — logs and variable data</li>
+  <li><code>/usr</code> — installed programs and libraries</li>
+  <li><code>/tmp</code> — temporary files</li>
+  <li><code>/root</code> — home directory of the root user</li>
+</ul>
+
 <h2>Checking Current Directory</h2>
-<p>Use <code>pwd</code> (Print Working Directory) to see your current location:</p>
+
+<p>
+  Use <code>pwd</code> (Print Working Directory) to see your current location:
+</p>
+
 <pre><code>pwd</code></pre>
+
 <p>Example Output:</p>
+
 <pre><code>/home/sanya/projects</code></pre>
+
 <h2>Listing Files and Directories</h2>
+
 <h3>Basic Listing</h3>
+
 <pre><code>ls</code></pre>
+
 <p>Shows files and folders in the current directory.</p>
-1
+
 <h3>Detailed Listing</h3>
+
 <pre><code>ls -l</code></pre>
+
 <p>Displays permissions, owner, size, and modification date.</p>
+
 <h3>Show Hidden Files</h3>
+
 <pre><code>ls -a</code></pre>
+
 <p>Files beginning with <code>.</code> are hidden by default.</p>
+
 <h3>Detailed + Hidden</h3>
+
 <pre><code>ls -la</code></pre>
+
 <h2>Changing Directories</h2>
+
 <h3>Move to a Directory</h3>
+
 <pre><code>cd /path/to/folder</code></pre>
+
 <p>Example:</p>
+
 <pre><code>cd /home/sanya/projects</code></pre>
+
 <h3>Go to Home Directory</h3>
+
 <pre><code>cd</code></pre>
+
 <p>or</p>
+
 <pre><code>cd ~</code></pre>
+
 <h3>Go Back One Directory</h3>
+
 <pre><code>cd ..</code></pre>
+
 <h3>Go Back Two Directories</h3>
+
 <pre><code>cd ../..</code></pre>
+
 <h3>Go to Previous Directory</h3>
+
 <pre><code>cd -</code></pre>
-2
+
 <h2>Creating Files</h2>
+
 <h3>Create an Empty File</h3>
+
 <pre><code>touch file.txt</code></pre>
+
 <p>Create multiple files:</p>
+
 <pre><code>touch file1.txt file2.txt file3.txt</code></pre>
+
 <h2>Viewing File Contents</h2>
+
 <h3>Display Entire File</h3>
+
 <pre><code>cat file.txt</code></pre>
+
 <h3>View Beginning of File</h3>
+
 <pre><code>head file.txt</code></pre>
+
 <h3>View End of File</h3>
+
 <pre><code>tail file.txt</code></pre>
+
 <h2>Writing Text to Files</h2>
+
 <h3>Print Text</h3>
+
 <pre><code>echo "Hello Linux"</code></pre>
+
 <h3>Create File with Text</h3>
+
 <pre><code>echo "Hello Linux" > file.txt</code></pre>
-<p>The <code>></code> operator overwrites the file.</p>
+
+<p>The <code>&gt;</code> operator overwrites the file.</p>
+
 <h3>Append Text</h3>
+
 <pre><code>echo "New Line" >> file.txt</code></pre>
-<p>The <code>> </code> operator appends content.</p>
+
+<p>The <code>&gt;&gt;</code> operator appends content.</p>
+
 <h2>Creating Directories</h2>
+
 <h3>Create Single Directory</h3>
-3
+
 <pre><code>mkdir myfolder</code></pre>
+
 <h3>Create Multiple Directories</h3>
+
 <pre><code>mkdir folder1 folder2 folder3</code></pre>
+
 <h3>Create Nested Directories</h3>
+
 <pre><code>mkdir -p projects/python/django</code></pre>
-<p>The <code>-p</code> flag creates missing parent directories automatically.</p>
+
+<p>
+  The <code>-p</code> flag creates missing parent directories automatically.
+</p>
+
 <h2>Copying Files</h2>
+
 <h3>Copy File to Another Directory</h3>
+
 <pre><code>cp file.txt /home/sanya/backup/</code></pre>
+
 <h3>Copy and Rename Simultaneously</h3>
+
 <pre><code>cp file.txt copy.txt</code></pre>
+
 <h3>Copy Multiple Files</h3>
+
 <pre><code>cp file1.txt file2.txt destination/</code></pre>
+
 <h2>Copying Directories</h2>
+
 <h3>Without -r</h3>
+
 <pre><code>cp myfolder backup/</code></pre>
-<p>This fails because Linux does not copy directories recursively by default.</p>
+
+<p>
+  This fails because Linux does not copy directories recursively by default.
+</p>
+
 <h3>With Recursive Flag</h3>
+
 <pre><code>cp -r myfolder backup/</code></pre>
-<p>The <code>-r</code> flag copies the directory and all its contents.</p>
+
+<p>
+  The <code>-r</code> flag copies the directory and all its contents.
+</p>
+
 <h2>Moving Files and Directories</h2>
+
 <h3>Move File</h3>
+
 <pre><code>mv file.txt destination/</code></pre>
-4
+
 <h3>Rename File</h3>
+
 <pre><code>mv old.txt new.txt</code></pre>
+
 <h3>Move Directory</h3>
+
 <pre><code>mv project/ backup/</code></pre>
+
 <h2>Removing Files</h2>
+
 <h3>Delete a File</h3>
+
 <pre><code>rm file.txt</code></pre>
+
 <h3>Delete Multiple Files</h3>
+
 <pre><code>rm file1.txt file2.txt</code></pre>
+
 <h2>Removing Directories</h2>
+
 <h3>Remove Empty Directory</h3>
+
 <pre><code>rmdir myfolder</code></pre>
+
 <p>This only works if the directory is empty.</p>
+
 <h3>Remove Directory and Contents</h3>
+
 <pre><code>rm -r myfolder</code></pre>
+
 <h3>Force Remove Directory</h3>
+
 <pre><code>rm -rf myfolder</code></pre>
-<blockquote> <p>Be extremely careful with <code>rm -rf</code>. It permanently deletes files without
-sending them to a recycle bin.</p> </blockquote>
+
+<blockquote>
+  <p>
+    Be extremely careful with <code>rm -rf</code>. It permanently deletes files
+    without sending them to a recycle bin.
+  </p>
+</blockquote>
+
 <h2>Searching for Files</h2>
+
 <h3>Find a File</h3>
+
 <pre><code>find . -name "file.txt"</code></pre>
+
 <h3>Find Python Files</h3>
-5
+
 <pre><code>find . -name "*.py"</code></pre>
+
 <h2>Searching Inside Files</h2>
+
 <h3>Using grep</h3>
+
 <pre><code>grep "Django" notes.txt</code></pre>
+
 <h3>Case-Insensitive Search</h3>
+
 <pre><code>grep -i "django" notes.txt</code></pre>
+
 <h2>File Permissions</h2>
+
 <p>View permissions:</p>
+
 <pre><code>ls -l</code></pre>
+
 <p>Example:</p>
+
 <pre><code>-rw-r--r-- 1 user user 500 file.txt</code></pre>
+
 <p>Permission groups:</p>
-<ul> <li>User (owner)</li> <li>Group</li> <li>Others</li> </ul>
+
+<ul>
+  <li>User (owner)</li>
+  <li>Group</li>
+  <li>Others</li>
+</ul>
+
 <h3>Make Script Executable</h3>
+
 <pre><code>chmod +x script.sh</code></pre>
+
 <h2>Useful Developer Commands</h2>
+
 <h3>Clear Terminal</h3>
+
 <pre><code>clear</code></pre>
+
 <h3>Command History</h3>
+
 <pre><code>history</code></pre>
+
 <h3>Check Current User</h3>
+
 <pre><code>whoami</code></pre>
+
 <h3>Check System Information</h3>
-6
+
 <pre><code>uname -a</code></pre>
+
 <h3>Check Disk Usage</h3>
+
 <pre><code>df -h</code></pre>
+
 <h3>Check Folder Size</h3>
+
 <pre><code>du -sh myfolder</code></pre>
+
 <h2>Wildcards</h2>
+
 <h3>List All TXT Files</h3>
+
 <pre><code>ls *.txt</code></pre>
+
 <h3>Delete All Log Files</h3>
+
 <pre><code>rm *.log</code></pre>
+
 <h2>Redirection and Pipes</h2>
+
 <h3>Save Output to File</h3>
+
 <pre><code>ls > files.txt</code></pre>
+
 <h3>Append Output</h3>
+
 <pre><code>ls >> files.txt</code></pre>
+
 <h3>Pipe Output to Another Command</h3>
+
 <pre><code>ls -la | grep ".txt"</code></pre>
-<p>The pipe operator <code>|</code> sends output from one command as input to another.</p>
+
+<p>
+  The pipe operator <code>|</code> sends output from one command as input to
+  another.
+</p>
+
 <h2>Key Takeaways</h2>
-<ol> <li><code>pwd</code> shows the current directory.</li> <li><code>ls</code> lists files and folders.</li>
-<li><code>cd</code> is used for navigation.</li> <li><code>touch</code> creates files.</li>
-<li><code>mkdir</code> creates directories.</li> <li><code>mkdir -p</code> creates nested directory
-structures.</li> <li><code>cp</code> copies files.</li> <li><code>cp -r</code> copies directories
-recursively.</li> <li><code>mv</code> moves and renames files.</li> <li><code>rm</code> deletes files.</li>
-<li><code>rm -r</code> removes directories.</li> <li><code>grep</code> searches file contents.</li>
-<li><code>find</code> searches for files.</li> <li><code>chmod</code> changes permissions.</li>
-7
-<li>Mastering these commands forms the foundation for Linux development, DevOps, cloud computing,
-and backend engineering.</li> </ol>
-8
+
+<ol>
+  <li><code>pwd</code> shows the current directory.</li>
+  <li><code>ls</code> lists files and folders.</li>
+  <li><code>cd</code> is used for navigation.</li>
+  <li><code>touch</code> creates files.</li>
+  <li><code>mkdir</code> creates directories.</li>
+  <li><code>mkdir -p</code> creates nested directory structures.</li>
+  <li><code>cp</code> copies files.</li>
+  <li><code>cp -r</code> copies directories recursively.</li>
+  <li><code>mv</code> moves and renames files.</li>
+  <li><code>rm</code> deletes files.</li>
+  <li><code>rm -r</code> removes directories.</li>
+  <li><code>grep</code> searches file contents.</li>
+  <li><code>find</code> searches for files.</li>
+  <li><code>chmod</code> changes permissions.</li>
+  <li>
+    Mastering these commands forms the foundation for Linux development,
+    DevOps, cloud computing, and backend engineering.
+  </li>
+</ol>
