@@ -1,0 +1,1592 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260715-210000",
+  "slug": "binary-trees-leetcode",
+  "title": "Binary Trees - Leetcode Questions",
+  "date": "2026-07-15",
+  "timestamp": "2026-07-15T21:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "binary-tree",
+    "trees",
+    "dfs",
+    "bfs",
+    "leetcode",
+    "python",
+    "revision"
+  ],
+  "summary": "Leetcode Binary Tree questions with BFS and DFS solutions, complexity analysis, and quick revision index."
+}
+</script>
+<h1>🌳 Binary Trees - Leetcode Questions</h1>
+<style>
+    /* =====================================================
+   Binary Tree Leetcode Notes Styling
+===================================================== */
+
+    .note-content {
+        --primary: #60a5fa;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --cyan: #38bdf8;
+        --orange: #fb923c;
+    }
+
+    .note-content hr {
+        margin: 40px 0;
+    }
+
+    .note-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+    }
+
+    .note-content table th {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .note-content table td {
+        padding: 10px;
+    }
+
+    .note-content code {
+        font-size: .95rem;
+    }
+
+    .note-content pre {
+        margin: 18px 0;
+    }
+
+    /* ====================================== */
+
+    /* Index Section */
+    .note-content .index-section {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .20);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+    }
+
+    .note-content .index-section h3 {
+        margin-top: 0;
+        color: #60a5fa;
+    }
+
+    .note-content .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .note-content .index-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .note-content .index-item:hover {
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .note-content .index-num {
+        font-weight: 700;
+        color: #60a5fa;
+        min-width: 38px;
+    }
+
+    .note-content .index-title {
+        flex: 1;
+    }
+
+    .note-content .index-diff {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .note-content .diff-easy {
+        background: rgba(34, 197, 94, .15);
+        color: #22c55e;
+    }
+
+    .note-content .diff-med {
+        background: rgba(251, 146, 60, .15);
+        color: #fb923c;
+    }
+
+    .note-content .diff-hard {
+        background: rgba(239, 68, 68, .15);
+        color: #ef4444;
+    }
+
+    /* Question Section */
+    .note-content .question-section {
+        margin: 40px 0;
+        padding: 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .02);
+        position: relative;
+    }
+
+    .note-content .question-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .note-content .question-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .note-content .approach-tags {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .note-content .tag {
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .note-content .tag-dfs {
+        background: rgba(168, 85, 247, .20);
+        color: #c084fc;
+    }
+
+    .note-content .tag-bfs {
+        background: rgba(56, 189, 248, .20);
+        color: #38bdf8;
+    }
+
+    /* Solution Block */
+    .note-content .solution-block {
+        margin: 16px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        overflow: hidden;
+    }
+
+    .note-content .solution-label {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+    }
+
+    .note-content .solution-label.label-dfs {
+        background: rgba(168, 85, 247, .12);
+        color: #c084fc;
+    }
+
+    .note-content .solution-label.label-bfs {
+        background: rgba(56, 189, 248, .12);
+        color: #38bdf8;
+    }
+
+    .note-content .complexity-box {
+        display: flex;
+        gap: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, .03);
+        font-size: .85rem;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .note-content .complexity-box strong {
+        color: #94a3b8;
+    }
+
+    /* Back to Top Button */
+    .note-content .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: .78rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 5px;
+        transition: all .2s;
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .note-content .back-to-top:hover {
+        background: rgba(99, 102, 241, .15);
+        color: #c7d2fe;
+        border-color: rgba(99, 102, 241, .30);
+    }
+</style>
+
+<!-- ============================================================
+     INDEX
+============================================================ -->
+
+<div class="index-section" id="top">
+
+    <h3>📋 Question Index</h3>
+
+    <div class="index-grid">
+
+        <a class="index-item" href="#q144">
+            <span class="index-num">144.</span>
+            <span class="index-title">Binary Tree Preorder Traversal</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q589">
+            <span class="index-num">589.</span>
+            <span class="index-title">N-ary Tree Preorder Traversal</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q590">
+            <span class="index-num">590.</span>
+            <span class="index-title">N-ary Tree Postorder Traversal</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q102">
+            <span class="index-num">102.</span>
+            <span class="index-title">Binary Tree Level Order Traversal</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q429">
+            <span class="index-num">429.</span>
+            <span class="index-title">N-ary Tree Level Order Traversal</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q637">
+            <span class="index-num">637.</span>
+            <span class="index-title">Average of Levels in Binary Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q103">
+            <span class="index-num">103.</span>
+            <span class="index-title">Binary Tree Zigzag Level Order Traversal</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q199">
+            <span class="index-num">199.</span>
+            <span class="index-title">Binary Tree Right Side View</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q226">
+            <span class="index-num">226.</span>
+            <span class="index-title">Invert Binary Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q100">
+            <span class="index-num">100.</span>
+            <span class="index-title">Same Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q101">
+            <span class="index-num">101.</span>
+            <span class="index-title">Symmetric Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q572">
+            <span class="index-num">572.</span>
+            <span class="index-title">Subtree of Another Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q104">
+            <span class="index-num">104.</span>
+            <span class="index-title">Maximum Depth of Binary Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q559">
+            <span class="index-num">559.</span>
+            <span class="index-title">Maximum Depth of N-ary Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q110">
+            <span class="index-num">110.</span>
+            <span class="index-title">Balanced Binary Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q543">
+            <span class="index-num">543.</span>
+            <span class="index-title">Diameter of Binary Tree</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q236">
+            <span class="index-num">236.</span>
+            <span class="index-title">Lowest Common Ancestor of a Binary Tree</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q105">
+            <span class="index-num">105.</span>
+            <span class="index-title">Construct Binary Tree from Preorder and Inorder Traversal</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q112">
+            <span class="index-num">112.</span>
+            <span class="index-title">Path Sum</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q124">
+            <span class="index-num">124.</span>
+            <span class="index-title">Binary Tree Maximum Path Sum</span>
+            <span class="index-diff diff-hard">Hard</span>
+        </a>
+
+        <a class="index-item" href="#q297">
+            <span class="index-num">297.</span>
+            <span class="index-title">Serialize and Deserialize Binary Tree</span>
+            <span class="index-diff diff-hard">Hard</span>
+        </a>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q1: 144. Binary Tree Preorder Traversal
+============================================================ -->
+
+<div class="question-section" id="q144" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>144. Binary Tree Preorder Traversal</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, return the preorder traversal of its nodes' values.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        ans=[]
+        def preorder(node):
+            if node is None:
+                return
+            ans.append(node.val)
+            preorder(node.left)
+            preorder(node.right)
+        preorder(root)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h) — recursion stack</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Iterative (Stack)</div>
+        <pre><code>class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        if root is None:
+            return []
+        ans=[]
+        stack=[root]
+        while stack:
+            node=stack.pop()
+            ans.append(node.val)
+            if node.right:
+                stack.append(node.right)
+            if node.left:
+                stack.append(node.left)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q2: 589. N-ary Tree Preorder Traversal
+============================================================ -->
+
+<div class="question-section" id="q589" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>589. N-ary Tree Preorder Traversal</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of an n-ary tree, return the preorder traversal of its nodes' values.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def preorder(self, root: 'Node') -> List[int]:
+        ans=[]
+        def pre(node):
+            if node is None:
+                return
+            ans.append(node.val)
+            for child in node.children:
+                pre(child)
+        pre(root)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Iterative (Stack)</div>
+        <pre><code>class Solution:
+    def preorder(self, root: 'Node') -> List[int]:
+        if root is None:
+            return []
+        ans=[]
+        stack=[root]
+        while stack:
+            node=stack.pop()
+            ans.append(node.val)
+            if node.children:
+                stack.extend(node.children[::-1])
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n) — stack can hold all children at a level</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q3: 590. N-ary Tree Postorder Traversal
+============================================================ -->
+
+<div class="question-section" id="q590" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>590. N-ary Tree Postorder Traversal</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of an n-ary tree, return the postorder traversal of its nodes' values.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def postorder(self, root: 'Node') -> List[int]:
+        ans=[]
+        def post(node):
+            if node is None:
+                return
+            for child in node.children:
+                post(child)
+            ans.append(node.val)
+        post(root)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Iterative (Modified Preorder + Reverse)</div>
+        <pre><code>class Solution:
+    def postorder(self, root: 'Node') -> List[int]:
+        if root is None:
+            return []
+        ans=[]
+        stack=[root]
+        while stack:
+            node=stack.pop()
+            ans.append(node.val)
+            if node.children:
+                stack.extend(node.children)
+        return ans[::-1]</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q4: 102. Binary Tree Level Order Traversal
+============================================================ -->
+
+<div class="question-section" id="q102" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>102. Binary Tree Level Order Traversal</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, return the level order traversal of its nodes' values (i.e., from
+        left to right, level by level).</p>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue</div>
+        <pre><code>from collections import deque
+class Solution:
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if root is None:
+            return []
+        ans=[]
+        queue=deque([root])
+        while queue:
+            level=[]
+            size=len(queue)
+            for _ in range(size):
+                node=queue.popleft()
+                level.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+            ans.append(level)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive with Depth Tracking</div>
+        <pre><code>class Solution:
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        ans=[]
+        def dfs(node, depth):
+            if node is None:
+                return
+            if depth == len(ans):
+                ans.append([])
+            ans[depth].append(node.val)
+            dfs(node.left, depth+1)
+            dfs(node.right, depth+1)
+        dfs(root, 0)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h) — recursion stack</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q5: 429. N-ary Tree Level Order Traversal
+============================================================ -->
+
+<div class="question-section" id="q429" data-approaches="bfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>429. N-ary Tree Level Order Traversal</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+        </div>
+    </div>
+
+    <p>Given an n-ary tree, return the level order traversal of its nodes' values.</p>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue</div>
+        <pre><code>from collections import deque
+class Solution:
+    def levelOrder(self, root: 'Node') -> List[List[int]]:
+        if root is None:
+            return []
+        ans=[]
+        queue=deque([root])
+        while queue:
+            level=[]
+            size=len(queue)
+            for _ in range(size):
+                node=queue.popleft()
+                level.append(node.val)
+                for child in node.children:
+                    queue.append(child)
+            ans.append(level)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q6: 637. Average of Levels in Binary Tree
+============================================================ -->
+
+<div class="question-section" id="q637" data-approaches="bfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>637. Average of Levels in Binary Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, return the average value of the nodes on each level in the form of
+        an array.</p>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue</div>
+        <pre><code>from collections import deque
+class Solution:
+    def averageOfLevels(self, root: Optional[TreeNode]) -> List[float]:
+        if root is None:
+            return []
+        ans=[]
+        queue=deque([root])
+        while queue:
+            level=[]
+            size=len(queue)
+            for _ in range(size):
+                node=queue.popleft()
+                level.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+            ans.append(sum(level)/len(level))
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q7: 103. Binary Tree Zigzag Level Order Traversal
+============================================================ -->
+
+<div class="question-section" id="q103" data-approaches="bfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>103. Binary Tree Zigzag Level Order Traversal</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, return the zigzag level order traversal of its nodes' values (i.e.,
+        from left to right, then right to left for the next level and alternate between).</p>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue with Direction Flag</div>
+        <pre><code>from collections import deque
+class Solution:
+    def zigzagLevelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if root is None:
+            return []
+        ans=[]
+        queue=deque([root])
+        dir_right=False
+        while queue:
+            level=[]
+            size=len(queue)
+            dir_right=not dir_right
+            for _ in range(size):
+                node=queue.popleft()
+                level.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+            if dir_right:
+                ans.append(level)
+            else:
+                ans.append(level[::-1])
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q8: 199. Binary Tree Right Side View
+============================================================ -->
+
+<div class="question-section" id="q199" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>199. Binary Tree Right Side View</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, imagine yourself standing on the right side of it, return the
+        values of the nodes you can see ordered from top to bottom.</p>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue (Last node of each level)</div>
+        <pre><code>from collections import deque
+class Solution:
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
+        if root is None:
+            return []
+        ans=[]
+        queue=deque([root])
+        while queue:
+            size=len(queue)
+            for i in range(size):
+                node=queue.popleft()
+                if i == size-1:
+                    ans.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Reverse Preorder (Root → Right → Left)</div>
+        <pre><code>class Solution:
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
+        ans=[]
+        def dfs(node, depth):
+            if node is None:
+                return
+            if depth == len(ans):
+                ans.append(node.val)
+            dfs(node.right, depth+1)
+            dfs(node.left, depth+1)
+        dfs(root, 0)
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q9: 226. Invert Binary Tree
+============================================================ -->
+
+<div class="question-section" id="q226" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>226. Invert Binary Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, invert the tree, and return its root.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        if root is None:
+            return None
+        root.left, root.right = root.right, root.left
+        self.invertTree(root.left)
+        self.invertTree(root.right)
+        return root</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue</div>
+        <pre><code>from collections import deque
+class Solution:
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        if root is None:
+            return None
+        queue=deque([root])
+        while queue:
+            node=queue.popleft()
+            node.left, node.right = node.right, node.left
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+        return root</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q10: 100. Same Tree
+============================================================ -->
+
+<div class="question-section" id="q100" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>100. Same Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the roots of two binary trees <code>p</code> and <code>q</code>, write a function to check if they are the
+        same or not.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        if p is None and q is None:
+            return True
+        if p is None or q is None:
+            return False
+        if p.val != q.val:
+            return False
+        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue</div>
+        <pre><code>from collections import deque
+class Solution:
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        queue=deque([(p, q)])
+        while queue:
+            n1, n2 = queue.popleft()
+            if n1 is None and n2 is None:
+                continue
+            if n1 is None or n2 is None:
+                return False
+            if n1.val != n2.val:
+                return False
+            queue.append((n1.left, n2.left))
+            queue.append((n1.right, n2.right))
+        return True</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q11: 101. Symmetric Tree
+============================================================ -->
+
+<div class="question-section" id="q101" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>101. Symmetric Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its
+        center).</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        def isMirror(left, right):
+            if left is None and right is None:
+                return True
+            if left is None or right is None:
+                return False
+            return (left.val == right.val and 
+                    isMirror(left.left, right.right) and 
+                    isMirror(left.right, right.left))
+        return isMirror(root.left, root.right) if root else True</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue</div>
+        <pre><code>from collections import deque
+class Solution:
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        if root is None:
+            return True
+        queue=deque([(root.left, root.right)])
+        while queue:
+            left, right = queue.popleft()
+            if left is None and right is None:
+                continue
+            if left is None or right is None:
+                return False
+            if left.val != right.val:
+                return False
+            queue.append((left.left, right.right))
+            queue.append((left.right, right.left))
+        return True</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q12: 572. Subtree of Another Tree
+============================================================ -->
+
+<div class="question-section" id="q572" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>572. Subtree of Another Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the roots of two binary trees <code>root</code> and <code>subRoot</code>, return <code>true</code> if there
+        is a subtree of <code>root</code> with the same structure and node values of <code>subRoot</code> and
+        <code>false</code> otherwise.
+    </p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive (isSameTree helper)</div>
+        <pre><code>class Solution:
+    def isSubtree(self, root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
+        def isSame(p, q):
+            if p is None and q is None:
+                return True
+            if p is None or q is None:
+                return False
+            return p.val == q.val and isSame(p.left, q.left) and isSame(p.right, q.right)
+        
+        if root is None:
+            return False
+        if isSame(root, subRoot):
+            return True
+        return self.isSubtree(root.left, subRoot) or self.isSubtree(root.right, subRoot)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(m * n) — m = nodes in root, n = nodes in subRoot</div>
+            <div><strong>Space:</strong> O(h) — height of root tree</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q13: 104. Maximum Depth of Binary Tree
+============================================================ -->
+
+<div class="question-section" id="q104" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>104. Maximum Depth of Binary Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, return its maximum depth. A binary tree's maximum depth is the
+        number of nodes along the longest path from the root node down to the farthest leaf node.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        if root is None:
+            return 0
+        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Level Count</div>
+        <pre><code>from collections import deque
+class Solution:
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        if root is None:
+            return 0
+        depth=0
+        queue=deque([root])
+        while queue:
+            depth+=1
+            size=len(queue)
+            for _ in range(size):
+                node=queue.popleft()
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+        return depth</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q14: 559. Maximum Depth of N-ary Tree
+============================================================ -->
+
+<div class="question-section" id="q559" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>559. Maximum Depth of N-ary Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given an n-ary tree, find its maximum depth.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def maxDepth(self, root: 'Node') -> int:
+        if root is None:
+            return 0
+        if not root.children:
+            return 1
+        return 1 + max(self.maxDepth(child) for child in root.children)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Level Count</div>
+        <pre><code>from collections import deque
+class Solution:
+    def maxDepth(self, root: 'Node') -> int:
+        if root is None:
+            return 0
+        depth=0
+        queue=deque([root])
+        while queue:
+            depth+=1
+            size=len(queue)
+            for _ in range(size):
+                node=queue.popleft()
+                for child in node.children:
+                    queue.append(child)
+        return depth</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q15: 110. Balanced Binary Tree
+============================================================ -->
+
+<div class="question-section" id="q110" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>110. Balanced Binary Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given a binary tree, determine if it is height-balanced. A height-balanced binary tree is a binary tree in which
+        the depth of the two subtrees of every node never differs by more than one.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Bottom-Up (Optimal)</div>
+        <pre><code>class Solution:
+    def isBalanced(self, root: Optional[TreeNode]) -> bool:
+        def height(node):
+            if node is None:
+                return 0
+            left_h = height(node.left)
+            if left_h == -1:
+                return -1
+            right_h = height(node.right)
+            if right_h == -1:
+                return -1
+            if abs(left_h - right_h) > 1:
+                return -1
+            return 1 + max(left_h, right_h)
+        return height(root) != -1</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q16: 543. Diameter of Binary Tree
+============================================================ -->
+
+<div class="question-section" id="q543" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>543. Diameter of Binary Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree, return the length of the diameter of the tree. The diameter is the
+        length of the longest path between any two nodes in a tree (may or may not pass through the root).</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive with Global Max</div>
+        <pre><code>class Solution:
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        self.diameter = 0
+        def height(node):
+            if node is None:
+                return 0
+            left_h = height(node.left)
+            right_h = height(node.right)
+            self.diameter = max(self.diameter, left_h + right_h)
+            return 1 + max(left_h, right_h)
+        height(root)
+        return self.diameter</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q17: 236. Lowest Common Ancestor of a Binary Tree
+============================================================ -->
+
+<div class="question-section" id="q236" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>236. Lowest Common Ancestor of a Binary Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if root is None or root == p or root == q:
+            return root
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
+        if left and right:
+            return root
+        return left if left else right</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q18: 105. Construct Binary Tree from Preorder and Inorder Traversal
+============================================================ -->
+
+<div class="question-section" id="q105" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>105. Construct Binary Tree from Preorder and Inorder Traversal</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given two integer arrays <code>preorder</code> and <code>inorder</code>, construct and return the binary tree.
+    </p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive with HashMap</div>
+        <pre><code>class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+        inorder_map = {val: idx for idx, val in enumerate(inorder)}
+        self.pre_idx = 0
+        
+        def build(left, right):
+            if left > right:
+                return None
+            root_val = preorder[self.pre_idx]
+            self.pre_idx += 1
+            root = TreeNode(root_val)
+            mid = inorder_map[root_val]
+            root.left = build(left, mid - 1)
+            root.right = build(mid + 1, right)
+            return root
+        
+        return build(0, len(inorder) - 1)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n) — hashmap + recursion stack</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q19: 112. Path Sum
+============================================================ -->
+
+<div class="question-section" id="q112" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>112. Path Sum</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Given the <code>root</code> of a binary tree and an integer <code>targetSum</code>, return <code>true</code> if
+        the tree has a root-to-leaf path such that adding up all the values along the path equals
+        <code>targetSum</code>.
+    </p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive</div>
+        <pre><code>class Solution:
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        if root is None:
+            return False
+        if root.left is None and root.right is None:
+            return root.val == targetSum
+        return (self.hasPathSum(root.left, targetSum - root.val) or 
+                self.hasPathSum(root.right, targetSum - root.val))</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Queue with Running Sum</div>
+        <pre><code>from collections import deque
+class Solution:
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        if root is None:
+            return False
+        queue=deque([(root, root.val)])
+        while queue:
+            node, curr_sum = queue.popleft()
+            if node.left is None and node.right is None and curr_sum == targetSum:
+                return True
+            if node.left:
+                queue.append((node.left, curr_sum + node.left.val))
+            if node.right:
+                queue.append((node.right, curr_sum + node.right.val))
+        return False</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q20: 124. Binary Tree Maximum Path Sum
+============================================================ -->
+
+<div class="question-section" id="q124" data-approaches="dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-hard">Hard</span>
+        <h2>124. Binary Tree Maximum Path Sum</h2>
+        <div class="approach-tags">
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge
+        connecting them. A node can only appear in the sequence at most once. The path does not need to pass through the
+        root. Return the maximum path sum of any non-empty path.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Recursive with Global Max</div>
+        <pre><code>class Solution:
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        self.max_sum = float('-inf')
+        
+        def gain(node):
+            if node is None:
+                return 0
+            left_gain = max(gain(node.left), 0)
+            right_gain = max(gain(node.right), 0)
+            # path through this node as highest point
+            self.max_sum = max(self.max_sum, node.val + left_gain + right_gain)
+            # return max gain if continuing path through parent
+            return node.val + max(left_gain, right_gain)
+        
+        gain(root)
+        return self.max_sum</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(h)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q21: 297. Serialize and Deserialize Binary Tree
+============================================================ -->
+
+<div class="question-section" id="q297" data-approaches="bfs,dfs">
+
+    <div class="question-header">
+        <span class="index-diff diff-hard">Hard</span>
+        <h2>297. Serialize and Deserialize Binary Tree</h2>
+        <div class="approach-tags">
+            <span class="tag tag-bfs">BFS</span>
+            <span class="tag tag-dfs">DFS</span>
+        </div>
+    </div>
+
+    <p>Design an algorithm to serialize and deserialize a binary tree.</p>
+
+    <div class="solution-block" data-type="dfs">
+        <div class="solution-label label-dfs">DFS — Preorder Recursive</div>
+        <pre><code>class Codec:
+    def serialize(self, root):
+        def dfs(node):
+            if node is None:
+                vals.append('#')
+                return
+            vals.append(str(node.val))
+            dfs(node.left)
+            dfs(node.right)
+        vals = []
+        dfs(root)
+        return ','.join(vals)
+
+    def deserialize(self, data):
+        vals = iter(data.split(','))
+        def dfs():
+            val = next(vals)
+            if val == '#':
+                return None
+            node = TreeNode(int(val))
+            node.left = dfs()
+            node.right = dfs()
+            return node
+        return dfs()</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <div class="solution-block" data-type="bfs">
+        <div class="solution-label label-bfs">BFS — Level Order Queue</div>
+        <pre><code>from collections import deque
+class Codec:
+    def serialize(self, root):
+        if root is None:
+            return ''
+        ans = []
+        queue = deque([root])
+        while queue:
+            node = queue.popleft()
+            if node:
+                ans.append(str(node.val))
+                queue.append(node.left)
+                queue.append(node.right)
+            else:
+                ans.append('#')
+        return ','.join(ans)
+
+    def deserialize(self, data):
+        if not data:
+            return None
+        vals = data.split(',')
+        root = TreeNode(int(vals[0]))
+        queue = deque([root])
+        i = 1
+        while queue:
+            node = queue.popleft()
+            if vals[i] != '#':
+                node.left = TreeNode(int(vals[i]))
+                queue.append(node.left)
+            i += 1
+            if vals[i] != '#':
+                node.right = TreeNode(int(vals[i]))
+                queue.append(node.right)
+            i += 1
+        return root</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>

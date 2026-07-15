@@ -1,0 +1,2107 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260714-090000",
+  "slug": "binary-trees",
+  "title": "Binary Trees - Fundamentals and Traversals",
+  "date": "2026-07-14",
+  "timestamp": "2026-07-14T09:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "binary-tree",
+    "trees",
+    "dfs",
+    "bfs",
+    "python",
+    "revision"
+  ],
+  "summary": "Comprehensive notes on Binary Trees covering terminology, mathematical properties, traversal algorithms, Python implementations, interview tips, and revision cheatsheet."
+}
+</script>
+<h1>🌳 Binary Trees - Fundamentals and Traversals</h1>
+<style>
+
+/* =====================================================
+   Binary Tree Notes Styling
+===================================================== */
+
+.note-content{
+
+    --primary:#60a5fa;
+    --green:#22c55e;
+    --yellow:#facc15;
+    --purple:#a855f7;
+    --red:#ef4444;
+    --cyan:#38bdf8;
+
+}
+
+.note-content hr{
+    margin:40px 0;
+}
+
+.note-content table{
+    width:100%;
+    border-collapse:collapse;
+    margin:18px 0;
+}
+
+.note-content table th{
+    padding:12px;
+    text-align:left;
+}
+
+.note-content table td{
+    padding:10px;
+}
+
+.note-content code{
+    font-size:.95rem;
+}
+
+.note-content pre{
+    margin:18px 0;
+}
+
+/* ====================================== */
+
+.note-content .definition-box{
+
+    background:rgba(59,130,246,.12);
+    border-left:5px solid #3b82f6;
+    padding:18px;
+    border-radius:8px;
+    margin:25px 0;
+
+}
+
+.note-content .formula-box{
+
+    background:rgba(6,182,212,.12);
+    border-left:5px solid #06b6d4;
+    padding:18px;
+    border-radius:8px;
+    margin:22px 0;
+
+}
+
+.note-content .formula{
+
+    font-size:1.2rem;
+    font-weight:bold;
+    color:#38bdf8;
+    margin-top:10px;
+
+}
+
+.note-content .tip-box{
+
+    background:rgba(250,204,21,.12);
+    border-left:5px solid #facc15;
+    padding:18px;
+    border-radius:8px;
+    margin:22px 0;
+
+}
+
+.note-content .interview-box{
+
+    background:rgba(168,85,247,.12);
+    border-left:5px solid #a855f7;
+    padding:18px;
+    border-radius:8px;
+    margin:22px 0;
+
+}
+
+.note-content .warning-box{
+
+    background:rgba(239,68,68,.12);
+    border-left:5px solid #ef4444;
+    padding:18px;
+    border-radius:8px;
+    margin:22px 0;
+
+}
+
+.note-content .revision-card{
+
+    background:rgba(34,197,94,.10);
+    border:1px solid rgba(34,197,94,.30);
+    border-radius:10px;
+    padding:20px;
+    margin:30px 0;
+
+}
+
+.note-content .learning-box{
+
+    background:rgba(99,102,241,.12);
+    border-left:5px solid #6366f1;
+    padding:18px;
+    border-radius:8px;
+    margin:25px 0;
+
+}
+
+.note-content .formula-grid{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:18px;
+margin:25px 0;
+
+}
+
+.note-content .formula-card{
+
+padding:18px;
+border-radius:8px;
+background:rgba(59,130,246,.08);
+border:1px solid rgba(59,130,246,.25);
+
+}
+
+.note-content .formula-card h4{
+
+margin-top:0;
+margin-bottom:10px;
+color:#60a5fa;
+
+}
+
+.note-content .tree{
+
+font-family:monospace;
+font-size:1rem;
+line-height:1.5;
+
+}
+
+</style>
+
+
+
+<p>
+
+Binary Trees are one of the most important data structures in Computer Science.
+They are used in search algorithms, databases, file systems, compilers,
+heaps, binary search trees, AVL trees, segment trees, and many interview
+problems.
+
+</p>
+
+<p>
+
+Before learning advanced trees like BSTs, AVL Trees, Red-Black Trees or Tries,
+it is essential to understand how a simple Binary Tree works.
+
+</p>
+
+<div class="learning-box">
+
+<h3>📚 Learning Objectives</h3>
+
+<p>After completing this note, you should be able to:</p>
+
+<ul>
+
+<li>Explain what a Binary Tree is.</li>
+
+<li>Understand tree terminology.</li>
+
+<li>Calculate important Binary Tree formulas.</li>
+
+<li>Understand tree height and depth.</li>
+
+<li>Implement DFS and BFS traversals.</li>
+
+<li>Solve beginner Binary Tree interview questions.</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<h2>What is a Binary Tree?</h2>
+
+<div class="definition-box">
+
+<strong>Definition</strong>
+
+<p>
+
+A <strong>Binary Tree</strong> is a hierarchical data structure in which
+every node has <strong>at most two children</strong>.
+
+These children are called
+
+<ul>
+
+<li>Left Child</li>
+
+<li>Right Child</li>
+
+</ul>
+
+No node can have more than two children.
+
+</p>
+
+</div>
+
+<h2>Example Binary Tree</h2>
+
+<pre class="tree"><code>
+
+                A
+              /   \
+             B     C
+            / \   / \
+           D   E F   G
+
+</code></pre>
+
+<p>
+
+Here,
+
+</p>
+
+<ul>
+
+<li>Root = A</li>
+
+<li>Parent of D = B</li>
+
+<li>Children of C = F, G</li>
+
+<li>Leaf Nodes = D, E, F, G</li>
+
+<li>Total Nodes = 7</li>
+
+<li>Total Edges = 6</li>
+
+</ul>
+
+<hr>
+
+<h2>Basic Terminology</h2>
+
+<table>
+
+<tr>
+<th>Term</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>Root</td>
+<td>The first node of the tree.</td>
+</tr>
+
+<tr>
+<td>Parent</td>
+<td>A node having children.</td>
+</tr>
+
+<tr>
+<td>Child</td>
+<td>Node directly connected below another node.</td>
+</tr>
+
+<tr>
+<td>Leaf Node</td>
+<td>Node with no children.</td>
+</tr>
+
+<tr>
+<td>Internal Node</td>
+<td>Node having at least one child.</td>
+</tr>
+
+<tr>
+<td>Sibling</td>
+<td>Nodes sharing the same parent.</td>
+</tr>
+
+<tr>
+<td>Edge</td>
+<td>Connection between two nodes.</td>
+</tr>
+
+<tr>
+<td>Path</td>
+<td>Sequence of connected nodes.</td>
+</tr>
+
+<tr>
+<td>Depth</td>
+<td>Distance from root to a node.</td>
+</tr>
+
+<tr>
+<td>Height</td>
+<td>Longest distance from node to any leaf.</td>
+</tr>
+
+<tr>
+<td>Level</td>
+<td>Position of a node in the tree.</td>
+</tr>
+
+</table>
+
+<hr>
+
+<h2>Height vs Depth</h2>
+
+<div class="definition-box">
+
+<strong>Depth</strong>
+
+<p>
+
+Number of edges from the root to a node.
+
+</p>
+
+<strong>Height</strong>
+
+<p>
+
+Number of edges in the longest path from a node to a leaf.
+
+</p>
+
+</div>
+
+<pre class="tree"><code>
+
+        A
+       /
+      B
+     /
+    C
+
+Depth(A)=0
+
+Depth(B)=1
+
+Depth(C)=2
+
+Height(C)=0
+
+Height(B)=1
+
+Height(A)=2
+
+</code></pre>
+
+<div class="warning-box">
+
+<strong>⚠ Interview Warning</strong>
+
+<p>
+
+Some books define height as the number of <strong>nodes</strong>,
+while most interview problems define it as the number of <strong>edges</strong>.
+
+Always verify the definition being used.
+
+</p>
+
+</div>
+
+<hr>
+
+<h2>Important Binary Tree Properties</h2>
+
+<div class="formula-grid">
+
+<div class="formula-card">
+
+<h4>Maximum Nodes at Level i</h4>
+
+<div class="formula">
+
+2<sup>i</sup>
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Maximum Nodes</h4>
+
+<div class="formula">
+
+2<sup>h+1</sup> - 1
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Maximum Leaf Nodes</h4>
+
+<div class="formula">
+
+2<sup>h</sup>
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Total Edges</h4>
+
+<div class="formula">
+
+Nodes - 1
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Minimum Nodes</h4>
+
+<div class="formula">
+
+h + 1
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Minimum Height</h4>
+
+<div class="formula">
+
+⌈log₂(N+1)⌉ − 1
+
+</div>
+
+</div>
+
+</div>
+
+<hr>
+
+<h2>Understanding the Formulas</h2>
+
+<h3>1. Maximum Nodes at Every Level</h3>
+
+<table>
+
+<tr>
+<th>Level</th>
+<th>Maximum Nodes</th>
+</tr>
+
+<tr>
+<td>0</td>
+<td>1</td>
+</tr>
+
+<tr>
+<td>1</td>
+<td>2</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>4</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>8</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>16</td>
+</tr>
+
+</table>
+
+<div class="tip-box">
+
+💡 Every new level doubles the maximum number of nodes.
+
+</div>
+
+<h3>2. Maximum Nodes in a Tree</h3>
+
+<p>
+
+Suppose height = 3
+
+</p>
+
+<pre><code>
+
+Maximum Nodes
+
+= 2^(3+1)-1
+
+=16-1
+
+=15
+
+</code></pre>
+
+<h3>3. Maximum Leaf Nodes</h3>
+
+<pre><code>
+
+Height = 4
+
+Leaf Nodes = 2⁴
+
+=16
+
+</code></pre>
+
+<h3>4. Number of Edges</h3>
+
+<pre><code>
+
+Nodes = 9
+
+Edges = 8
+
+</code></pre>
+
+<div class="interview-box">
+
+🎯 <strong>Interview Tip</strong>
+
+If a Binary Tree has N nodes,
+
+it ALWAYS has
+
+<strong>N − 1 edges.</strong>
+
+This is true for every tree.
+
+</div>
+
+<hr>
+
+<h2>Python Representation</h2>
+
+<p>
+
+A Binary Tree node generally stores
+
+</p>
+
+<ul>
+
+<li>Data</li>
+
+<li>Left Child</li>
+
+<li>Right Child</li>
+
+</ul>
+
+<pre><code>class TreeNode:
+
+    def __init__(self, value):
+
+        self.val = value
+        self.left = None
+        self.right = None
+</code></pre>
+
+<div class="revision-card">
+
+<h3>⚡ Quick Revision</h3>
+
+<ul>
+
+<li>Each node has at most 2 children.</li>
+
+<li>Root is the first node.</li>
+
+<li>Leaf nodes have no children.</li>
+
+<li>Maximum Nodes = 2^(h+1)-1</li>
+
+<li>Maximum Leaves = 2^h</li>
+
+<li>Edges = Nodes-1</li>
+
+<li>Height = Longest path to a leaf.</li>
+
+<li>Depth = Distance from root.</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<h2>Next Topic</h2>
+
+<p>
+
+Now that we understand Binary Tree structure and formulas, we can learn how to
+<strong>visit every node</strong> using different traversal algorithms.
+
+The next section covers:
+
+<ul>
+
+<li>Depth First Search (DFS)</li>
+
+<li>Preorder Traversal</li>
+
+<li>Inorder Traversal</li>
+
+<li>Postorder Traversal</li>
+
+</ul>
+
+<hr>
+
+<h1>🌲 Tree Traversals (Depth First Search)</h1>
+
+<p>
+Traversal means <strong>visiting every node of a tree exactly once</strong>.
+Since trees are non-linear data structures, we need systematic algorithms to
+visit all nodes.
+</p>
+
+<p>
+The first category of traversals is called <strong>Depth First Search (DFS)</strong>.
+DFS explores one branch completely before moving to another branch.
+</p>
+
+<div class="definition-box">
+
+<h3>📘 Depth First Search (DFS)</h3>
+
+<p>
+
+DFS goes as deep as possible into one subtree before backtracking and exploring
+another subtree.
+
+</p>
+
+<p>
+
+DFS can be implemented using:
+
+</p>
+
+<ul>
+
+<li>Recursion (most common)</li>
+<li>Stack (iterative implementation)</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<h2>Example Tree</h2>
+
+<pre class="tree"><code>
+
+                A
+              /   \
+             B     C
+            / \   / \
+           D   E F   G
+
+</code></pre>
+
+<p>
+We will use this same tree for every traversal.
+</p>
+
+<hr>
+
+<h1>1️⃣ Preorder Traversal</h1>
+
+<div class="definition-box">
+
+<h3>Traversal Order</h3>
+
+<div class="formula">
+
+Root → Left → Right
+
+</div>
+
+</div>
+
+<div class="tip-box">
+
+💡 <strong>Memory Trick</strong>
+
+<p>
+
+Meet yourself first, then visit your left child, then your right child.
+
+</p>
+
+</div>
+
+<h3>Traversal Animation</h3>
+
+<pre class="tree"><code>
+
+                A  ← Start
+              /   \
+             B     C
+            / \   / \
+           D   E F   G
+
+Visit Order
+
+① A
+
+② B
+
+③ D
+
+④ E
+
+⑤ C
+
+⑥ F
+
+⑦ G
+
+</code></pre>
+
+<h3>Output</h3>
+
+<pre><code>
+
+A B D E C F G
+
+</code></pre>
+
+<hr>
+
+<h2>Recursive Algorithm</h2>
+
+<pre><code>def preorder(root):
+
+    if root is None:
+        return
+
+    print(root.val, end=" ")
+
+    preorder(root.left)
+
+    preorder(root.right)
+</code></pre>
+
+<h3>How it Works</h3>
+
+<ol>
+
+<li>Visit current node.</li>
+
+<li>Traverse left subtree.</li>
+
+<li>Traverse right subtree.</li>
+
+</ol>
+
+<div class="interview-box">
+
+🎯 <strong>Interview Tip</strong>
+
+Preorder is commonly used for:
+
+<ul>
+
+<li>Tree Serialization</li>
+
+<li>Copying Trees</li>
+
+<li>Creating Prefix Expressions</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<h2>Iterative Preorder</h2>
+
+<p>
+
+Instead of recursion, we use a <strong>Stack</strong>.
+
+</p>
+
+<pre><code>def preorder(root):
+
+    if root is None:
+        return
+
+    stack = [root]
+
+    while stack:
+
+        node = stack.pop()
+
+        print(node.val, end=" ")
+
+        if node.right:
+            stack.append(node.right)
+
+        if node.left:
+            stack.append(node.left)
+</code></pre>
+
+<div class="tip-box">
+
+💡 Push the <strong>right child first</strong>.
+
+Since Stack is LIFO, the left child gets processed first.
+
+</div>
+
+<hr>
+
+<h2>Complexity</h2>
+
+<table>
+
+<tr>
+<th>Operation</th>
+<th>Complexity</th>
+</tr>
+
+<tr>
+<td>Time</td>
+<td>O(n)</td>
+</tr>
+
+<tr>
+<td>Space</td>
+<td>O(h)</td>
+</tr>
+
+</table>
+
+<hr>
+
+<h1>2️⃣ Inorder Traversal</h1>
+
+<div class="definition-box">
+
+<h3>Traversal Order</h3>
+
+<div class="formula">
+
+Left → Root → Right
+
+</div>
+
+</div>
+
+<div class="tip-box">
+
+💡 <strong>Memory Trick</strong>
+
+Finish the entire left subtree before visiting yourself.
+
+</div>
+
+<h3>Traversal Animation</h3>
+
+<pre class="tree"><code>
+
+                A
+              /   \
+             B     C
+            / \   / \
+           D   E F   G
+
+Visit Order
+
+① D
+
+② B
+
+③ E
+
+④ A
+
+⑤ F
+
+⑥ C
+
+⑦ G
+
+</code></pre>
+
+<h3>Output</h3>
+
+<pre><code>
+
+D B E A F C G
+
+</code></pre>
+
+<hr>
+
+<h2>Recursive Algorithm</h2>
+
+<pre><code>def inorder(root):
+
+    if root is None:
+        return
+
+    inorder(root.left)
+
+    print(root.val, end=" ")
+
+    inorder(root.right)
+</code></pre>
+
+<hr>
+
+<h2>Iterative Inorder</h2>
+
+<pre><code>def inorder(root):
+
+    stack = []
+
+    current = root
+
+    while current or stack:
+
+        while current:
+
+            stack.append(current)
+
+            current = current.left
+
+        current = stack.pop()
+
+        print(current.val, end=" ")
+
+        current = current.right
+</code></pre>
+
+<div class="interview-box">
+
+🎯 <strong>Most Important Interview Fact</strong>
+
+If the tree is a <strong>Binary Search Tree (BST)</strong>,
+
+<strong>Inorder Traversal always produces the elements in sorted order.</strong>
+
+This fact appears in countless coding interviews.
+
+</div>
+
+<hr>
+
+<h2>Complexity</h2>
+
+<table>
+
+<tr>
+<th>Operation</th>
+<th>Complexity</th>
+</tr>
+
+<tr>
+<td>Time</td>
+<td>O(n)</td>
+</tr>
+
+<tr>
+<td>Space</td>
+<td>O(h)</td>
+</tr>
+
+</table>
+
+<hr>
+
+<h1>3️⃣ Postorder Traversal</h1>
+
+<div class="definition-box">
+
+<h3>Traversal Order</h3>
+
+<div class="formula">
+
+Left → Right → Root
+
+</div>
+
+</div>
+
+<div class="tip-box">
+
+💡 <strong>Memory Trick</strong>
+
+Parents should be visited only after both children finish.
+
+</div>
+
+<h3>Traversal Animation</h3>
+
+<pre class="tree"><code>
+
+                A
+              /   \
+             B     C
+            / \   / \
+           D   E F   G
+
+Visit Order
+
+① D
+
+② E
+
+③ B
+
+④ F
+
+⑤ G
+
+⑥ C
+
+⑦ A
+
+</code></pre>
+
+<h3>Output</h3>
+
+<pre><code>
+
+D E B F G C A
+
+</code></pre>
+
+<hr>
+
+<h2>Recursive Algorithm</h2>
+
+<pre><code>def postorder(root):
+
+    if root is None:
+        return
+
+    postorder(root.left)
+
+    postorder(root.right)
+
+    print(root.val, end=" ")
+</code></pre>
+
+<hr>
+
+<h2>Iterative Postorder (Two Stacks)</h2>
+
+<pre><code>def postorder(root):
+
+    if root is None:
+        return
+
+    stack1 = [root]
+    stack2 = []
+
+    while stack1:
+
+        node = stack1.pop()
+
+        stack2.append(node)
+
+        if node.left:
+            stack1.append(node.left)
+
+        if node.right:
+            stack1.append(node.right)
+
+    while stack2:
+
+        print(stack2.pop().val, end=" ")
+</code></pre>
+
+<div class="interview-box">
+
+🎯 <strong>Interview Tip</strong>
+
+Postorder is commonly used for:
+
+<ul>
+
+<li>Deleting Trees</li>
+
+<li>Freeing Memory</li>
+
+<li>Evaluating Expression Trees</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<h2>Complexity</h2>
+
+<table>
+
+<tr>
+<th>Operation</th>
+<th>Complexity</th>
+</tr>
+
+<tr>
+<td>Time</td>
+<td>O(n)</td>
+</tr>
+
+<tr>
+<td>Space</td>
+<td>O(h)</td>
+</tr>
+
+</table>
+
+<hr>
+
+<h1>📊 DFS Traversal Comparison</h1>
+
+<table>
+
+<tr>
+
+<th>Traversal</th>
+
+<th>Order</th>
+
+<th>Main Uses</th>
+
+</tr>
+
+<tr>
+
+<td>Preorder</td>
+
+<td>Root → Left → Right</td>
+
+<td>Serialization, Copy Tree, Prefix Expression</td>
+
+</tr>
+
+<tr>
+
+<td>Inorder</td>
+
+<td>Left → Root → Right</td>
+
+<td>Sorted order in BST</td>
+
+</tr>
+
+<tr>
+
+<td>Postorder</td>
+
+<td>Left → Right → Root</td>
+
+<td>Delete Tree, Expression Evaluation</td>
+
+</tr>
+
+</table>
+
+<hr>
+
+<div class="warning-box">
+
+<h3>⚠ Common Mistakes</h3>
+
+<ul>
+
+<li>Confusing Height with Depth.</li>
+
+<li>Writing Root before Left in Inorder.</li>
+
+<li>Pushing left child first in iterative preorder.</li>
+
+<li>Forgetting the base case (<code>if root is None</code>).</li>
+
+<li>Mixing preorder and postorder sequences.</li>
+
+</ul>
+
+</div>
+
+<div class="revision-card">
+
+<h2>⚡ 30 Second Revision</h2>
+
+<table>
+
+<tr>
+
+<th>Traversal</th>
+
+<th>Remember As</th>
+
+</tr>
+
+<tr>
+
+<td>Preorder</td>
+
+<td>Root Left Right</td>
+
+</tr>
+
+<tr>
+
+<td>Inorder</td>
+
+<td>Left Root Right</td>
+
+</tr>
+
+<tr>
+
+<td>Postorder</td>
+
+<td>Left Right Root</td>
+
+</tr>
+
+</table>
+
+<p>
+
+All DFS traversals:
+
+</p>
+
+<ul>
+
+<li>Visit every node exactly once.</li>
+
+<li>Time Complexity = <strong>O(n)</strong></li>
+
+<li>Recursive Space = <strong>O(h)</strong></li>
+
+<li>Iterative implementation uses a Stack.</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<h2>➡ Coming Next</h2>
+
+<p>
+
+The final part covers <strong>Breadth First Search (BFS)</strong>, also known as
+<strong>Level Order Traversal</strong>, along with Queue implementation,
+DFS vs BFS comparison, interview questions, cheat sheet, and final revision.
+
+</p>
+
+<hr>
+
+<h1>🌊 Breadth First Search (BFS)</h1>
+
+<p>
+
+Unlike DFS, which explores one branch completely before moving to another,
+<strong>Breadth First Search (BFS)</strong> visits nodes <strong>level by level</strong>.
+
+</p>
+
+<div class="definition-box">
+
+<h3>📘 Breadth First Search (BFS)</h3>
+
+<p>
+
+BFS visits every node on the current level before moving to the next level.
+
+</p>
+
+<p>
+
+It uses a <strong>Queue (FIFO)</strong>.
+
+</p>
+
+</div>
+
+<div class="tip-box">
+
+💡 <strong>Memory Trick</strong>
+
+<p>
+
+DFS → Stack / Recursion
+
+<br>
+
+BFS → Queue
+
+</p>
+
+</div>
+
+<hr>
+
+<h2>Example Tree</h2>
+
+<pre class="tree"><code>
+
+                A
+              /   \
+             B     C
+            / \   / \
+           D   E F   G
+
+</code></pre>
+
+<h3>Traversal Order</h3>
+
+<pre><code>
+
+A
+
+↓
+
+B C
+
+↓
+
+D E F G
+
+</code></pre>
+
+<h3>Output</h3>
+
+<pre><code>
+
+A B C D E F G
+
+</code></pre>
+
+<hr>
+
+<h2>Queue Visualization</h2>
+
+<p>
+
+Understanding the queue makes BFS extremely easy.
+
+</p>
+
+<table>
+
+<tr>
+
+<th>Queue</th>
+
+<th>Visited</th>
+
+</tr>
+
+<tr>
+
+<td>[A]</td>
+
+<td>-</td>
+
+</tr>
+
+<tr>
+
+<td>[B,C]</td>
+
+<td>A</td>
+
+</tr>
+
+<tr>
+
+<td>[C,D,E]</td>
+
+<td>A B</td>
+
+</tr>
+
+<tr>
+
+<td>[D,E,F,G]</td>
+
+<td>A B C</td>
+
+</tr>
+
+<tr>
+
+<td>[E,F,G]</td>
+
+<td>A B C D</td>
+
+</tr>
+
+<tr>
+
+<td>[F,G]</td>
+
+<td>A B C D E</td>
+
+</tr>
+
+<tr>
+
+<td>[G]</td>
+
+<td>A B C D E F</td>
+
+</tr>
+
+<tr>
+
+<td>[]</td>
+
+<td>A B C D E F G</td>
+
+</tr>
+
+</table>
+
+<hr>
+
+<h2>Python Implementation</h2>
+
+<pre><code>from collections import deque
+
+def level_order(root):
+
+    if root is None:
+        return
+
+    queue = deque([root])
+
+    while queue:
+
+        node = queue.popleft()
+
+        print(node.val, end=" ")
+
+        if node.left:
+            queue.append(node.left)
+
+        if node.right:
+            queue.append(node.right)
+</code></pre>
+
+<div class="interview-box">
+
+🎯 <strong>Interview Tip</strong>
+
+Whenever you hear
+
+<ul>
+
+<li>Level Order Traversal</li>
+
+<li>Print Tree Level by Level</li>
+
+<li>Shortest Path in an Unweighted Graph</li>
+
+</ul>
+
+Immediately think
+
+<strong>Queue + BFS</strong>
+
+</div>
+
+<hr>
+
+<h2>Complexity</h2>
+
+<table>
+
+<tr>
+
+<th>Operation</th>
+
+<th>Complexity</th>
+
+</tr>
+
+<tr>
+
+<td>Time</td>
+
+<td>O(n)</td>
+
+</tr>
+
+<tr>
+
+<td>Space</td>
+
+<td>O(n)</td>
+
+</tr>
+
+</table>
+
+<p>
+
+The queue may contain an entire level of the tree, making the worst-case
+space complexity O(n).
+
+</p>
+
+<hr>
+
+<h1>📊 DFS vs BFS</h1>
+
+<table>
+
+<tr>
+
+<th>Feature</th>
+
+<th>DFS</th>
+
+<th>BFS</th>
+
+</tr>
+
+<tr>
+
+<td>Traversal Style</td>
+
+<td>Go Deep</td>
+
+<td>Go Level by Level</td>
+
+</tr>
+
+<tr>
+
+<td>Uses</td>
+
+<td>Recursion / Stack</td>
+
+<td>Queue</td>
+
+</tr>
+
+<tr>
+
+<td>Time Complexity</td>
+
+<td>O(n)</td>
+
+<td>O(n)</td>
+
+</tr>
+
+<tr>
+
+<td>Space Complexity</td>
+
+<td>O(h)</td>
+
+<td>O(n)</td>
+
+</tr>
+
+<tr>
+
+<td>Best For</td>
+
+<td>Recursive Problems</td>
+
+<td>Shortest Level Traversal</td>
+
+</tr>
+
+</table>
+
+<hr>
+
+<h1>🧠 Choosing the Correct Traversal</h1>
+
+<table>
+
+<tr>
+
+<th>If the Question Says...</th>
+
+<th>Think...</th>
+
+</tr>
+
+<tr>
+
+<td>Print Sorted Values (BST)</td>
+
+<td>Inorder</td>
+
+</tr>
+
+<tr>
+
+<td>Copy a Tree</td>
+
+<td>Preorder</td>
+
+</tr>
+
+<tr>
+
+<td>Delete Entire Tree</td>
+
+<td>Postorder</td>
+
+</tr>
+
+<tr>
+
+<td>Print Nodes Level by Level</td>
+
+<td>BFS</td>
+
+</tr>
+
+<tr>
+
+<td>Find Maximum Width</td>
+
+<td>BFS</td>
+
+</tr>
+
+<tr>
+
+<td>Height of Tree</td>
+
+<td>DFS</td>
+
+</tr>
+
+<tr>
+
+<td>Diameter of Tree</td>
+
+<td>DFS</td>
+
+</tr>
+
+<tr>
+
+<td>Lowest Common Ancestor</td>
+
+<td>DFS</td>
+
+</tr>
+
+</table>
+
+<hr>
+
+<h1>🎯 Common Interview Questions</h1>
+
+<div class="definition-box">
+
+<h3>Frequently Asked Problems</h3>
+
+<ul>
+
+<li>Maximum Depth / Height of Tree</li>
+
+<li>Balanced Binary Tree</li>
+
+<li>Diameter of Binary Tree</li>
+
+<li>Invert Binary Tree</li>
+
+<li>Lowest Common Ancestor</li>
+
+<li>Binary Tree Paths</li>
+
+<li>Path Sum</li>
+
+<li>Maximum Path Sum</li>
+
+<li>Same Tree</li>
+
+<li>Symmetric Tree</li>
+
+<li>Zigzag Level Order Traversal</li>
+
+<li>Boundary Traversal</li>
+
+<li>Vertical Order Traversal</li>
+
+<li>Top View & Bottom View</li>
+
+<li>Right Side View</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<h1>⚠ Common Mistakes</h1>
+
+<div class="warning-box">
+
+<ul>
+
+<li>Mixing Height and Depth.</li>
+
+<li>Using Stack instead of Queue for BFS.</li>
+
+<li>Forgetting to check <code>None</code>.</li>
+
+<li>Visiting the Root in the wrong order.</li>
+
+<li>Pushing children in the wrong order for iterative traversals.</li>
+
+<li>Confusing Binary Trees with Binary Search Trees.</li>
+
+<li>Thinking Inorder is always sorted (it is only sorted in BSTs).</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<h1>📐 Important Formula Sheet</h1>
+
+<div class="formula-grid">
+
+<div class="formula-card">
+
+<h4>Maximum Nodes at Level i</h4>
+
+<div class="formula">
+
+2<sup>i</sup>
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Maximum Nodes</h4>
+
+<div class="formula">
+
+2<sup>h+1</sup>-1
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Maximum Leaf Nodes</h4>
+
+<div class="formula">
+
+2<sup>h</sup>
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Edges</h4>
+
+<div class="formula">
+
+Nodes-1
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Minimum Nodes</h4>
+
+<div class="formula">
+
+h+1
+
+</div>
+
+</div>
+
+<div class="formula-card">
+
+<h4>Minimum Height</h4>
+
+<div class="formula">
+
+⌈log₂(N+1)⌉−1
+
+</div>
+
+</div>
+
+</div>
+
+<hr>
+
+<h1>💻 Complete Traversal Summary</h1>
+
+<table>
+
+<tr>
+
+<th>Traversal</th>
+
+<th>Order</th>
+
+<th>Data Structure</th>
+
+<th>Time</th>
+
+<th>Space</th>
+
+</tr>
+
+<tr>
+
+<td>Preorder</td>
+
+<td>Root → Left → Right</td>
+
+<td>Stack / Recursion</td>
+
+<td>O(n)</td>
+
+<td>O(h)</td>
+
+</tr>
+
+<tr>
+
+<td>Inorder</td>
+
+<td>Left → Root → Right</td>
+
+<td>Stack / Recursion</td>
+
+<td>O(n)</td>
+
+<td>O(h)</td>
+
+</tr>
+
+<tr>
+
+<td>Postorder</td>
+
+<td>Left → Right → Root</td>
+
+<td>Stack / Recursion</td>
+
+<td>O(n)</td>
+
+<td>O(h)</td>
+
+</tr>
+
+<tr>
+
+<td>Level Order</td>
+
+<td>Level by Level</td>
+
+<td>Queue</td>
+
+<td>O(n)</td>
+
+<td>O(n)</td>
+
+</tr>
+
+</table>
+
+<hr>
+
+<div class="revision-card">
+
+<h2>⚡ 60 Second Revision</h2>
+
+<h3>Tree Properties</h3>
+
+<ul>
+
+<li>Maximum Nodes at Level i = 2<sup>i</sup></li>
+
+<li>Maximum Nodes = 2<sup>h+1</sup>-1</li>
+
+<li>Maximum Leaf Nodes = 2<sup>h</sup></li>
+
+<li>Edges = Nodes-1</li>
+
+</ul>
+
+<h3>Traversal Orders</h3>
+
+<table>
+
+<tr>
+
+<th>Traversal</th>
+
+<th>Remember</th>
+
+</tr>
+
+<tr>
+
+<td>Preorder</td>
+
+<td>Root Left Right</td>
+
+</tr>
+
+<tr>
+
+<td>Inorder</td>
+
+<td>Left Root Right</td>
+
+</tr>
+
+<tr>
+
+<td>Postorder</td>
+
+<td>Left Right Root</td>
+
+</tr>
+
+<tr>
+
+<td>Level Order</td>
+
+<td>BFS using Queue</td>
+
+</tr>
+
+</table>
+
+<h3>Complexities</h3>
+
+<ul>
+
+<li>All traversals visit every node exactly once.</li>
+
+<li>Time Complexity = O(n)</li>
+
+<li>DFS Space = O(h)</li>
+
+<li>BFS Space = O(n)</li>
+
+</ul>
+
+</div>
+
+<hr>
+
+<div class="learning-box">
+
+<h2>🏁 Key Takeaways</h2>
+
+<ol>
+
+<li>Every Binary Tree node has at most two children.</li>
+
+<li>Height is the longest path from a node to a leaf.</li>
+
+<li>Depth is the distance from the root to a node.</li>
+
+<li>Preorder visits the root first.</li>
+
+<li>Inorder visits the root in the middle.</li>
+
+<li>Postorder visits the root last.</li>
+
+<li>Level Order Traversal uses a Queue.</li>
+
+<li>DFS uses Recursion or a Stack.</li>
+
+<li>All traversals have O(n) time complexity.</li>
+
+<li>Understanding Binary Trees is the foundation for BSTs, AVL Trees, Heaps, Tries, and many advanced data structures.</li>
+
+</ol>
+
+</div>
+
+<hr>
+
+<div class="tip-box">
+
+<h2>📖 What's Next?</h2>
+
+<p>
+
+Now that you understand Binary Trees, the next logical topic is:
+
+</p>
+
+<ol>
+
+<li>Binary Search Trees (BST)</li>
+
+<li>Insertion & Deletion</li>
+
+<li>Searching</li>
+
+<li>Balanced BST</li>
+
+<li>AVL Trees</li>
+
+<li>Heap</li>
+
+<li>Trie</li>
+
+</ol>
+
+</div>
