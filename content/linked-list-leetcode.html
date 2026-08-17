@@ -1,0 +1,1110 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260818-090000",
+  "slug": "linked-list-leetcode",
+  "title": "Linked List - Leetcode Questions",
+  "date": "2026-08-18",
+  "timestamp": "2026-08-18T09:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "linked-list",
+    "leetcode",
+    "python",
+    "two-pointers",
+    "revision"
+  ],
+  "summary": "Leetcode Linked List questions — brief prompts, Python solutions, and time/space complexity for quick revision."
+}
+</script>
+<h1>🔗 Linked List - Leetcode Questions</h1>
+<style>
+    /* =====================================================
+   Linked List Leetcode Notes Styling
+===================================================== */
+
+    .note-content {
+        --primary: #60a5fa;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --cyan: #38bdf8;
+        --orange: #fb923c;
+    }
+
+    .note-content hr {
+        margin: 40px 0;
+    }
+
+    .note-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+    }
+
+    .note-content table th {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .note-content table td {
+        padding: 10px;
+    }
+
+    .note-content code {
+        font-size: .95rem;
+    }
+
+    .note-content pre {
+        margin: 18px 0;
+    }
+
+    /* ====================================== */
+
+    /* Index Section */
+    .note-content .index-section {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .20);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+    }
+
+    .note-content .index-section h3 {
+        margin-top: 0;
+        color: #60a5fa;
+    }
+
+    .note-content .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .note-content .index-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .note-content .index-item:hover {
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .note-content .index-num {
+        font-weight: 700;
+        color: #60a5fa;
+        min-width: 44px;
+    }
+
+    .note-content .index-title {
+        flex: 1;
+    }
+
+    .note-content .index-diff {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .note-content .diff-easy {
+        background: rgba(34, 197, 94, .15);
+        color: #22c55e;
+    }
+
+    .note-content .diff-med {
+        background: rgba(251, 146, 60, .15);
+        color: #fb923c;
+    }
+
+    .note-content .diff-hard {
+        background: rgba(239, 68, 68, .15);
+        color: #ef4444;
+    }
+
+    /* Question Section */
+    .note-content .question-section {
+        margin: 40px 0;
+        padding: 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .02);
+        position: relative;
+    }
+
+    .note-content .question-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .note-content .question-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .note-content .approach-tags {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .note-content .tag {
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .note-content .tag-technique {
+        background: rgba(96, 165, 250, .18);
+        color: #60a5fa;
+    }
+
+    .note-content .question-prompt {
+        color: #94a3b8;
+        margin: 0 0 16px 0;
+    }
+
+    /* Solution Block */
+    .note-content .solution-block {
+        margin: 16px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        overflow: hidden;
+    }
+
+    .note-content .solution-label {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        background: rgba(96, 165, 250, .12);
+        color: #60a5fa;
+    }
+
+    .note-content .complexity-box {
+        display: flex;
+        gap: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, .03);
+        font-size: .85rem;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .note-content .complexity-box strong {
+        color: #94a3b8;
+    }
+
+    /* Back to Top Button */
+    .note-content .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: .78rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 5px;
+        transition: all .2s;
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .note-content .back-to-top:hover {
+        background: rgba(99, 102, 241, .15);
+        color: #c7d2fe;
+        border-color: rgba(99, 102, 241, .30);
+    }
+</style>
+
+<!-- ============================================================
+     INDEX
+============================================================ -->
+
+<div class="index-section" id="top">
+
+    <h3>📋 Question Index</h3>
+
+    <div class="index-grid">
+
+        <a class="index-item" href="#q83">
+            <span class="index-num">83.</span>
+            <span class="index-title">Remove Duplicates from Sorted List</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q2">
+            <span class="index-num">2.</span>
+            <span class="index-title">Add Two Numbers</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q21">
+            <span class="index-num">21.</span>
+            <span class="index-title">Merge Two Sorted Lists</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q148">
+            <span class="index-num">148.</span>
+            <span class="index-title">Sort List</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q2807">
+            <span class="index-num">2807.</span>
+            <span class="index-title">Insert Greatest Common Divisors in Linked List</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q19">
+            <span class="index-num">19.</span>
+            <span class="index-title">Remove Nth Node From End of List</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q138">
+            <span class="index-num">138.</span>
+            <span class="index-title">Copy List with Random Pointer</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q876">
+            <span class="index-num">876.</span>
+            <span class="index-title">Middle of the Linked List</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q141">
+            <span class="index-num">141.</span>
+            <span class="index-title">Linked List Cycle</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q142">
+            <span class="index-num">142.</span>
+            <span class="index-title">Linked List Cycle II</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q160">
+            <span class="index-num">160.</span>
+            <span class="index-title">Intersection of Two Linked Lists</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q206">
+            <span class="index-num">206.</span>
+            <span class="index-title">Reverse Linked List</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q234">
+            <span class="index-num">234.</span>
+            <span class="index-title">Palindrome Linked List</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q92">
+            <span class="index-num">92.</span>
+            <span class="index-title">Reverse Linked List II</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q25">
+            <span class="index-num">25.</span>
+            <span class="index-title">Reverse Nodes in k-Group</span>
+            <span class="index-diff diff-hard">Hard</span>
+        </a>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q1: 83. Remove Duplicates from Sorted List
+============================================================ -->
+
+<div class="question-section" id="q83" data-approaches="pointer">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>83. Remove Duplicates from Sorted List</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Pointer</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a sorted linked list, delete duplicates so each element appears only once.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def deleteDuplicates(self, head):
+    if head is None:
+        return None
+
+    curr = head
+
+    while curr.next:
+        if curr.val == curr.next.val:
+            curr.next = curr.next.next
+        else:
+            curr = curr.next
+
+    return head</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q2: 2. Add Two Numbers
+============================================================ -->
+
+<div class="question-section" id="q2" data-approaches="carry">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>2. Add Two Numbers</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Carry / Simulation</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Two non-empty lists represent non-negative integers with digits in reverse order. Add them and return the sum as a linked list.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def addTwoNumbers(self, l1, l2):
+    dummy = ListNode(0)
+    curr = dummy
+    carry = 0
+
+    while l1 or l2 or carry:
+        x = l1.val if l1 else 0
+        y = l2.val if l2 else 0
+
+        total = x + y + carry
+
+        carry = total // 10
+        digit = total % 10
+
+        curr.next = ListNode(digit)
+        curr = curr.next
+
+        if l1:
+            l1 = l1.next
+        if l2:
+            l2 = l2.next
+
+    return dummy.next</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(max(n, m))</div>
+            <div><strong>Space:</strong> O(max(n, m)) — output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q3: 21. Merge Two Sorted Lists
+============================================================ -->
+
+<div class="question-section" id="q21" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>21. Merge Two Sorted Lists</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Merge two sorted linked lists <code>list1</code> and <code>list2</code> into one sorted list.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def mergeTwoLists(self, list1, list2):
+    dummy = ListNode(0)
+    curr = dummy
+
+    while list1 and list2:
+        if list1.val < list2.val:
+            curr.next = list1
+            list1 = list1.next
+        else:
+            curr.next = list2
+            list2 = list2.next
+
+        curr = curr.next
+
+    if list1:
+        curr.next = list1
+    else:
+        curr.next = list2
+
+    return dummy.next</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q4: 148. Sort List
+============================================================ -->
+
+<div class="question-section" id="q148" data-approaches="merge-sort">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>148. Sort List</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Merge Sort</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given the head of a linked list, return it sorted in ascending order.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def sortList(self, head):
+    if not head or not head.next:
+        return head
+
+    # Find middle
+    slow = head
+    fast = head.next
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    mid = slow.next
+    slow.next = None
+
+    # Sort both halves
+    left = self.sortList(head)
+    right = self.sortList(mid)
+
+    # Merge
+    dummy = ListNode(0)
+    curr = dummy
+
+    while left and right:
+        if left.val < right.val:
+            curr.next = left
+            left = left.next
+        else:
+            curr.next = right
+            right = right.next
+
+        curr = curr.next
+
+    curr.next = left if left else right
+
+    return dummy.next</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n log n)</div>
+            <div><strong>Space:</strong> O(log n) — recursion stack</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q5: 2807. Insert Greatest Common Divisors in Linked List
+============================================================ -->
+
+<div class="question-section" id="q2807" data-approaches="gcd">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>2807. Insert Greatest Common Divisors in Linked List</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">GCD + Pointer</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Between every pair of adjacent nodes, insert a new node containing the GCD of those two values.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def gcd(a, b):
+    if b == 0:
+        return a
+    return gcd(b, a % b)
+
+
+def insertGreatestCommonDivisors(self, head):
+    if head is None or head.next is None:
+        return head
+
+    curr = head
+
+    while curr.next:
+        value = gcd(curr.val, curr.next.val)
+
+        new_node = ListNode(value)
+        new_node.next = curr.next
+        curr.next = new_node
+
+        curr = new_node.next
+
+    return head</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n log V)</div>
+            <div><strong>Space:</strong> O(log V) — recursive GCD</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q6: 19. Remove Nth Node From End of List
+============================================================ -->
+
+<div class="question-section" id="q19" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>19. Remove Nth Node From End of List</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given the head of a linked list, remove the <code>n</code>th node from the end and return the head.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def removeNthFromEnd(self, head, n):
+    dummy = ListNode(0)
+    dummy.next = head
+
+    slow = dummy
+    fast = dummy
+
+    for _ in range(n):
+        fast = fast.next
+
+    while fast.next:
+        slow = slow.next
+        fast = fast.next
+
+    slow.next = slow.next.next
+
+    return dummy.next</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q7: 138. Copy List with Random Pointer
+============================================================ -->
+
+<div class="question-section" id="q138" data-approaches="interleaving">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>138. Copy List with Random Pointer</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Interleaving</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Each node has <code>val</code>, <code>next</code>, and <code>random</code> pointers. Return a deep copy of the list.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def copyRandomList(self, head):
+    if not head:
+        return None
+
+    # 1. Create copied nodes
+    curr = head
+
+    while curr:
+        copy = Node(curr.val)
+
+        copy.next = curr.next
+        curr.next = copy
+
+        curr = copy.next
+
+    # 2. Assign random pointers
+    curr = head
+
+    while curr:
+        if curr.random:
+            curr.next.random = curr.random.next
+
+        curr = curr.next.next
+
+    # 3. Separate lists
+    curr = head
+    copy_head = head.next
+
+    while curr:
+        copy = curr.next
+
+        curr.next = copy.next
+
+        if copy.next:
+            copy.next = copy.next.next
+
+        curr = curr.next
+
+    return copy_head</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1) — excluding copied nodes</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q8: 876. Middle of the Linked List
+============================================================ -->
+
+<div class="question-section" id="q876" data-approaches="slow-fast">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>876. Middle of the Linked List</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Slow / Fast</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return the middle node of a singly linked list; if two middle nodes exist, return the second one.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def middleNode(self, head):
+    slow = head
+    fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    return slow</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q9: 141. Linked List Cycle
+============================================================ -->
+
+<div class="question-section" id="q141" data-approaches="floyd">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>141. Linked List Cycle</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Floyd's (Slow/Fast)</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Determine whether a linked list contains a cycle.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def hasCycle(self, head):
+    slow = head
+    fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+        if slow == fast:
+            return True
+
+    return False</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q10: 142. Linked List Cycle II
+============================================================ -->
+
+<div class="question-section" id="q142" data-approaches="floyd">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>142. Linked List Cycle II</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Floyd's (Slow/Fast)</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">If the linked list has a cycle, return the node where the cycle begins; otherwise return <code>None</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def detectCycle(self, head):
+    slow = head
+    fast = head
+
+    # Detect cycle
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+        if slow == fast:
+            break
+    else:
+        return None
+
+    # Find cycle start
+    slow = head
+
+    while slow != fast:
+        slow = slow.next
+        fast = fast.next
+
+    return slow</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q11: 160. Intersection of Two Linked Lists
+============================================================ -->
+
+<div class="question-section" id="q160" data-approaches="length-alignment">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>160. Intersection of Two Linked Lists</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Length Alignment</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given two singly linked lists, return the node where they intersect, or <code>None</code> if they don't.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def getIntersectionNode(self, headA, headB):
+    def length(head):
+        count = 0
+
+        while head:
+            count += 1
+            head = head.next
+
+        return count
+
+    lenA = length(headA)
+    lenB = length(headB)
+
+    while lenA > lenB:
+        headA = headA.next
+        lenA -= 1
+
+    while lenB > lenA:
+        headB = headB.next
+        lenB -= 1
+
+    while headA != headB:
+        headA = headA.next
+        headB = headB.next
+
+    return headA</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q12: 206. Reverse Linked List
+============================================================ -->
+
+<div class="question-section" id="q206" data-approaches="reversal">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>206. Reverse Linked List</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">prev / curr / next</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given the head of a singly linked list, reverse the list and return the new head.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def reverseList(self, head):
+    prev = None
+    curr = head
+
+    while curr:
+        nextnode = curr.next
+        curr.next = prev
+
+        prev = curr
+        curr = nextnode
+
+    return prev</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q13: 234. Palindrome Linked List
+============================================================ -->
+
+<div class="question-section" id="q234" data-approaches="reverse-half">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>234. Palindrome Linked List</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Reverse Half</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Determine whether a linked list reads the same forwards and backwards.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def isPalindrome(self, head):
+    if not head or not head.next:
+        return True
+
+    # Find middle
+    slow = head
+    fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    # Reverse second half
+    prev = None
+
+    while slow:
+        nextnode = slow.next
+        slow.next = prev
+        prev = slow
+        slow = nextnode
+
+    # Compare
+    left = head
+    right = prev
+
+    while right:
+        if left.val != right.val:
+            return False
+
+        left = left.next
+        right = right.next
+
+    return True</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q14: 92. Reverse Linked List II
+============================================================ -->
+
+<div class="question-section" id="q92" data-approaches="partial-reverse">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>92. Reverse Linked List II</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Partial Reverse</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Reverse the linked list nodes from position <code>left</code> to position <code>right</code>, in one pass.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def reverseBetween(self, head, left, right):
+    dummy = ListNode(0)
+    dummy.next = head
+
+    prev = dummy
+
+    # Move prev to node before left
+    for _ in range(left - 1):
+        prev = prev.next
+
+    curr = prev.next
+
+    # Reverse section
+    for _ in range(right - left):
+        temp = curr.next
+
+        curr.next = temp.next
+        temp.next = prev.next
+        prev.next = temp
+
+    return dummy.next</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q15: 25. Reverse Nodes in k-Group
+============================================================ -->
+
+<div class="question-section" id="q25" data-approaches="group-reversal">
+
+    <div class="question-header">
+        <span class="index-diff diff-hard">Hard</span>
+        <h2>25. Reverse Nodes in k-Group</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Group Reversal</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Reverse the nodes of a linked list <code>k</code> at a time; leave a final group of fewer than <code>k</code> nodes unchanged.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def reverseKGroup(self, head, k):
+    dummy = ListNode(0)
+    dummy.next = head
+
+    group_prev = dummy
+
+    while True:
+        # Find kth node
+        kth = group_prev
+
+        for _ in range(k):
+            kth = kth.next
+
+            if not kth:
+                return dummy.next
+
+        group_next = kth.next
+
+        # Reverse group
+        prev = group_next
+        curr = group_prev.next
+
+        while curr != group_next:
+            nextnode = curr.next
+            curr.next = prev
+            prev = curr
+            curr = nextnode
+
+        # Connect previous group
+        temp = group_prev.next
+        group_prev.next = kth
+        group_prev = temp</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
