@@ -1,0 +1,1035 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260818-100000",
+  "slug": "binary-search-leetcode",
+  "title": "Binary Search - Leetcode Questions",
+  "date": "2026-08-18",
+  "timestamp": "2026-08-18T10:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "binary-search",
+    "arrays",
+    "leetcode",
+    "python",
+    "revision"
+  ],
+  "summary": "Leetcode Binary Search questions — brief prompts, Python solutions, and time/space complexity for quick revision."
+}
+</script>
+<h1>🔎 Binary Search - Leetcode Questions</h1>
+<style>
+    /* =====================================================
+   Binary Search Leetcode Notes Styling
+===================================================== */
+
+    .note-content {
+        --primary: #60a5fa;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --cyan: #38bdf8;
+        --orange: #fb923c;
+    }
+
+    .note-content hr {
+        margin: 40px 0;
+    }
+
+    .note-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+    }
+
+    .note-content table th {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .note-content table td {
+        padding: 10px;
+    }
+
+    .note-content code {
+        font-size: .95rem;
+    }
+
+    .note-content pre {
+        margin: 18px 0;
+    }
+
+    /* ====================================== */
+
+    /* Index Section */
+    .note-content .index-section {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .20);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+    }
+
+    .note-content .index-section h3 {
+        margin-top: 0;
+        color: #60a5fa;
+    }
+
+    .note-content .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .note-content .index-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .note-content .index-item:hover {
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .note-content .index-num {
+        font-weight: 700;
+        color: #60a5fa;
+        min-width: 38px;
+    }
+
+    .note-content .index-title {
+        flex: 1;
+    }
+
+    .note-content .index-diff {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .note-content .diff-easy {
+        background: rgba(34, 197, 94, .15);
+        color: #22c55e;
+    }
+
+    .note-content .diff-med {
+        background: rgba(251, 146, 60, .15);
+        color: #fb923c;
+    }
+
+    .note-content .diff-hard {
+        background: rgba(239, 68, 68, .15);
+        color: #ef4444;
+    }
+
+    /* Question Section */
+    .note-content .question-section {
+        margin: 40px 0;
+        padding: 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .02);
+        position: relative;
+    }
+
+    .note-content .question-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .note-content .question-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .note-content .approach-tags {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .note-content .tag {
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .note-content .tag-technique {
+        background: rgba(96, 165, 250, .18);
+        color: #60a5fa;
+    }
+
+    .note-content .question-prompt {
+        color: #94a3b8;
+        margin: 0 0 16px 0;
+    }
+
+    /* Solution Block */
+    .note-content .solution-block {
+        margin: 16px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        overflow: hidden;
+    }
+
+    .note-content .solution-label {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        background: rgba(96, 165, 250, .12);
+        color: #60a5fa;
+    }
+
+    .note-content .complexity-box {
+        display: flex;
+        gap: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, .03);
+        font-size: .85rem;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .note-content .complexity-box strong {
+        color: #94a3b8;
+    }
+
+    /* Back to Top Button */
+    .note-content .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: .78rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 5px;
+        transition: all .2s;
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .note-content .back-to-top:hover {
+        background: rgba(99, 102, 241, .15);
+        color: #c7d2fe;
+        border-color: rgba(99, 102, 241, .30);
+    }
+</style>
+
+<!-- ============================================================
+     INDEX
+============================================================ -->
+
+<div class="index-section" id="top">
+
+    <h3>📋 Question Index</h3>
+
+    <div class="index-grid">
+
+        <a class="index-item" href="#q704">
+            <span class="index-num">704.</span>
+            <span class="index-title">Binary Search</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q278">
+            <span class="index-num">278.</span>
+            <span class="index-title">First Bad Version</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q35">
+            <span class="index-num">35.</span>
+            <span class="index-title">Search Insert Position</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q367">
+            <span class="index-num">367.</span>
+            <span class="index-title">Valid Perfect Square</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q74">
+            <span class="index-num">74.</span>
+            <span class="index-title">Search a 2D Matrix</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q240">
+            <span class="index-num">240.</span>
+            <span class="index-title">Search a 2D Matrix II</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q4">
+            <span class="index-num">4.</span>
+            <span class="index-title">Median of Two Sorted Arrays</span>
+            <span class="index-diff diff-hard">Hard</span>
+        </a>
+
+        <a class="index-item" href="#q875">
+            <span class="index-num">875.</span>
+            <span class="index-title">Koko Eating Bananas</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q410">
+            <span class="index-num">410.</span>
+            <span class="index-title">Split Array Largest Sum</span>
+            <span class="index-diff diff-hard">Hard</span>
+        </a>
+
+        <a class="index-item" href="#q34">
+            <span class="index-num">34.</span>
+            <span class="index-title">Find First and Last Position of Element</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q33">
+            <span class="index-num">33.</span>
+            <span class="index-title">Search in Rotated Sorted Array</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q162">
+            <span class="index-num">162.</span>
+            <span class="index-title">Find Peak Element</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q153">
+            <span class="index-num">153.</span>
+            <span class="index-title">Find Minimum in Rotated Sorted Array</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q154">
+            <span class="index-num">154.</span>
+            <span class="index-title">Find Minimum in Rotated Sorted Array II</span>
+            <span class="index-diff diff-hard">Hard</span>
+        </a>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q1: 704. Binary Search
+============================================================ -->
+
+<div class="question-section" id="q704" data-approaches="classic-bs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>704. Binary Search</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Classic BS</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a sorted array <code>nums</code> and a <code>target</code>, return its index or <code>-1</code> if not found.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def search(self, nums, target):
+        low, high = 0, len(nums) - 1
+
+        while low <= high:
+            mid = (low + high) // 2
+
+            if nums[mid] == target:
+                return mid
+            elif nums[mid] < target:
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        return -1</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q2: 278. First Bad Version
+============================================================ -->
+
+<div class="question-section" id="q278" data-approaches="first-true">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>278. First Bad Version</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">First True</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>isBadVersion(version)</code> for versions <code>1..n</code>, find the first bad version with the fewest calls.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def firstBadVersion(self, n):
+        low, high = 1, n
+        result = 1
+
+        while low <= high:
+            mid = (low + high) // 2
+
+            if isBadVersion(mid):
+                result = mid
+                high = mid - 1
+            else:
+                low = mid + 1
+
+        return result</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q3: 35. Search Insert Position
+============================================================ -->
+
+<div class="question-section" id="q35" data-approaches="boundary">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>35. Search Insert Position</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Boundary</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a sorted array and a <code>target</code>, return the index where it is, or where it should be inserted.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def searchInsert(self, nums, target):
+        low, high = 0, len(nums) - 1
+
+        while low <= high:
+            mid = (low + high) // 2
+
+            if nums[mid] == target:
+                return mid
+            elif nums[mid] < target:
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        return low</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q4: 367. Valid Perfect Square
+============================================================ -->
+
+<div class="question-section" id="q367" data-approaches="classic-bs">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>367. Valid Perfect Square</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Classic BS</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a positive integer <code>num</code>, determine whether it is a perfect square without using a built-in sqrt function.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def isPerfectSquare(self, num):
+        low, high = 1, num
+
+        while low <= high:
+            mid = (low + high) // 2
+
+            square = mid * mid
+
+            if square == num:
+                return True
+            elif square < num:
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        return False</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q5: 74. Search a 2D Matrix
+============================================================ -->
+
+<div class="question-section" id="q74" data-approaches="flatten-bs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>74. Search a 2D Matrix</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Flatten + BS</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a matrix where each row is sorted and rows are sequentially sorted, return <code>true</code> if <code>target</code> exists, in O(log(m×n)).</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def searchMatrix(self, matrix, target):
+        m = len(matrix)
+        n = len(matrix[0])
+
+        low, high = 0, m * n - 1
+
+        while low <= high:
+            mid = (low + high) // 2
+
+            row = mid // n
+            col = mid % n
+
+            if matrix[row][col] == target:
+                return True
+            elif matrix[row][col] < target:
+                low = mid + 1
+            else:
+                high = mid - 1
+
+        return False</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log(m × n))</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q6: 240. Search a 2D Matrix II
+============================================================ -->
+
+<div class="question-section" id="q240" data-approaches="top-right">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>240. Search a 2D Matrix II</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Top-Right Search</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a matrix sorted ascending along rows and columns, find whether <code>target</code> exists.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def searchMatrix(self, matrix, target):
+        m = len(matrix)
+        n = len(matrix[0])
+
+        row = 0
+        col = n - 1
+
+        while row < m and col >= 0:
+            if matrix[row][col] == target:
+                return True
+
+            elif matrix[row][col] > target:
+                col -= 1
+
+            else:
+                row += 1
+
+        return False</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(m + n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q7: 4. Median of Two Sorted Arrays
+============================================================ -->
+
+<div class="question-section" id="q4" data-approaches="partition-bs">
+
+    <div class="question-header">
+        <span class="index-diff diff-hard">Hard</span>
+        <h2>4. Median of Two Sorted Arrays</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Partition BS</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given two sorted arrays <code>nums1</code> and <code>nums2</code>, find their median in O(log(m + n)).</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def findMedianSortedArrays(self, nums1, nums2):
+        if len(nums1) > len(nums2):
+            nums1, nums2 = nums2, nums1
+
+        m, n = len(nums1), len(nums2)
+
+        low, high = 0, m
+
+        while low <= high:
+            cut1 = (low + high) // 2
+            cut2 = (m + n + 1) // 2 - cut1
+
+            left1 = float('-inf') if cut1 == 0 else nums1[cut1 - 1]
+            right1 = float('inf') if cut1 == m else nums1[cut1]
+
+            left2 = float('-inf') if cut2 == 0 else nums2[cut2 - 1]
+            right2 = float('inf') if cut2 == n else nums2[cut2]
+
+            if left1 <= right2 and left2 <= right1:
+
+                if (m + n) % 2 == 0:
+                    return (
+                        max(left1, left2) +
+                        min(right1, right2)
+                    ) / 2
+
+                return max(left1, left2)
+
+            elif left1 > right2:
+                high = cut1 - 1
+
+            else:
+                low = cut1 + 1</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log(min(m, n)))</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q8: 875. Koko Eating Bananas
+============================================================ -->
+
+<div class="question-section" id="q875" data-approaches="bs-on-answer">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>875. Koko Eating Bananas</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">BS on Answer</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>piles</code> and <code>h</code> hours, find the minimum eating speed <code>k</code> to finish all piles within <code>h</code> hours.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def minEatingSpeed(self, piles, h):
+
+        def is_possible(speed):
+            hours = 0
+
+            for pile in piles:
+                hours += (pile + speed - 1) // speed
+
+                if hours > h:
+                    return False
+
+            return True
+
+        low, high = 1, max(piles)
+
+        while low <= high:
+            mid = (low + high) // 2
+
+            if is_possible(mid):
+                high = mid - 1
+            else:
+                low = mid + 1
+
+        return low</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n log(max(piles)))</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q9: 410. Split Array Largest Sum
+============================================================ -->
+
+<div class="question-section" id="q410" data-approaches="bs-on-answer">
+
+    <div class="question-header">
+        <span class="index-diff diff-hard">Hard</span>
+        <h2>410. Split Array Largest Sum</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">BS on Answer</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Split <code>nums</code> into <code>k</code> contiguous subarrays minimizing the largest subarray sum.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def splitArray(self, nums, k):
+
+        def is_possible(max_sum):
+            parts = 1
+            curr = 0
+
+            for num in nums:
+                if curr + num > max_sum:
+                    parts += 1
+                    curr = num
+                else:
+                    curr += num
+
+            return parts <= k
+
+        low = max(nums)
+        high = sum(nums)
+
+        while low <= high:
+            mid = (low + high) // 2
+
+            if is_possible(mid):
+                high = mid - 1
+            else:
+                low = mid + 1
+
+        return low</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n log(sum(nums)))</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q10: 34. Find First and Last Position of Element in Sorted Array
+============================================================ -->
+
+<div class="question-section" id="q34" data-approaches="boundary-bs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>34. Find First and Last Position of Element in Sorted Array</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Boundary BS</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a sorted array and a <code>target</code>, return its first and last index, or <code>[-1,-1]</code> if absent.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def searchRange(self, nums, target):
+
+        def first_position():
+            low, high = 0, len(nums) - 1
+            result = -1
+
+            while low <= high:
+                mid = (low + high) // 2
+
+                if nums[mid] == target:
+                    result = mid
+                    high = mid - 1
+                elif nums[mid] < target:
+                    low = mid + 1
+                else:
+                    high = mid - 1
+
+            return result
+
+        def last_position():
+            low, high = 0, len(nums) - 1
+            result = -1
+
+            while low <= high:
+                mid = (low + high) // 2
+
+                if nums[mid] == target:
+                    result = mid
+                    low = mid + 1
+                elif nums[mid] < target:
+                    low = mid + 1
+                else:
+                    high = mid - 1
+
+            return result
+
+        return [first_position(), last_position()]</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q11: 33. Search in Rotated Sorted Array
+============================================================ -->
+
+<div class="question-section" id="q33" data-approaches="rotated-bs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>33. Search in Rotated Sorted Array</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Rotated BS</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">A sorted array of distinct values has been rotated. Find the index of <code>target</code>, or <code>-1</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def search(self, nums, target):
+        low, high = 0, len(nums) - 1
+
+        while low <= high:
+            mid = (low + high) // 2
+
+            if nums[mid] == target:
+                return mid
+
+            # Left half is sorted
+            if nums[low] <= nums[mid]:
+
+                if nums[low] <= target < nums[mid]:
+                    high = mid - 1
+                else:
+                    low = mid + 1
+
+            # Right half is sorted
+            else:
+
+                if nums[mid] < target <= nums[high]:
+                    low = mid + 1
+                else:
+                    high = mid - 1
+
+        return -1</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q12: 162. Find Peak Element
+============================================================ -->
+
+<div class="question-section" id="q162" data-approaches="peak-bs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>162. Find Peak Element</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Peak BS</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Find an index of a peak element — one greater than both neighbors.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def findPeakElement(self, nums):
+        left, right = 0, len(nums) - 1
+
+        while left < right:
+            mid = (left + right) // 2
+
+            if nums[mid] < nums[mid + 1]:
+                left = mid + 1
+            else:
+                right = mid
+
+        return left</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q13: 153. Find Minimum in Rotated Sorted Array
+============================================================ -->
+
+<div class="question-section" id="q153" data-approaches="rotated-bs">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>153. Find Minimum in Rotated Sorted Array</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Rotated BS</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">A rotated sorted array of unique elements — find the minimum element in O(log n).</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def findMin(self, nums):
+        low, high = 0, len(nums) - 1
+
+        while low < high:
+            mid = (low + high) // 2
+
+            if nums[mid] > nums[high]:
+                low = mid + 1
+            else:
+                high = mid
+
+        return nums[low]</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q14: 154. Find Minimum in Rotated Sorted Array II
+============================================================ -->
+
+<div class="question-section" id="q154" data-approaches="rotated-bs-duplicates">
+
+    <div class="question-header">
+        <span class="index-diff diff-hard">Hard</span>
+        <h2>154. Find Minimum in Rotated Sorted Array II</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Rotated BS + Duplicates</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Same as 153, but <code>nums</code> may contain duplicates. Find the minimum element.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def findMin(self, nums):
+        low, high = 0, len(nums) - 1
+
+        while low < high:
+            mid = (low + high) // 2
+
+            if nums[mid] > nums[high]:
+                low = mid + 1
+
+            elif nums[mid] < nums[high]:
+                high = mid
+
+            else:
+                high -= 1
+
+        return nums[low]</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n) avg, O(n) worst case</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>

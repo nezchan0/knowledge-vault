@@ -1,0 +1,837 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260818-130000",
+  "slug": "bit-manipulation-leetcode",
+  "title": "Bit Manipulation - Leetcode Questions",
+  "date": "2026-08-18",
+  "timestamp": "2026-08-18T13:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "bit-manipulation",
+    "leetcode",
+    "python",
+    "revision"
+  ],
+  "summary": "Leetcode Bit Manipulation questions — brief prompts, Python solutions, and time/space complexity for quick revision."
+}
+</script>
+<h1>🧮 Bit Manipulation - Leetcode Questions</h1>
+<style>
+    /* =====================================================
+   Bit Manipulation Leetcode Notes Styling
+===================================================== */
+
+    .note-content {
+        --primary: #60a5fa;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --cyan: #38bdf8;
+        --orange: #fb923c;
+    }
+
+    .note-content hr {
+        margin: 40px 0;
+    }
+
+    .note-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+    }
+
+    .note-content table th {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .note-content table td {
+        padding: 10px;
+    }
+
+    .note-content code {
+        font-size: .95rem;
+    }
+
+    .note-content pre {
+        margin: 18px 0;
+    }
+
+    /* ====================================== */
+
+    /* Index Section */
+    .note-content .index-section {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .20);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+    }
+
+    .note-content .index-section h3 {
+        margin-top: 0;
+        color: #60a5fa;
+    }
+
+    .note-content .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .note-content .index-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .note-content .index-item:hover {
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .note-content .index-num {
+        font-weight: 700;
+        color: #60a5fa;
+        min-width: 44px;
+    }
+
+    .note-content .index-title {
+        flex: 1;
+    }
+
+    .note-content .index-diff {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .note-content .diff-easy {
+        background: rgba(34, 197, 94, .15);
+        color: #22c55e;
+    }
+
+    .note-content .diff-med {
+        background: rgba(251, 146, 60, .15);
+        color: #fb923c;
+    }
+
+    .note-content .diff-hard {
+        background: rgba(239, 68, 68, .15);
+        color: #ef4444;
+    }
+
+    /* Question Section */
+    .note-content .question-section {
+        margin: 40px 0;
+        padding: 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .02);
+        position: relative;
+    }
+
+    .note-content .question-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .note-content .question-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .note-content .approach-tags {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .note-content .tag {
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .note-content .tag-technique {
+        background: rgba(96, 165, 250, .18);
+        color: #60a5fa;
+    }
+
+    .note-content .question-prompt {
+        color: #94a3b8;
+        margin: 0 0 16px 0;
+    }
+
+    /* Solution Block */
+    .note-content .solution-block {
+        margin: 16px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        overflow: hidden;
+    }
+
+    .note-content .solution-label {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        background: rgba(96, 165, 250, .12);
+        color: #60a5fa;
+    }
+
+    .note-content .complexity-box {
+        display: flex;
+        gap: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, .03);
+        font-size: .85rem;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .note-content .complexity-box strong {
+        color: #94a3b8;
+    }
+
+    /* Back to Top Button */
+    .note-content .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: .78rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 5px;
+        transition: all .2s;
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .note-content .back-to-top:hover {
+        background: rgba(99, 102, 241, .15);
+        color: #c7d2fe;
+        border-color: rgba(99, 102, 241, .30);
+    }
+</style>
+
+<!-- ============================================================
+     INDEX
+============================================================ -->
+
+<div class="index-section" id="top">
+
+    <h3>📋 Question Index</h3>
+
+    <div class="index-grid">
+
+        <a class="index-item" href="#q231">
+            <span class="index-num">231.</span>
+            <span class="index-title">Power of Two</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q476">
+            <span class="index-num">476.</span>
+            <span class="index-title">Number Complement</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q190">
+            <span class="index-num">190.</span>
+            <span class="index-title">Reverse Bits</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q693">
+            <span class="index-num">693.</span>
+            <span class="index-title">Binary Number with Alternating Bits</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q504">
+            <span class="index-num">504.</span>
+            <span class="index-title">Base 7</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q191">
+            <span class="index-num">191.</span>
+            <span class="index-title">Number of 1 Bits</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q136">
+            <span class="index-num">136.</span>
+            <span class="index-title">Single Number</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q268">
+            <span class="index-num">268.</span>
+            <span class="index-title">Missing Number</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q137">
+            <span class="index-num">137.</span>
+            <span class="index-title">Single Number II</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q260">
+            <span class="index-num">260.</span>
+            <span class="index-title">Single Number III</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q318">
+            <span class="index-num">318.</span>
+            <span class="index-title">Maximum Product of Word Lengths</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q371">
+            <span class="index-num">371.</span>
+            <span class="index-title">Sum of Two Integers</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q201">
+            <span class="index-num">201.</span>
+            <span class="index-title">Bitwise AND of Numbers Range</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q1: 231. Power of Two
+============================================================ -->
+
+<div class="question-section" id="q231" data-approaches="bit-trick">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>231. Power of Two</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">n & (n-1)</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given an integer <code>n</code>, return <code>true</code> if it is a power of two.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def isPowerOfTwo(self, n):
+        return n > 0 and (n & (n - 1)) == 0</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(1)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q2: 476. Number Complement
+============================================================ -->
+
+<div class="question-section" id="q476" data-approaches="bitmask">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>476. Number Complement</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Bit Mask</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a positive integer <code>num</code>, return its complement (flip all bits within its bit length).</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def findComplement(self, num):
+        mask = 1
+
+        while mask < num:
+            mask = (mask << 1) | 1
+
+        return num ^ mask</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q3: 190. Reverse Bits
+============================================================ -->
+
+<div class="question-section" id="q190" data-approaches="bit-reversal">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>190. Reverse Bits</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Bit Reversal</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Reverse the bits of a given 32-bit unsigned integer <code>n</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def reverseBits(self, n):
+        result = 0
+
+        for _ in range(32):
+            result = (result << 1) | (n & 1)
+            n >>= 1
+
+        return result</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(1) — fixed 32 bits</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q4: 693. Binary Number with Alternating Bits
+============================================================ -->
+
+<div class="question-section" id="q693" data-approaches="xor-shift">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>693. Binary Number with Alternating Bits</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">XOR Shift Check</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a positive integer <code>n</code>, return <code>true</code> if its binary representation alternates between <code>0</code> and <code>1</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def hasAlternatingBits(self, n):
+        x = n ^ (n >> 1)
+        return (x & (x + 1)) == 0</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(1)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q5: 504. Base 7
+============================================================ -->
+
+<div class="question-section" id="q504" data-approaches="base-conversion">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>504. Base 7</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Base Conversion</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given an integer <code>num</code>, return its base 7 string representation.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def convertToBase7(self, num):
+        if num == 0:
+            return "0"
+
+        negative = num < 0
+        num = abs(num)
+        digits = []
+
+        while num:
+            digits.append(str(num % 7))
+            num //= 7
+
+        if negative:
+            digits.append('-')
+
+        return ''.join(reversed(digits))</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log₇ n)</div>
+            <div><strong>Space:</strong> O(log₇ n) — output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q6: 191. Number of 1 Bits
+============================================================ -->
+
+<div class="question-section" id="q191" data-approaches="brian-kernighan">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>191. Number of 1 Bits</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Brian Kernighan's</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given an integer <code>n</code>, return the number of set bits (Hamming weight) in its binary representation.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def hammingWeight(self, n):
+        count = 0
+
+        while n:
+            n &= (n - 1)
+            count += 1
+
+        return count</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(k) — k = number of set bits</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q7: 136. Single Number
+============================================================ -->
+
+<div class="question-section" id="q136" data-approaches="xor">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>136. Single Number</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">XOR</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> where every element appears twice except one, return that single element.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def singleNumber(self, nums):
+        result = 0
+
+        for num in nums:
+            result ^= num
+
+        return result</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q8: 268. Missing Number
+============================================================ -->
+
+<div class="question-section" id="q268" data-approaches="xor">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>268. Missing Number</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">XOR</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> containing <code>n</code> distinct numbers from <code>0</code> to <code>n</code>, return the one missing number.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def missingNumber(self, nums):
+        n = len(nums)
+        result = n
+
+        for i, num in enumerate(nums):
+            result ^= i ^ num
+
+        return result</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q9: 137. Single Number II
+============================================================ -->
+
+<div class="question-section" id="q137" data-approaches="bitmask-state">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>137. Single Number II</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Bitmask State Machine</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> where every element appears three times except one, return that single element.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def singleNumber(self, nums):
+        ones, twos = 0, 0
+
+        for num in nums:
+            ones = (ones ^ num) & ~twos
+            twos = (twos ^ num) & ~ones
+
+        return ones</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q10: 260. Single Number III
+============================================================ -->
+
+<div class="question-section" id="q260" data-approaches="xor-lowest-bit">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>260. Single Number III</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">XOR + Lowest Set Bit</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> where exactly two elements appear once and the rest appear twice, return the two single elements.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def singleNumber(self, nums):
+        xor_all = 0
+
+        for num in nums:
+            xor_all ^= num
+
+        diff = xor_all & (-xor_all)
+
+        a = 0
+
+        for num in nums:
+            if num & diff:
+                a ^= num
+
+        b = xor_all ^ a
+
+        return [a, b]</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q11: 318. Maximum Product of Word Lengths
+============================================================ -->
+
+<div class="question-section" id="q318" data-approaches="bitmask">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>318. Maximum Product of Word Lengths</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Bitmask</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a string array <code>words</code>, return the maximum value of <code>len(words[i]) * len(words[j])</code> for two words sharing no common letters.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def maxProduct(self, words):
+        masks = []
+
+        for word in words:
+            mask = 0
+
+            for c in word:
+                mask |= 1 << (ord(c) - ord('a'))
+
+            masks.append(mask)
+
+        max_prod = 0
+        n = len(words)
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                if masks[i] & masks[j] == 0:
+                    max_prod = max(max_prod, len(words[i]) * len(words[j]))
+
+        return max_prod</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n² + total chars)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q12: 371. Sum of Two Integers
+============================================================ -->
+
+<div class="question-section" id="q371" data-approaches="carry-simulation">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>371. Sum of Two Integers</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Bit Carry Simulation</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given two integers <code>a</code> and <code>b</code>, return their sum without using <code>+</code> or <code>-</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def getSum(self, a, b):
+        mask = 0xFFFFFFFF
+
+        while b != 0:
+            carry = (a & b) << 1
+            a = (a ^ b) & mask
+            b = carry & mask
+
+        return a if a <= 0x7FFFFFFF else ~(a ^ mask)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(1) — fixed 32-bit width</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q13: 201. Bitwise AND of Numbers Range
+============================================================ -->
+
+<div class="question-section" id="q201" data-approaches="common-prefix">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>201. Bitwise AND of Numbers Range</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Common Prefix Shift</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>left</code> and <code>right</code>, return the bitwise AND of all numbers in <code>[left, right]</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def rangeBitwiseAnd(self, left, right):
+        shift = 0
+
+        while left < right:
+            left >>= 1
+            right >>= 1
+            shift += 1
+
+        return left << shift</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(log n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>

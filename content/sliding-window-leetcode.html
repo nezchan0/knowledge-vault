@@ -1,0 +1,785 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260818-110000",
+  "slug": "sliding-window-leetcode",
+  "title": "Sliding Window - Leetcode Questions",
+  "date": "2026-08-18",
+  "timestamp": "2026-08-18T11:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "sliding-window",
+    "arrays",
+    "strings",
+    "leetcode",
+    "python",
+    "revision"
+  ],
+  "summary": "Leetcode Sliding Window questions — brief prompts, Python solutions, and time/space complexity for quick revision."
+}
+</script>
+<h1>🪟 Sliding Window - Leetcode Questions</h1>
+<style>
+    /* =====================================================
+   Sliding Window Leetcode Notes Styling
+===================================================== */
+
+    .note-content {
+        --primary: #60a5fa;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --cyan: #38bdf8;
+        --orange: #fb923c;
+    }
+
+    .note-content hr {
+        margin: 40px 0;
+    }
+
+    .note-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+    }
+
+    .note-content table th {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .note-content table td {
+        padding: 10px;
+    }
+
+    .note-content code {
+        font-size: .95rem;
+    }
+
+    .note-content pre {
+        margin: 18px 0;
+    }
+
+    /* ====================================== */
+
+    /* Index Section */
+    .note-content .index-section {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .20);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+    }
+
+    .note-content .index-section h3 {
+        margin-top: 0;
+        color: #60a5fa;
+    }
+
+    .note-content .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .note-content .index-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .note-content .index-item:hover {
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .note-content .index-num {
+        font-weight: 700;
+        color: #60a5fa;
+        min-width: 44px;
+    }
+
+    .note-content .index-title {
+        flex: 1;
+    }
+
+    .note-content .index-diff {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .note-content .diff-easy {
+        background: rgba(34, 197, 94, .15);
+        color: #22c55e;
+    }
+
+    .note-content .diff-med {
+        background: rgba(251, 146, 60, .15);
+        color: #fb923c;
+    }
+
+    .note-content .diff-hard {
+        background: rgba(239, 68, 68, .15);
+        color: #ef4444;
+    }
+
+    /* Question Section */
+    .note-content .question-section {
+        margin: 40px 0;
+        padding: 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .02);
+        position: relative;
+    }
+
+    .note-content .question-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .note-content .question-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .note-content .approach-tags {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .note-content .tag {
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .note-content .tag-technique {
+        background: rgba(96, 165, 250, .18);
+        color: #60a5fa;
+    }
+
+    .note-content .question-prompt {
+        color: #94a3b8;
+        margin: 0 0 16px 0;
+    }
+
+    /* Solution Block */
+    .note-content .solution-block {
+        margin: 16px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        overflow: hidden;
+    }
+
+    .note-content .solution-label {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        background: rgba(96, 165, 250, .12);
+        color: #60a5fa;
+    }
+
+    .note-content .complexity-box {
+        display: flex;
+        gap: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, .03);
+        font-size: .85rem;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .note-content .complexity-box strong {
+        color: #94a3b8;
+    }
+
+    /* Back to Top Button */
+    .note-content .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: .78rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 5px;
+        transition: all .2s;
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .note-content .back-to-top:hover {
+        background: rgba(99, 102, 241, .15);
+        color: #c7d2fe;
+        border-color: rgba(99, 102, 241, .30);
+    }
+</style>
+
+<!-- ============================================================
+     INDEX
+============================================================ -->
+
+<div class="index-section" id="top">
+
+    <h3>📋 Question Index</h3>
+
+    <div class="index-grid">
+
+        <a class="index-item" href="#q643">
+            <span class="index-num">643.</span>
+            <span class="index-title">Maximum Average Subarray I</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q1423">
+            <span class="index-num">1423.</span>
+            <span class="index-title">Maximum Points You Can Obtain from Cards</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q1456">
+            <span class="index-num">1456.</span>
+            <span class="index-title">Maximum Number of Vowels in a Substring</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q567">
+            <span class="index-num">567.</span>
+            <span class="index-title">Permutation in String</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q438">
+            <span class="index-num">438.</span>
+            <span class="index-title">Find All Anagrams in a String</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q209">
+            <span class="index-num">209.</span>
+            <span class="index-title">Minimum Size Subarray Sum</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q3">
+            <span class="index-num">3.</span>
+            <span class="index-title">Longest Substring Without Repeating Characters</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q1004">
+            <span class="index-num">1004.</span>
+            <span class="index-title">Max Consecutive Ones III</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q424">
+            <span class="index-num">424.</span>
+            <span class="index-title">Longest Repeating Character Replacement</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q76">
+            <span class="index-num">76.</span>
+            <span class="index-title">Minimum Window Substring</span>
+            <span class="index-diff diff-hard">Hard</span>
+        </a>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q1: 643. Maximum Average Subarray I
+============================================================ -->
+
+<div class="question-section" id="q643" data-approaches="fixed-window">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>643. Maximum Average Subarray I</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Fixed Window</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> and integer <code>k</code>, return the maximum average of any contiguous subarray of length <code>k</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def findMaxAverage(self, nums, k):
+        window_sum = sum(nums[:k])
+        max_sum = window_sum
+
+        for i in range(k, len(nums)):
+            window_sum += nums[i] - nums[i - k]
+            max_sum = max(max_sum, window_sum)
+
+        return max_sum / k</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q2: 1423. Maximum Points You Can Obtain from Cards
+============================================================ -->
+
+<div class="question-section" id="q1423" data-approaches="fixed-window">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>1423. Maximum Points You Can Obtain from Cards</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Fixed Window (Complement)</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>cardPoints</code>, pick exactly <code>k</code> cards from either end to maximize the sum of picked cards.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def maxScore(self, cardPoints, k):
+        n = len(cardPoints)
+        total = sum(cardPoints)
+        window_size = n - k
+
+        if window_size == 0:
+            return total
+
+        window_sum = sum(cardPoints[:window_size])
+        min_window = window_sum
+
+        for i in range(window_size, n):
+            window_sum += cardPoints[i] - cardPoints[i - window_size]
+            min_window = min(min_window, window_sum)
+
+        return total - min_window</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q3: 1456. Maximum Number of Vowels in a Substring of Given Length
+============================================================ -->
+
+<div class="question-section" id="q1456" data-approaches="fixed-window">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>1456. Maximum Number of Vowels in a Substring of Given Length</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Fixed Window</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given string <code>s</code> and integer <code>k</code>, return the maximum number of vowels in any substring of length <code>k</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def maxVowels(self, s, k):
+        vowels = set('aeiou')
+
+        count = sum(1 for c in s[:k] if c in vowels)
+        max_count = count
+
+        for i in range(k, len(s)):
+            if s[i] in vowels:
+                count += 1
+            if s[i - k] in vowels:
+                count -= 1
+
+            max_count = max(max_count, count)
+
+        return max_count</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q4: 567. Permutation in String
+============================================================ -->
+
+<div class="question-section" id="q567" data-approaches="fixed-window-frequency">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>567. Permutation in String</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Fixed Window + Frequency</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return <code>true</code> if <code>s2</code> contains a permutation of <code>s1</code> as a contiguous substring.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def checkInclusion(self, s1, s2):
+        n1, n2 = len(s1), len(s2)
+
+        if n1 > n2:
+            return False
+
+        need = [0] * 26
+        window = [0] * 26
+
+        for c in s1:
+            need[ord(c) - ord('a')] += 1
+
+        for i in range(n2):
+            window[ord(s2[i]) - ord('a')] += 1
+
+            if i >= n1:
+                window[ord(s2[i - n1]) - ord('a')] -= 1
+
+            if window == need:
+                return True
+
+        return False</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1) — fixed 26-size arrays</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q5: 438. Find All Anagrams in a String
+============================================================ -->
+
+<div class="question-section" id="q438" data-approaches="fixed-window-frequency">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>438. Find All Anagrams in a String</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Fixed Window + Frequency</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>s</code> and <code>p</code>, return all start indices of <code>p</code>'s anagrams in <code>s</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def findAnagrams(self, s, p):
+        ns, np = len(s), len(p)
+
+        if np > ns:
+            return []
+
+        need = [0] * 26
+        window = [0] * 26
+
+        for c in p:
+            need[ord(c) - ord('a')] += 1
+
+        res = []
+
+        for i in range(ns):
+            window[ord(s[i]) - ord('a')] += 1
+
+            if i >= np:
+                window[ord(s[i - np]) - ord('a')] -= 1
+
+            if window == need:
+                res.append(i - np + 1)
+
+        return res</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1) — fixed 26-size arrays</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q6: 209. Minimum Size Subarray Sum
+============================================================ -->
+
+<div class="question-section" id="q209" data-approaches="variable-window">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>209. Minimum Size Subarray Sum</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Variable Window</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>target</code> and <code>nums</code>, return the minimal length of a contiguous subarray with sum ≥ <code>target</code>, or <code>0</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def minSubArrayLen(self, target, nums):
+        left = 0
+        curr_sum = 0
+        min_len = float('inf')
+
+        for right in range(len(nums)):
+            curr_sum += nums[right]
+
+            while curr_sum >= target:
+                min_len = min(min_len, right - left + 1)
+                curr_sum -= nums[left]
+                left += 1
+
+        return min_len if min_len != float('inf') else 0</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q7: 3. Longest Substring Without Repeating Characters
+============================================================ -->
+
+<div class="question-section" id="q3" data-approaches="variable-window">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>3. Longest Substring Without Repeating Characters</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Variable Window</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a string <code>s</code>, return the length of the longest substring without repeating characters.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def lengthOfLongestSubstring(self, s):
+        seen = {}
+        left = 0
+        max_len = 0
+
+        for right, c in enumerate(s):
+            if c in seen and seen[c] >= left:
+                left = seen[c] + 1
+
+            seen[c] = right
+            max_len = max(max_len, right - left + 1)
+
+        return max_len</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(min(n, charset))</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q8: 1004. Max Consecutive Ones III
+============================================================ -->
+
+<div class="question-section" id="q1004" data-approaches="variable-window">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>1004. Max Consecutive Ones III</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Variable Window</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a binary array <code>nums</code> and integer <code>k</code>, return the max length of consecutive <code>1</code>s after flipping at most <code>k</code> <code>0</code>s.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def longestOnes(self, nums, k):
+        left = 0
+        zeros = 0
+        max_len = 0
+
+        for right in range(len(nums)):
+            if nums[right] == 0:
+                zeros += 1
+
+            while zeros > k:
+                if nums[left] == 0:
+                    zeros -= 1
+                left += 1
+
+            max_len = max(max_len, right - left + 1)
+
+        return max_len</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q9: 424. Longest Repeating Character Replacement
+============================================================ -->
+
+<div class="question-section" id="q424" data-approaches="variable-window">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>424. Longest Repeating Character Replacement</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Variable Window</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given string <code>s</code> and integer <code>k</code>, return the length of the longest substring of a single repeated letter after replacing at most <code>k</code> characters.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def characterReplacement(self, s, k):
+        count = [0] * 26
+        left = 0
+        max_count = 0
+        max_len = 0
+
+        for right in range(len(s)):
+            count[ord(s[right]) - ord('A')] += 1
+            max_count = max(max_count, count[ord(s[right]) - ord('A')])
+
+            while (right - left + 1) - max_count > k:
+                count[ord(s[left]) - ord('A')] -= 1
+                left += 1
+
+            max_len = max(max_len, right - left + 1)
+
+        return max_len</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1) — fixed 26-size array</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q10: 76. Minimum Window Substring
+============================================================ -->
+
+<div class="question-section" id="q76" data-approaches="variable-window-frequency">
+
+    <div class="question-header">
+        <span class="index-diff diff-hard">Hard</span>
+        <h2>76. Minimum Window Substring</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Variable Window + Frequency</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>s</code> and <code>t</code>, return the smallest substring of <code>s</code> containing every character of <code>t</code> (with counts), or <code>""</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>from collections import Counter
+
+class Solution:
+    def minWindow(self, s, t):
+        if not t or not s:
+            return ""
+
+        need = Counter(t)
+        missing = len(t)
+        left = 0
+        best_left, best_right = 0, 0
+
+        for right, char in enumerate(s, 1):
+            if need[char] > 0:
+                missing -= 1
+            need[char] -= 1
+
+            if missing == 0:
+                while left < right and need[s[left]] < 0:
+                    need[s[left]] += 1
+                    left += 1
+
+                if best_right == 0 or right - left < best_right - best_left:
+                    best_left, best_right = left, right
+
+                need[s[left]] += 1
+                missing += 1
+                left += 1
+
+        return s[best_left:best_right]</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(k) — distinct characters in t</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
