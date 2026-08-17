@@ -1,0 +1,853 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260817-120000",
+  "slug": "arrays-and-strings-leetcode",
+  "title": "Arrays and Strings - Leetcode Questions",
+  "date": "2026-08-17",
+  "timestamp": "2026-08-17T12:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "arrays",
+    "strings",
+    "leetcode",
+    "python",
+    "two-pointers",
+    "prefix-sum",
+    "revision"
+  ],
+  "summary": "Leetcode Arrays & Strings questions — brief prompts, Python solutions, and time/space complexity for quick revision."
+}
+</script>
+<h1>🔤 Arrays and Strings - Leetcode Questions</h1>
+<style>
+    /* =====================================================
+   Arrays & Strings Leetcode Notes Styling
+===================================================== */
+
+    .note-content {
+        --primary: #60a5fa;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --cyan: #38bdf8;
+        --orange: #fb923c;
+    }
+
+    .note-content hr {
+        margin: 40px 0;
+    }
+
+    .note-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+    }
+
+    .note-content table th {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .note-content table td {
+        padding: 10px;
+    }
+
+    .note-content code {
+        font-size: .95rem;
+    }
+
+    .note-content pre {
+        margin: 18px 0;
+    }
+
+    /* ====================================== */
+
+    /* Index Section */
+    .note-content .index-section {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .20);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+    }
+
+    .note-content .index-section h3 {
+        margin-top: 0;
+        color: #60a5fa;
+    }
+
+    .note-content .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .note-content .index-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .note-content .index-item:hover {
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .note-content .index-num {
+        font-weight: 700;
+        color: #60a5fa;
+        min-width: 38px;
+    }
+
+    .note-content .index-title {
+        flex: 1;
+    }
+
+    .note-content .index-diff {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .note-content .diff-easy {
+        background: rgba(34, 197, 94, .15);
+        color: #22c55e;
+    }
+
+    .note-content .diff-med {
+        background: rgba(251, 146, 60, .15);
+        color: #fb923c;
+    }
+
+    .note-content .diff-hard {
+        background: rgba(239, 68, 68, .15);
+        color: #ef4444;
+    }
+
+    /* Question Section */
+    .note-content .question-section {
+        margin: 40px 0;
+        padding: 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .02);
+        position: relative;
+    }
+
+    .note-content .question-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .note-content .question-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .note-content .approach-tags {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .note-content .tag {
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .note-content .tag-technique {
+        background: rgba(96, 165, 250, .18);
+        color: #60a5fa;
+    }
+
+    .note-content .question-prompt {
+        color: #94a3b8;
+        margin: 0 0 16px 0;
+    }
+
+    /* Solution Block */
+    .note-content .solution-block {
+        margin: 16px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        overflow: hidden;
+    }
+
+    .note-content .solution-label {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        background: rgba(96, 165, 250, .12);
+        color: #60a5fa;
+    }
+
+    .note-content .complexity-box {
+        display: flex;
+        gap: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, .03);
+        font-size: .85rem;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .note-content .complexity-box strong {
+        color: #94a3b8;
+    }
+
+    /* Back to Top Button */
+    .note-content .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: .78rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 5px;
+        transition: all .2s;
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .note-content .back-to-top:hover {
+        background: rgba(99, 102, 241, .15);
+        color: #c7d2fe;
+        border-color: rgba(99, 102, 241, .30);
+    }
+</style>
+
+<!-- ============================================================
+     INDEX
+============================================================ -->
+
+<div class="index-section" id="top">
+
+    <h3>📋 Question Index</h3>
+
+    <div class="index-grid">
+
+        <a class="index-item" href="#q2239">
+            <span class="index-num">2239.</span>
+            <span class="index-title">Find Closest Number to Zero</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q1768">
+            <span class="index-num">1768.</span>
+            <span class="index-title">Merge Strings Alternately</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q13">
+            <span class="index-num">13.</span>
+            <span class="index-title">Roman to Integer</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q392">
+            <span class="index-num">392.</span>
+            <span class="index-title">Is Subsequence</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q121">
+            <span class="index-num">121.</span>
+            <span class="index-title">Best Time to Buy and Sell Stock</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q14">
+            <span class="index-num">14.</span>
+            <span class="index-title">Longest Common Prefix</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q228">
+            <span class="index-num">228.</span>
+            <span class="index-title">Summary Ranges</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q238">
+            <span class="index-num">238.</span>
+            <span class="index-title">Product of Array Except Self</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q56">
+            <span class="index-num">56.</span>
+            <span class="index-title">Merge Intervals</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q54">
+            <span class="index-num">54.</span>
+            <span class="index-title">Spiral Matrix</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q6">
+            <span class="index-num">6.</span>
+            <span class="index-title">Zigzag Conversion</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q1: 2239. Find Closest Number to Zero
+============================================================ -->
+
+<div class="question-section" id="q2239" data-approaches="traversal">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>2239. Find Closest Number to Zero</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Traversal</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return the number in <code>nums</code> closest to <code>0</code>; if tied, return the larger one.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def findClosestNumber(self, nums: List[int]) -> int:
+        closest = float('inf')
+
+        for ele in nums:
+            if abs(ele) == abs(closest):
+                closest = max(closest, ele)
+            elif abs(ele) < abs(closest):
+                closest = ele
+
+        return closest</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q2: 1768. Merge Strings Alternately
+============================================================ -->
+
+<div class="question-section" id="q1768" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>1768. Merge Strings Alternately</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Merge <code>word1</code> and <code>word2</code> by alternating characters, starting with <code>word1</code>; append leftover characters at the end.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def mergeAlternately(self, word1: str, word2: str) -> str:
+        n1 = len(word1)
+        n2 = len(word2)
+
+        ans = []
+        i = 0
+
+        while i < min(n2, n1):
+            ans.append(word1[i])
+            ans.append(word2[i])
+            i += 1
+
+        ans.append(word1[i:])
+        ans.append(word2[i:])
+
+        return "".join(ans)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(n + m)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q3: 13. Roman to Integer
+============================================================ -->
+
+<div class="question-section" id="q13" data-approaches="hashmap">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>13. Roman to Integer</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Hash Map</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Convert a Roman numeral string <code>s</code> into an integer.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def romanToInt(self, s: str) -> int:
+        dic = {
+            "I": 1,
+            "V": 5,
+            "X": 10,
+            "L": 50,
+            "C": 100,
+            "D": 500,
+            "M": 1000
+        }
+
+        sum = dic[s[0]]
+
+        for i in range(1, len(s)):
+            sum += dic[s[i]]
+
+            if s[i-1] == "I" and (s[i] == "V" or s[i] == "X"):
+                sum -= 2 * dic["I"]
+
+            elif s[i-1] == "X" and (s[i] == "L" or s[i] == "C"):
+                sum -= 2 * dic["X"]
+
+            elif s[i-1] == "C" and (s[i] == "D" or s[i] == "M"):
+                sum -= 2 * dic["C"]
+
+        return sum</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q4: 392. Is Subsequence
+============================================================ -->
+
+<div class="question-section" id="q392" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>392. Is Subsequence</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return <code>true</code> if <code>s</code> is a subsequence of <code>t</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def isSubsequence(self, s: str, t: str) -> bool:
+        i = 0
+        j = 0
+
+        while i < len(s) and j < len(t):
+            if s[i] == t[j]:
+                i += 1
+
+            j += 1
+
+        if i == len(s):
+            return True
+
+        return False</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q5: 121. Best Time to Buy and Sell Stock
+============================================================ -->
+
+<div class="question-section" id="q121" data-approaches="running-min">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>121. Best Time to Buy and Sell Stock</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Running Min</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given daily <code>prices</code>, buy on one day and sell on a later day to maximize profit; return <code>0</code> if no profit is possible.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def maxProfit(self, prices: List[int]) -> int:
+        minprice = float('inf')
+        profit = 0
+        n = len(prices)
+
+        for i in range(n):
+            if prices[i] < minprice:
+                minprice = prices[i]
+
+            profit = max(profit, prices[i] - minprice)
+
+        return profit</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q6: 14. Longest Common Prefix
+============================================================ -->
+
+<div class="question-section" id="q14" data-approaches="string-compare">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>14. Longest Common Prefix</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">String Compare</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Find the longest common prefix string among an array of strings; return <code>""</code> if none.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+
+        if not strs:
+            return ""
+
+        for i in range(len(strs[0])):
+            char = strs[0][i]
+
+            for ele in strs[1:]:
+                if i >= len(ele) or ele[i] != char:
+                    return strs[0][:i]
+
+        return strs[0]</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n × m)</div>
+            <div><strong>Space:</strong> O(1) — excluding output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q7: 228. Summary Ranges
+============================================================ -->
+
+<div class="question-section" id="q228" data-approaches="traversal">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>228. Summary Ranges</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Traversal</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a sorted unique integer array <code>nums</code>, return the smallest list of ranges that exactly covers all numbers.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def summaryRanges(self, nums: List[int]) -> List[str]:
+        if len(nums) == 0:
+            return []
+
+        rangearr = []
+        prev = nums[0]
+        nex = nums[0]
+
+        for i in range(0, len(nums) - 1):
+            nex = nums[i]
+
+            if nums[i + 1] - nums[i] == 1:
+                if prev == nex:
+                    rangearr.append(f"{prev}")
+                else:
+                    rangearr.append(f"{prev}->{nex}")
+
+                prev = nums[i + 1]
+
+        nex = nums[len(nums) - 1]
+
+        if prev == nex:
+            rangearr.append(f"{prev}")
+        else:
+            rangearr.append(f"{prev}->{nex}")
+
+        return rangearr</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1) — excluding output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q8: 238. Product of Array Except Self
+============================================================ -->
+
+<div class="question-section" id="q238" data-approaches="prefix-suffix">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>238. Product of Array Except Self</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Prefix / Suffix</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return <code>answer</code> where <code>answer[i]</code> is the product of all elements except <code>nums[i]</code>, in O(n) time without division.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        answer = [1] * n
+
+        # Product of all elements to the left
+        prefix = 1
+
+        for i in range(n):
+            answer[i] = prefix
+            prefix *= nums[i]
+
+        # Product of all elements to the right
+        suffix = 1
+
+        for i in range(n - 1, -1, -1):
+            answer[i] *= suffix
+            suffix *= nums[i]
+
+        return answer</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1) — excluding output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q9: 56. Merge Intervals
+============================================================ -->
+
+<div class="question-section" id="q56" data-approaches="sorting">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>56. Merge Intervals</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Sorting</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Merge all overlapping intervals and return the non-overlapping intervals covering all input intervals.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        intervals.sort(key=lambda x: x[0])
+
+        ansarr = []
+        index = 0
+        currmerger = intervals[0]
+
+        while index < len(intervals):
+            if currmerger[1] >= intervals[index][0]:
+                currmerger[1] = max(
+                    currmerger[1],
+                    intervals[index][1]
+                )
+                currmerger[0] = min(
+                    currmerger[0],
+                    intervals[index][0]
+                )
+            else:
+                ansarr.append(currmerger)
+                currmerger = intervals[index]
+
+            index += 1
+
+        ansarr.append(currmerger)
+
+        return ansarr</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n log n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q10: 54. Spiral Matrix
+============================================================ -->
+
+<div class="question-section" id="q54" data-approaches="boundary-traversal">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>54. Spiral Matrix</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Boundary Traversal</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given an m × n matrix, return all elements in spiral order.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        left, right, top, down = 0, len(matrix[0]) - 1, 0, len(matrix) - 1
+
+        a, b, c, d = 0, 0, 0, 0
+        ansarr = []
+
+        while left <= right and top <= down:
+
+            for a in range(left, right + 1):
+                ansarr.append(matrix[top][a])
+            top += 1
+
+            for b in range(top, down + 1):
+                ansarr.append(matrix[b][right])
+            right -= 1
+
+            if top <= down:
+                for c in range(right, left - 1, -1):
+                    ansarr.append(matrix[down][c])
+                down -= 1
+
+            if left <= right:
+                for d in range(down, top - 1, -1):
+                    ansarr.append(matrix[d][left])
+                left += 1
+
+        return ansarr</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(m × n)</div>
+            <div><strong>Space:</strong> O(m × n) — output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q11: 6. Zigzag Conversion
+============================================================ -->
+
+<div class="question-section" id="q6" data-approaches="simulation">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>6. Zigzag Conversion</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Simulation</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Write string <code>s</code> in a zigzag pattern across <code>numRows</code> rows, then read row by row.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def convert(self, s: str, numRows: int) -> str:
+        if numRows == 1 or numRows >= len(s):
+            return s
+
+        rows = [""] * numRows
+        curr_row = 0
+        goingdown = False
+
+        for char in s:
+            rows[curr_row] += char
+
+            if curr_row == 0 or curr_row == numRows - 1:
+                goingdown = not goingdown
+
+            curr_row += 1 if goingdown else -1
+
+        return "".join(rows)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
