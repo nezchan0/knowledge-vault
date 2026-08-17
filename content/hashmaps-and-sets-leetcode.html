@@ -1,0 +1,921 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260817-130000",
+  "slug": "hashmaps-and-sets-leetcode",
+  "title": "Hashmaps and Sets - Leetcode Questions",
+  "date": "2026-08-17",
+  "timestamp": "2026-08-17T13:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "hashmap",
+    "set",
+    "leetcode",
+    "python",
+    "frequency-array",
+    "prefix-sum",
+    "revision"
+  ],
+  "summary": "Leetcode Hashmap & Set questions — brief prompts, Python solutions (frequency-array and Counter variants included), and time/space complexity for quick revision."
+}
+</script>
+<h1>🗂️ Hashmaps and Sets - Leetcode Questions</h1>
+<style>
+    /* =====================================================
+   Hashmaps & Sets Leetcode Notes Styling
+===================================================== */
+
+    .note-content {
+        --primary: #60a5fa;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --cyan: #38bdf8;
+        --orange: #fb923c;
+    }
+
+    .note-content hr {
+        margin: 40px 0;
+    }
+
+    .note-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+    }
+
+    .note-content table th {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .note-content table td {
+        padding: 10px;
+    }
+
+    .note-content code {
+        font-size: .95rem;
+    }
+
+    .note-content pre {
+        margin: 18px 0;
+    }
+
+    /* ====================================== */
+
+    /* Index Section */
+    .note-content .index-section {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .20);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+    }
+
+    .note-content .index-section h3 {
+        margin-top: 0;
+        color: #60a5fa;
+    }
+
+    .note-content .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .note-content .index-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .note-content .index-item:hover {
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .note-content .index-num {
+        font-weight: 700;
+        color: #60a5fa;
+        min-width: 38px;
+    }
+
+    .note-content .index-title {
+        flex: 1;
+    }
+
+    .note-content .index-diff {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .note-content .diff-easy {
+        background: rgba(34, 197, 94, .15);
+        color: #22c55e;
+    }
+
+    .note-content .diff-med {
+        background: rgba(251, 146, 60, .15);
+        color: #fb923c;
+    }
+
+    .note-content .diff-hard {
+        background: rgba(239, 68, 68, .15);
+        color: #ef4444;
+    }
+
+    /* Question Section */
+    .note-content .question-section {
+        margin: 40px 0;
+        padding: 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .02);
+        position: relative;
+    }
+
+    .note-content .question-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .note-content .question-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .note-content .approach-tags {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .note-content .tag {
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .note-content .tag-technique {
+        background: rgba(96, 165, 250, .18);
+        color: #60a5fa;
+    }
+
+    .note-content .question-prompt {
+        color: #94a3b8;
+        margin: 0 0 16px 0;
+    }
+
+    /* Solution Block */
+    .note-content .solution-block {
+        margin: 16px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        overflow: hidden;
+    }
+
+    .note-content .solution-label {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        background: rgba(96, 165, 250, .12);
+        color: #60a5fa;
+    }
+
+    .note-content .solution-label.label-alt {
+        background: rgba(168, 85, 247, .12);
+        color: #c084fc;
+    }
+
+    .note-content .complexity-box {
+        display: flex;
+        gap: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, .03);
+        font-size: .85rem;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .note-content .complexity-box strong {
+        color: #94a3b8;
+    }
+
+    /* Back to Top Button */
+    .note-content .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: .78rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 5px;
+        transition: all .2s;
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .note-content .back-to-top:hover {
+        background: rgba(99, 102, 241, .15);
+        color: #c7d2fe;
+        border-color: rgba(99, 102, 241, .30);
+    }
+</style>
+
+<!-- ============================================================
+     INDEX
+============================================================ -->
+
+<div class="index-section" id="top">
+
+    <h3>📋 Question Index</h3>
+
+    <div class="index-grid">
+
+        <a class="index-item" href="#q771">
+            <span class="index-num">771.</span>
+            <span class="index-title">Jewels and Stones</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q217">
+            <span class="index-num">217.</span>
+            <span class="index-title">Contains Duplicate</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q383">
+            <span class="index-num">383.</span>
+            <span class="index-title">Ransom Note</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q242">
+            <span class="index-num">242.</span>
+            <span class="index-title">Valid Anagram</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q1189">
+            <span class="index-num">1189.</span>
+            <span class="index-title">Maximum Number of Balloons</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q2287">
+            <span class="index-num">2287.</span>
+            <span class="index-title">Rearrange Characters to Make Target String</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q1">
+            <span class="index-num">1.</span>
+            <span class="index-title">Two Sum</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q169">
+            <span class="index-num">169.</span>
+            <span class="index-title">Majority Element</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q36">
+            <span class="index-num">36.</span>
+            <span class="index-title">Valid Sudoku</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q49">
+            <span class="index-num">49.</span>
+            <span class="index-title">Group Anagrams</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q128">
+            <span class="index-num">128.</span>
+            <span class="index-title">Longest Consecutive Sequence</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q560">
+            <span class="index-num">560.</span>
+            <span class="index-title">Subarray Sum Equals K</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q1: 771. Jewels and Stones
+============================================================ -->
+
+<div class="question-section" id="q771" data-approaches="set">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>771. Jewels and Stones</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Set</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>jewels</code> and <code>stones</code>, return how many characters in <code>stones</code> are also in <code>jewels</code> (case-sensitive).</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def numJewelsInStones(self, jewels: str, stones: str) -> int:
+        jewels_set = set(jewels)
+        return sum(x in jewels_set for x in stones)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q2: 217. Contains Duplicate
+============================================================ -->
+
+<div class="question-section" id="q217" data-approaches="set">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>217. Contains Duplicate</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Set</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return <code>true</code> if any value appears at least twice in <code>nums</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        return len(nums) != len(set(nums))</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q3: 383. Ransom Note
+============================================================ -->
+
+<div class="question-section" id="q383" data-approaches="frequency">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>383. Ransom Note</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Frequency Array / Counter</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return <code>true</code> if <code>ransomNote</code> can be built from the letters of <code>magazine</code>, each letter used at most once.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Frequency Array</div>
+        <pre><code>class Solution:
+    def canConstruct(self, ransomNote: str, magazine: str) -> bool:
+        freq = [0] * 26
+
+        for c in magazine:
+            freq[ord(c) - ord('a')] += 1
+
+        for c in ransomNote:
+            freq[ord(c) - ord('a')] -= 1
+
+            if freq[ord(c) - ord('a')] == -1:
+                return False
+
+        return True</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <div class="solution-block">
+        <div class="solution-label label-alt">Counter</div>
+        <pre><code>from collections import Counter
+
+class Solution:
+    def canConstruct(self, ransomNote: str, magazine: str) -> bool:
+        c1 = Counter(ransomNote)
+        c2 = Counter(magazine)
+
+        return c1 <= c2</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q4: 242. Valid Anagram
+============================================================ -->
+
+<div class="question-section" id="q242" data-approaches="frequency">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>242. Valid Anagram</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Frequency Array / Counter</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return <code>true</code> if <code>t</code> is an anagram of <code>s</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Frequency Array</div>
+        <pre><code>class Solution:
+    def isAnagram(self, s: str, t: str) -> bool:
+        if len(s) != len(t):
+            return False
+
+        freq = [0] * 26
+
+        for c in s:
+            freq[ord(c) - ord('a')] += 1
+
+        for c in t:
+            freq[ord(c) - ord('a')] -= 1
+
+        return all(x == 0 for x in freq)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <div class="solution-block">
+        <div class="solution-label label-alt">Counter</div>
+        <pre><code>from collections import Counter
+
+class Solution:
+    def isAnagram(self, s: str, t: str) -> bool:
+        return Counter(s) == Counter(t)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(k) — distinct characters</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q5: 1189. Maximum Number of Balloons
+============================================================ -->
+
+<div class="question-section" id="q1189" data-approaches="frequency">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>1189. Maximum Number of Balloons</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Frequency Array / Counter</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return the maximum number of instances of <code>"balloon"</code> that can be formed from the characters of <code>text</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Frequency Array</div>
+        <pre><code>class Solution:
+    def maxNumberOfBalloons(self, text: str) -> int:
+        freq = [0] * 26
+
+        for c in text:
+            freq[ord(c) - ord('a')] += 1
+
+        b = freq[ord('b') - ord('a')]
+        a = freq[ord('a') - ord('a')]
+        l = freq[ord('l') - ord('a')] // 2
+        o = freq[ord('o') - ord('a')] // 2
+        n = freq[ord('n') - ord('a')]
+
+        return min(b, a, l, o, n)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <div class="solution-block">
+        <div class="solution-label label-alt">Counter</div>
+        <pre><code>from collections import Counter
+
+class Solution:
+    def maxNumberOfBalloons(self, text: str) -> int:
+        c = Counter(text)
+
+        return min(
+            c['b'],
+            c['a'],
+            c['l'] // 2,
+            c['o'] // 2,
+            c['n']
+        )</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q6: 2287. Rearrange Characters to Make Target String
+============================================================ -->
+
+<div class="question-section" id="q2287" data-approaches="frequency">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>2287. Rearrange Characters to Make Target String</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Frequency Array / Counter</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return the maximum number of copies of <code>target</code> that can be formed using the characters of <code>s</code>, each used at most once.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Frequency Array</div>
+        <pre><code>class Solution:
+    def rearrangeCharacters(self, s: str, target: str) -> int:
+        sfreq = [0] * 26
+        tfreq = [0] * 26
+
+        for c in s:
+            sfreq[ord(c) - ord('a')] += 1
+
+        for c in target:
+            tfreq[ord(c) - ord('a')] += 1
+
+        ans = float('inf')
+
+        for i in range(26):
+            if tfreq[i] > 0:
+                ans = min(ans, sfreq[i] // tfreq[i])
+
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <div class="solution-block">
+        <div class="solution-label label-alt">Counter</div>
+        <pre><code>from collections import Counter
+
+class Solution:
+    def rearrangeCharacters(self, s: str, target: str) -> int:
+        s_count = Counter(s)
+        t_count = Counter(target)
+
+        return min(
+            s_count[c] // t_count[c]
+            for c in t_count
+        )</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n + m)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q7: 1. Two Sum
+============================================================ -->
+
+<div class="question-section" id="q1" data-approaches="hashmap">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>1. Two Sum</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">HashMap</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return indices of the two numbers in <code>nums</code> that add up to <code>target</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        numset = {}
+
+        for i, ele in enumerate(nums):
+            comp = target - ele
+
+            if comp in numset:
+                return [numset[comp], i]
+
+            numset[ele] = i</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q8: 169. Majority Element
+============================================================ -->
+
+<div class="question-section" id="q169" data-approaches="counter,boyer-moore">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>169. Majority Element</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Counter / Boyer-Moore</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return the element that appears more than <code>⌊n / 2⌋</code> times in <code>nums</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Counter</div>
+        <pre><code>from collections import Counter
+
+class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        c = Counter(nums)
+
+        return c.most_common(1)[0][0]</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <div class="solution-block">
+        <div class="solution-label label-alt">Boyer-Moore Voting</div>
+        <pre><code>class Solution:
+    def majorityElement(self, nums: List[int]) -> int:
+        count = 0
+        candidate = None
+
+        for ele in nums:
+            if count == 0:
+                candidate = ele
+
+            count += 1 if ele == candidate else -1
+
+        return candidate</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q9: 36. Valid Sudoku
+============================================================ -->
+
+<div class="question-section" id="q36" data-approaches="multiple-sets">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>36. Valid Sudoku</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Multiple Sets</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Determine if a 9×9 Sudoku board is valid — no repeated digits per row, column, or 3×3 box.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        rowset = [set() for _ in range(9)]
+        colset = [set() for _ in range(9)]
+        boxset = [set() for _ in range(9)]
+
+        for r in range(9):
+            for c in range(9):
+                val = board[r][c]
+
+                if val == ".":
+                    continue
+
+                boxindex = (r // 3) * 3 + (c // 3)
+
+                if (val in rowset[r] or
+                    val in colset[c] or
+                    val in boxset[boxindex]):
+                    return False
+
+                rowset[r].add(val)
+                colset[c].add(val)
+                boxset[boxindex].add(val)
+
+        return True</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(81) → O(1)</div>
+            <div><strong>Space:</strong> O(81) → O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q10: 49. Group Anagrams
+============================================================ -->
+
+<div class="question-section" id="q49" data-approaches="hashmap">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>49. Group Anagrams</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">HashMap + Key</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given an array of strings <code>strs</code>, group the anagrams together.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        dic = {}
+
+        for ele in strs:
+            key = "".join(sorted(ele))
+
+            if key not in dic:
+                dic[key] = []
+
+            dic[key].append(ele)
+
+        return list(dic.values())</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n × k log k)</div>
+            <div><strong>Space:</strong> O(n × k)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q11: 128. Longest Consecutive Sequence
+============================================================ -->
+
+<div class="question-section" id="q128" data-approaches="set">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>128. Longest Consecutive Sequence</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Set</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given an unsorted array <code>nums</code>, return the length of the longest consecutive elements sequence in O(n).</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def longestConsecutive(self, nums: List[int]) -> int:
+        nset = set(nums)
+        longest = 0
+
+        for ele in nset:
+            if ele - 1 not in nset:
+                length = 1
+
+                while ele + length in nset:
+                    length += 1
+
+                longest = max(longest, length)
+
+        return longest</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n) average</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q12: 560. Subarray Sum Equals K
+============================================================ -->
+
+<div class="question-section" id="q560" data-approaches="prefix-sum">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>560. Subarray Sum Equals K</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Prefix Sum + HashMap</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return the total number of contiguous subarrays of <code>nums</code> whose sum equals <code>k</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>from collections import defaultdict
+
+class Solution:
+    def subarraySum(self, nums: List[int], k: int) -> int:
+        prefix = 0
+        count = 0
+
+        freq = defaultdict(int)
+        freq[0] = 1
+
+        for num in nums:
+            prefix += num
+
+            if prefix - k in freq:
+                count += freq[prefix - k]
+
+            freq[prefix] += 1
+
+        return count</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
