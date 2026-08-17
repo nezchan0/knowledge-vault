@@ -1,0 +1,832 @@
+<script id="metadata" type="application/json">
+{
+  "id": "20260817-140000",
+  "slug": "two-pointers-leetcode",
+  "title": "Two Pointers - Leetcode Questions",
+  "date": "2026-08-17",
+  "timestamp": "2026-08-17T14:00:00Z",
+  "type": "dsa",
+  "tags": [
+    "dsa",
+    "two-pointers",
+    "arrays",
+    "leetcode",
+    "python",
+    "revision"
+  ],
+  "summary": "Leetcode Two Pointer questions — brief prompts, Python solutions, and time/space complexity for quick revision."
+}
+</script>
+<h1>👉👈 Two Pointers - Leetcode Questions</h1>
+<style>
+    /* =====================================================
+   Two Pointers Leetcode Notes Styling
+===================================================== */
+
+    .note-content {
+        --primary: #60a5fa;
+        --green: #22c55e;
+        --yellow: #facc15;
+        --purple: #a855f7;
+        --red: #ef4444;
+        --cyan: #38bdf8;
+        --orange: #fb923c;
+    }
+
+    .note-content hr {
+        margin: 40px 0;
+    }
+
+    .note-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+    }
+
+    .note-content table th {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .note-content table td {
+        padding: 10px;
+    }
+
+    .note-content code {
+        font-size: .95rem;
+    }
+
+    .note-content pre {
+        margin: 18px 0;
+    }
+
+    /* ====================================== */
+
+    /* Index Section */
+    .note-content .index-section {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .20);
+        border-radius: 12px;
+        padding: 24px;
+        margin: 30px 0;
+    }
+
+    .note-content .index-section h3 {
+        margin-top: 0;
+        color: #60a5fa;
+    }
+
+    .note-content .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .note-content .index-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: background .2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .note-content .index-item:hover {
+        background: rgba(59, 130, 246, .12);
+    }
+
+    .note-content .index-num {
+        font-weight: 700;
+        color: #60a5fa;
+        min-width: 38px;
+    }
+
+    .note-content .index-title {
+        flex: 1;
+    }
+
+    .note-content .index-diff {
+        font-size: .75rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .note-content .diff-easy {
+        background: rgba(34, 197, 94, .15);
+        color: #22c55e;
+    }
+
+    .note-content .diff-med {
+        background: rgba(251, 146, 60, .15);
+        color: #fb923c;
+    }
+
+    .note-content .diff-hard {
+        background: rgba(239, 68, 68, .15);
+        color: #ef4444;
+    }
+
+    .note-content .diff-concept {
+        background: rgba(168, 85, 247, .15);
+        color: #c084fc;
+    }
+
+    /* Question Section */
+    .note-content .question-section {
+        margin: 40px 0;
+        padding: 28px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .02);
+        position: relative;
+    }
+
+    .note-content .question-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .note-content .question-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .note-content .approach-tags {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+    }
+
+    .note-content .tag {
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+    }
+
+    .note-content .tag-technique {
+        background: rgba(96, 165, 250, .18);
+        color: #60a5fa;
+    }
+
+    .note-content .question-prompt {
+        color: #94a3b8;
+        margin: 0 0 16px 0;
+    }
+
+    /* Solution Block */
+    .note-content .solution-block {
+        margin: 16px 0;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, .06);
+        overflow: hidden;
+    }
+
+    .note-content .solution-label {
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        background: rgba(96, 165, 250, .12);
+        color: #60a5fa;
+    }
+
+    .note-content .complexity-box {
+        display: flex;
+        gap: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, .03);
+        font-size: .85rem;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .note-content .complexity-box strong {
+        color: #94a3b8;
+    }
+
+    /* Back to Top Button */
+    .note-content .back-to-top {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        font-size: .78rem;
+        color: #94a3b8;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 5px;
+        transition: all .2s;
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+    }
+
+    .note-content .back-to-top:hover {
+        background: rgba(99, 102, 241, .15);
+        color: #c7d2fe;
+        border-color: rgba(99, 102, 241, .30);
+    }
+</style>
+
+<!-- ============================================================
+     INDEX
+============================================================ -->
+
+<div class="index-section" id="top">
+
+    <h3>📋 Question Index</h3>
+
+    <div class="index-grid">
+
+        <a class="index-item" href="#qconcept">
+            <span class="index-num">—</span>
+            <span class="index-title">What is the Two Pointer Method?</span>
+            <span class="index-diff diff-concept">Concept</span>
+        </a>
+
+        <a class="index-item" href="#q977">
+            <span class="index-num">977.</span>
+            <span class="index-title">Squares of a Sorted Array</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q392">
+            <span class="index-num">392.</span>
+            <span class="index-title">Is Subsequence</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q283">
+            <span class="index-num">283.</span>
+            <span class="index-title">Move Zeroes</span>
+            <span class="index-diff diff-easy">Easy</span>
+        </a>
+
+        <a class="index-item" href="#q75">
+            <span class="index-num">75.</span>
+            <span class="index-title">Sort Colors</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q167">
+            <span class="index-num">167.</span>
+            <span class="index-title">Two Sum II - Input Array Is Sorted</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q15">
+            <span class="index-num">15.</span>
+            <span class="index-title">3Sum</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q16">
+            <span class="index-num">16.</span>
+            <span class="index-title">3Sum Closest</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q18">
+            <span class="index-num">18.</span>
+            <span class="index-title">4Sum</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q11">
+            <span class="index-num">11.</span>
+            <span class="index-title">Container With Most Water</span>
+            <span class="index-diff diff-med">Med</span>
+        </a>
+
+        <a class="index-item" href="#q42">
+            <span class="index-num">42.</span>
+            <span class="index-title">Trapping Rain Water</span>
+            <span class="index-diff diff-hard">Hard</span>
+        </a>
+
+    </div>
+
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q1: What is the Two Pointer Method?
+============================================================ -->
+
+<div class="question-section" id="qconcept" data-approaches="concept">
+
+    <div class="question-header">
+        <span class="index-diff diff-concept">Concept</span>
+        <h2>What is the Two Pointer Method?</h2>
+    </div>
+
+    <p class="question-prompt">Two indices moving through an array/string — from both ends, or both from the start — to scan, search, or compare without nested loops, often turning O(n²) into O(n).</p>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q2: 977. Squares of a Sorted Array
+============================================================ -->
+
+<div class="question-section" id="q977" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>977. Squares of a Sorted Array</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> sorted non-decreasing, return the squares of each number, also sorted non-decreasing.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def sortedSquares(self, nums):
+        n = len(nums)
+        result = [0] * n
+
+        left, right = 0, n - 1
+        pos = n - 1
+
+        while left <= right:
+            left_sq = nums[left] ** 2
+            right_sq = nums[right] ** 2
+
+            if left_sq > right_sq:
+                result[pos] = left_sq
+                left += 1
+            else:
+                result[pos] = right_sq
+                right -= 1
+
+            pos -= 1
+
+        return result</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(n) — output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q3: 392. Is Subsequence
+============================================================ -->
+
+<div class="question-section" id="q392" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>392. Is Subsequence</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Return <code>true</code> if <code>s</code> is a subsequence of <code>t</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def is_subsequence(s, t):
+    i = j = 0
+
+    while i < len(s) and j < len(t):
+        if s[i] == t[j]:
+            i += 1
+        j += 1
+
+    return i == len(s)</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q4: 283. Move Zeroes
+============================================================ -->
+
+<div class="question-section" id="q283" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-easy">Easy</span>
+        <h2>283. Move Zeroes</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Move all <code>0</code>s in <code>nums</code> to the end while keeping the relative order of non-zero elements, in-place.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>def move_zeroes(nums):
+    insert_pos = 0
+
+    for i in range(len(nums)):
+        if nums[i] != 0:
+            nums[insert_pos], nums[i] = nums[i], nums[insert_pos]
+            insert_pos += 1</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q5: 75. Sort Colors
+============================================================ -->
+
+<div class="question-section" id="q75" data-approaches="dutch-flag">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>75. Sort Colors</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Dutch National Flag</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> containing only <code>0</code>, <code>1</code>, <code>2</code>, sort it in-place so same colors are adjacent, in order <code>0 → 1 → 2</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def sortColors(self, nums):
+        low = mid = 0
+        high = len(nums) - 1
+
+        while mid <= high:
+            if nums[mid] == 0:
+                nums[low], nums[mid] = nums[mid], nums[low]
+                low += 1
+                mid += 1
+
+            elif nums[mid] == 1:
+                mid += 1
+
+            else:
+                nums[mid], nums[high] = nums[high], nums[mid]
+                high -= 1</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q6: 167. Two Sum II - Input Array Is Sorted
+============================================================ -->
+
+<div class="question-section" id="q167" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>167. Two Sum II - Input Array Is Sorted</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given a 1-indexed sorted array <code>numbers</code>, return the 1-based indices of two numbers that add up to <code>target</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def twoSum(self, numbers, target):
+        left, right = 0, len(numbers) - 1
+
+        while left < right:
+            total = numbers[left] + numbers[right]
+
+            if total == target:
+                return [left + 1, right + 1]
+
+            elif total > target:
+                right -= 1
+
+            else:
+                left += 1</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q7: 15. 3Sum
+============================================================ -->
+
+<div class="question-section" id="q15" data-approaches="sorting,two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>15. 3Sum</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Sort + Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code>, return all unique triplets that sum to <code>0</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def threeSum(self, nums):
+        ans = []
+        nums.sort()
+
+        for i in range(len(nums)):
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+
+            left, right = i + 1, len(nums) - 1
+
+            while left < right:
+                total = nums[i] + nums[left] + nums[right]
+
+                if total == 0:
+                    ans.append([nums[i], nums[left], nums[right]])
+
+                    while left < right and nums[left] == nums[left + 1]:
+                        left += 1
+
+                    while left < right and nums[right] == nums[right - 1]:
+                        right -= 1
+
+                    left += 1
+                    right -= 1
+
+                elif total < 0:
+                    left += 1
+                else:
+                    right -= 1
+
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n²)</div>
+            <div><strong>Space:</strong> O(1) — excluding output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q8: 16. 3Sum Closest
+============================================================ -->
+
+<div class="question-section" id="q16" data-approaches="sorting,two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>16. 3Sum Closest</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Sort + Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> and <code>target</code>, find three integers whose sum is closest to <code>target</code> and return that sum.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def threeSumClosest(self, nums, target):
+        nums.sort()
+        closest = float('inf')
+
+        for i in range(len(nums)):
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+
+            left, right = i + 1, len(nums) - 1
+
+            while left < right:
+                curr_sum = nums[i] + nums[left] + nums[right]
+
+                if abs(target - curr_sum) < abs(target - closest):
+                    closest = curr_sum
+
+                if curr_sum == target:
+                    return curr_sum
+                elif curr_sum < target:
+                    left += 1
+                else:
+                    right -= 1
+
+        return closest</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n²)</div>
+            <div><strong>Space:</strong> O(1) — excluding output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q9: 18. 4Sum
+============================================================ -->
+
+<div class="question-section" id="q18" data-approaches="sorting,two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>18. 4Sum</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Sort + Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>nums</code> and <code>target</code>, return all unique quadruplets that sum to <code>target</code>.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def fourSum(self, nums, target):
+        nums.sort()
+        ans = []
+        n = len(nums)
+
+        for i in range(n):
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+
+            for j in range(i + 1, n):
+                if j > i + 1 and nums[j] == nums[j - 1]:
+                    continue
+
+                left, right = j + 1, n - 1
+
+                while left < right:
+                    total = (
+                        nums[i] + nums[j] +
+                        nums[left] + nums[right]
+                    )
+
+                    if total == target:
+                        ans.append([
+                            nums[i], nums[j],
+                            nums[left], nums[right]
+                        ])
+
+                        while left < right and nums[left] == nums[left + 1]:
+                            left += 1
+
+                        while left < right and nums[right] == nums[right - 1]:
+                            right -= 1
+
+                        left += 1
+                        right -= 1
+
+                    elif total < target:
+                        left += 1
+                    else:
+                        right -= 1
+
+        return ans</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n³)</div>
+            <div><strong>Space:</strong> O(1) — excluding output</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q10: 11. Container With Most Water
+============================================================ -->
+
+<div class="question-section" id="q11" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-med">Med</span>
+        <h2>11. Container With Most Water</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given <code>height</code>, find two lines that with the x-axis form the container holding the most water.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def maxArea(self, height):
+        left, right = 0, len(height) - 1
+        maxsum = 0
+
+        while left <= right:
+            h = min(height[left], height[right])
+            currsum = h * (right - left)
+
+            maxsum = max(maxsum, currsum)
+
+            if height[left] < height[right]:
+                left += 1
+            else:
+                right -= 1
+
+        return maxsum</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
+
+<hr>
+
+<!-- ============================================================
+     Q11: 42. Trapping Rain Water
+============================================================ -->
+
+<div class="question-section" id="q42" data-approaches="two-pointers">
+
+    <div class="question-header">
+        <span class="index-diff diff-hard">Hard</span>
+        <h2>42. Trapping Rain Water</h2>
+        <div class="approach-tags">
+            <span class="tag tag-technique">Two Pointers</span>
+        </div>
+    </div>
+
+    <p class="question-prompt">Given an elevation map <code>height</code> of unit width, compute how much water it can trap after raining.</p>
+
+    <div class="solution-block">
+        <div class="solution-label">Python</div>
+        <pre><code>class Solution:
+    def trap(self, height):
+        left, right = 0, len(height) - 1
+        leftwall, rightwall = 0, 0
+        total = 0
+
+        while left < right:
+            if height[left] < height[right]:
+                leftwall = max(leftwall, height[left])
+                total += leftwall - height[left]
+                left += 1
+
+            else:
+                rightwall = max(rightwall, height[right])
+                total += rightwall - height[right]
+                right -= 1
+
+        return total</code></pre>
+        <div class="complexity-box">
+            <div><strong>Time:</strong> O(n)</div>
+            <div><strong>Space:</strong> O(1)</div>
+        </div>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Top</a>
+</div>
