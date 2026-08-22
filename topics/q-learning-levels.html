@@ -1,0 +1,964 @@
+<title>Q-Learning Levels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Karla:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #eef3f7;
+    --surface: #ffffff;
+    --surface-2: #e3ecf3;
+    --border: #c7d6e1;
+    --ink: #14232f;
+    --ink-soft: #4d6376;
+    --ink-faint: #7c93a3;
+    --accent: #1f6f9c;
+    --accent-strong: #145575;
+    --accent-soft: #d7ebf4;
+    --accent-soft-2: #c1e0ee;
+    --amber: #c98a2a;
+    --amber-soft: #f5e6c8;
+    --danger: #a6503b;
+    --danger-soft: #f1ddd4;
+    --explore: #7d5a9e;
+    --explore-soft: #e8dff0;
+    --ref: #6b7a89;
+    --ref-soft: #e4e9ed;
+    --shadow: 0 1px 2px rgba(20,35,47,0.06), 0 8px 24px -12px rgba(20,35,47,0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1620; --surface: #142230; --surface-2: #1a2c3c; --border: #2b4457;
+      --ink: #eaf2f8; --ink-soft: #a9c0d1; --ink-faint: #77909f;
+      --accent: #4fa8d8; --accent-strong: #7cc3e8; --accent-soft: #1c3d4d; --accent-soft-2: #234a5d;
+      --amber: #e8b055; --amber-soft: #3a3120;
+      --danger: #d97b64; --danger-soft: #3c2620;
+      --explore: #b79bd6; --explore-soft: #2e2740;
+      --ref: #93a3b2; --ref-soft: #242f39;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1620; --surface: #142230; --surface-2: #1a2c3c; --border: #2b4457;
+    --ink: #eaf2f8; --ink-soft: #a9c0d1; --ink-faint: #77909f;
+    --accent: #4fa8d8; --accent-strong: #7cc3e8; --accent-soft: #1c3d4d; --accent-soft-2: #234a5d;
+    --amber: #e8b055; --amber-soft: #3a3120;
+    --danger: #d97b64; --danger-soft: #3c2620;
+    --explore: #b79bd6; --explore-soft: #2e2740;
+    --ref: #93a3b2; --ref-soft: #242f39;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: 'Karla', ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.5; padding: 2rem clamp(1rem, 4vw, 3rem) 4rem;
+  }
+  h1, h2, h3 { font-family: 'Sora', ui-sans-serif, system-ui, sans-serif; text-wrap: balance; margin: 0; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600;
+  }
+
+  .page-head { max-width: 1180px; margin: 0 auto 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .page-head h1 { font-size: clamp(1.6rem, 3vw, 2.15rem); font-weight: 700; }
+  .page-head p { max-width: 68ch; color: var(--ink-soft); font-size: 0.98rem; }
+
+  .tabbar {
+    max-width: 1180px; margin: 0 auto 1.75rem;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem;
+  }
+  @media (max-width: 720px) { .tabbar { grid-template-columns: repeat(2, 1fr); } }
+  .tab {
+    font-family: 'Sora', sans-serif;
+    text-align: left; cursor: pointer;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 0.7rem 0.9rem;
+    display: flex; flex-direction: column; gap: 0.15rem;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .tab:hover { border-color: var(--accent-soft-2); }
+  .tab .tnum {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em;
+    color: var(--ink-faint); font-weight: 700; text-transform: uppercase;
+  }
+  .tab .tlabel { font-weight: 600; font-size: 0.92rem; }
+  .tab.active { border-color: var(--accent); background: var(--accent-soft); }
+  .tab.active .tnum { color: var(--accent-strong); }
+  .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .level-panel { display: none; max-width: 1180px; margin: 0 auto; }
+  .level-panel.active { display: block; }
+
+  .level-intro {
+    display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1.1rem;
+    padding: 0.9rem 1.1rem; background: var(--surface); border: 1px dashed var(--border); border-radius: 12px;
+  }
+  .level-intro p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; max-width: 78ch; }
+  .level-intro .whatsnew { font-size: 0.78rem; color: var(--accent-strong); font-weight: 600; }
+
+  .layout { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 1.25rem; align-items: start; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  .col { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.15rem 1.25rem 1.3rem; box-shadow: var(--shadow); }
+  .card h2 { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; color: var(--ink-faint); margin-bottom: 0.9rem; }
+  .card h2 .sub { text-transform: none; letter-spacing: 0; color: var(--ink-faint); font-weight: 400; font-size: 0.9em; }
+
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+  button {
+    font-family: 'Sora', sans-serif; font-weight: 600; font-size: 0.85rem;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+    padding: 0.55rem 0.9rem; border-radius: 8px; cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+  }
+  button:hover { background: var(--accent-soft); border-color: var(--accent-soft-2); }
+  button:active { transform: translateY(1px); }
+  button.primary { background: var(--accent); color: white; border-color: var(--accent-strong); }
+  button.primary:hover { background: var(--accent-strong); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .n-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.6rem; }
+  .n-row input[type="number"] {
+    width: 4.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+    padding: 0.4rem 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+  }
+  .n-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .n-row span.hint { font-size: 0.78rem; color: var(--ink-faint); }
+
+  .param-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem 1rem; }
+  .param { display: flex; flex-direction: column; gap: 0.3rem; }
+  .param label { font-size: 0.72rem; color: var(--ink-faint); letter-spacing: 0.03em; }
+  .param .val { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 600; }
+  .param input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+  .stat-strip { display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px dashed var(--border); }
+  .stat { text-align: center; flex: 1; }
+  .stat .n { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); }
+
+  .toggle-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.85rem; font-size: 0.8rem; color: var(--ink-soft); }
+  .toggle-row input { accent-color: var(--accent); }
+
+  table { border-collapse: collapse; width: 100%; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+  .table-scroll { overflow-x: auto; }
+  th, td { padding: 0.45rem 0.55rem; text-align: center; font-variant-numeric: tabular-nums; border: 1px solid var(--border); }
+  th { background: var(--surface-2); color: var(--ink-soft); font-weight: 600; font-size: 0.68rem; letter-spacing: 0.03em; text-transform: uppercase; }
+  td.qcell { position: relative; transition: background 0.25s ease; }
+  td.qcell.updated { box-shadow: inset 0 0 0 2px var(--accent); }
+  td.terminal { color: var(--ink-faint); background: var(--surface-2); font-style: italic; }
+  td.state-label { background: var(--surface-2); font-weight: 700; color: var(--ink); }
+  td.pos { color: var(--amber); font-weight: 700; }
+
+  .qtable-note { margin-top: 0.7rem; font-size: 0.76rem; color: var(--ink-faint); }
+
+  .trace {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+    background: var(--surface-2); border-radius: 10px; padding: 0.9rem 1rem;
+    white-space: pre-wrap; line-height: 1.55;
+  }
+  .trace .hl { color: var(--accent-strong); font-weight: 700; }
+  .trace .hl-ref { color: var(--ref); font-weight: 700; }
+  .trace .tag-reward { color: var(--amber); font-weight: 700; }
+  .trace hr { border: none; border-top: 1px dashed var(--border); margin: 0.6rem 0; }
+
+  .log-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.9rem; max-height: 260px; overflow-y: auto; }
+  .log-entry { font-family: 'JetBrains Mono', monospace; font-size: 0.73rem; color: var(--ink-soft); border-left: 3px solid var(--border); padding: 0.3rem 0.6rem; }
+  .log-entry.first { border-color: var(--accent); color: var(--ink); }
+  .log-entry b { color: var(--ink); }
+
+  .pill { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; letter-spacing: 0.03em; padding: 0.1rem 0.45rem; border-radius: 999px; font-weight: 700; }
+  .pill.explore { background: var(--explore-soft); color: var(--explore); }
+  .pill.exploit { background: var(--accent-soft); color: var(--accent-strong); }
+  .pill.ref { background: var(--ref-soft); color: var(--ref); }
+  .pill.mine { background: var(--accent-soft); color: var(--accent-strong); }
+
+  .formula-block {
+    background: var(--surface-2); border-radius: 10px; padding: 0.8rem 1rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 0.9rem;
+  }
+  .formula-block .k { color: var(--accent-strong); font-weight: 700; }
+  .formula-block .muted { color: var(--ink-faint); text-decoration: line-through; }
+
+  .diagram-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.7rem; }
+  .diagram-legend { display: flex; gap: 0.9rem; flex-wrap: wrap; justify-content: center; font-size: 0.74rem; color: var(--ink-soft); }
+  .diagram-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .swatch.line { width: 16px; height: 3px; border-radius: 2px; }
+
+  .agent-compare-head { display: flex; gap: 0.6rem; margin-bottom: 0.6rem; }
+  .agent-compare-head .chip { flex: 1; text-align: center; padding: 0.4rem 0.5rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; font-weight: 700; }
+  .agent-compare-head .chip.ref { background: var(--ref-soft); color: var(--ref); }
+  .agent-compare-head .chip.mine { background: var(--accent-soft); color: var(--accent-strong); }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 76px); grid-template-rows: repeat(3, 76px); gap: 7px; padding: 8px; background: var(--surface-2); border-radius: 12px; }
+  .cell3 {
+    position: relative; border-radius: 8px; background: var(--surface); border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; font-size: 1.3rem; color: var(--ink-faint); transition: box-shadow 0.2s ease;
+  }
+  .cell3 .tag { position: absolute; top: 4px; left: 6px; font-size: 0.58rem; font-family: 'JetBrains Mono', monospace; color: var(--ink-faint); font-weight: 600; }
+  .cell3 .idx { position: absolute; bottom: 4px; right: 6px; font-size: 0.58rem; color: var(--ink-faint); font-family: 'JetBrains Mono', monospace; }
+  .cell3.hole { background: var(--danger-soft); border-color: var(--danger); color: var(--danger); }
+  .cell3.goal { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); }
+  .cell3.start { border-style: dashed; }
+  .cell3.current { box-shadow: 0 0 0 3px var(--accent); }
+  .cell3 .agent { position: absolute; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.85rem; box-shadow: 0 3px 8px -2px rgba(20,35,47,0.4); }
+  .cell3 .policy-arrow { position: absolute; font-size: 1.1rem; color: var(--accent); opacity: 0.55; }
+
+  .reward-mini-grid { display: grid; grid-template-columns: repeat(3, 76px); grid-template-rows: repeat(3, 76px); gap: 7px; padding: 8px; background: var(--surface-2); border-radius: 12px; }
+  .rcell { border-radius: 8px; background: var(--surface); border: 1.5px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; gap: 0.1rem; }
+  .rcell .rv { font-weight: 700; font-size: 1rem; }
+  .rcell.hole { background: var(--danger-soft); border-color: var(--danger); }
+  .rcell.goal { background: var(--amber-soft); border-color: var(--amber); }
+
+  ::-webkit-scrollbar { height: 8px; width: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="page-head">
+  <span class="eyebrow">Q-Learning · A Four-Level Ladder</span>
+  <h1>Q-Learning Levels</h1>
+  <p>Same room-escape puzzle all the way through Level 3, one new ingredient added per level, then a Frozen Lake grid at the end to prove it's the same math on a different map.</p>
+</div>
+
+<div class="tabbar" id="tabbar">
+  <button class="tab active" data-target="panel-l1"><span class="tnum">Level 1</span><span class="tlabel">Base formula</span></button>
+  <button class="tab" data-target="panel-l2"><span class="tnum">Level 2</span><span class="tlabel">+ ε epsilon-greedy</span></button>
+  <button class="tab" data-target="panel-l3"><span class="tnum">Level 3</span><span class="tlabel">+ α learning rate (noisy)</span></button>
+  <button class="tab" data-target="panel-l4"><span class="tnum">Level 4</span><span class="tlabel">Frozen Lake 3×3</span></button>
+</div>
+
+<!-- ============ LEVEL 1 ============ -->
+<div class="level-panel active" id="panel-l1">
+  <div class="level-intro">
+    <span class="whatsnew">What's new: nothing yet — this is the bare-bones formula.</span>
+    <p>Five rooms plus "outside" (room 5, the goal). Every step: stand in a room, pick a <strong>uniformly random</strong> valid door, walk through it, and update one Q-table cell with <code>Q(s,a) = R(s,a) + γ·max Q(s′,·)</code> — a straight replacement, no learning rate, no smarter action choice yet.</p>
+  </div>
+  <div class="layout">
+    <div class="col">
+      <div class="card">
+        <h2>Room map</h2>
+        <div class="diagram-wrap">
+          <div id="l1-svg"></div>
+          <div class="diagram-legend">
+            <span><span class="swatch" style="background:var(--accent)"></span> current room</span>
+            <span><span class="swatch line" style="background:var(--amber)"></span> door just used</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Controls</h2>
+        <div class="btn-row">
+          <button class="primary" id="l1-step">Step</button>
+          <button id="l1-episode">Run 1 episode</button>
+          <button id="l1-reset">Reset</button>
+        </div>
+        <div class="n-row">
+          <button id="l1-runn">Run</button>
+          <input type="number" id="l1-n" value="20" min="1" max="500">
+          <span class="hint">episodes fast-forward</span>
+        </div>
+        <div class="stat-strip">
+          <div class="stat"><div class="n" id="l1-stat-ep">0</div><div class="l">episode</div></div>
+          <div class="stat"><div class="n" id="l1-stat-step">0</div><div class="l">total steps</div></div>
+          <div class="stat"><div class="n" id="l1-stat-room">0</div><div class="l">current room</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Parameter</h2>
+        <div class="param">
+          <label>γ gamma — discount factor</label>
+          <input type="range" id="l1-gamma" min="0" max="0.99" step="0.01" value="0.8">
+          <span class="val" id="l1-gammaVal">0.80</span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h2>Reward matrix R(s,a) <span class="sub">— static</span></h2>
+        <div class="table-scroll"><table id="l1-rtable"></table></div>
+      </div>
+      <div class="card">
+        <h2>Q-table <span class="sub">— updates every step</span></h2>
+        <div class="table-scroll"><table id="l1-qtable"></table></div>
+        <p class="qtable-note">−1 cells are doors that don't exist; the agent can never choose them.</p>
+      </div>
+      <div class="card">
+        <h2>Last update, worked out</h2>
+        <div class="formula-block"><span class="k">Q(s,a) ← R(s,a) + γ · max<sub>a′</sub> Q(s′,a′)</span></div>
+        <div class="trace" id="l1-trace">Press <strong>Step</strong> to take the first action.</div>
+        <div class="log-list" id="l1-log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LEVEL 2 ============ -->
+<div class="level-panel" id="panel-l2">
+  <div class="level-intro">
+    <span class="whatsnew">What's new: ε (epsilon)-greedy action choice, decaying every episode.</span>
+    <p>Same rooms, same doors, same reward matrix. The only change: instead of always picking a random door, the agent now rolls against <strong>ε</strong> each step — random below it, "walk to the door with the best known Q-value" above it. ε starts at 1.0 (all exploring) and shrinks after every episode, so the path sharpens over time. The update formula is unchanged (α is still effectively 1) — written here with the subtraction spelled out so Level 3's change is easy to spot.</p>
+  </div>
+  <div class="layout">
+    <div class="col">
+      <div class="card">
+        <h2>Room map</h2>
+        <div class="diagram-wrap">
+          <div id="l2-svg"></div>
+          <div class="diagram-legend">
+            <span><span class="swatch" style="background:var(--accent)"></span> current room</span>
+            <span><span class="swatch line" style="background:var(--amber)"></span> door just used</span>
+            <span><span class="swatch line" style="background:var(--accent)"></span> greedy pick</span>
+          </div>
+          <label class="toggle-row"><input type="checkbox" id="l2-showpolicy"> show current best-known path</label>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Controls</h2>
+        <div class="btn-row">
+          <button class="primary" id="l2-step">Step</button>
+          <button id="l2-episode">Run 1 episode</button>
+          <button id="l2-reset">Reset</button>
+        </div>
+        <div class="n-row">
+          <button id="l2-runn">Run</button>
+          <input type="number" id="l2-n" value="20" min="1" max="500">
+          <span class="hint">episodes fast-forward</span>
+        </div>
+        <div class="stat-strip">
+          <div class="stat"><div class="n" id="l2-stat-ep">0</div><div class="l">episode</div></div>
+          <div class="stat"><div class="n" id="l2-stat-step">0</div><div class="l">total steps</div></div>
+          <div class="stat"><div class="n" id="l2-stat-eps">1.00</div><div class="l">ε epsilon</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Parameters</h2>
+        <div class="param-grid">
+          <div class="param"><label>γ gamma</label><input type="range" id="l2-gamma" min="0" max="0.99" step="0.01" value="0.8"><span class="val" id="l2-gammaVal">0.80</span></div>
+          <div class="param"><label>ε decay / episode</label><input type="range" id="l2-decay" min="0.5" max="0.99" step="0.01" value="0.85"><span class="val" id="l2-decayVal">0.85</span></div>
+          <div class="param"><label>ε floor</label><input type="range" id="l2-floor" min="0" max="0.3" step="0.01" value="0.05"><span class="val" id="l2-floorVal">0.05</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h2>Reward matrix R(s,a) <span class="sub">— static</span></h2>
+        <div class="table-scroll"><table id="l2-rtable"></table></div>
+      </div>
+      <div class="card">
+        <h2>Q-table <span class="sub">— updates every step</span></h2>
+        <div class="table-scroll"><table id="l2-qtable"></table></div>
+      </div>
+      <div class="card">
+        <h2>Last update, worked out</h2>
+        <div class="formula-block"><span class="k">Q(s,a) ← Q(s,a) + <span class="muted">α·</span>[ r + γ·max<sub>a′</sub>Q(s′,a′) − Q(s,a) ]</span>  <span style="font-size:0.75em">(α = 1, so this still equals R + γ·max)</span></div>
+        <div class="trace" id="l2-trace">Press <strong>Step</strong> to take the first action.</div>
+        <div class="log-list" id="l2-log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LEVEL 3 ============ -->
+<div class="level-panel" id="panel-l3">
+  <div class="level-intro">
+    <span class="whatsnew">What's new: α (alpha) learning rate — and a noisy reward to justify needing it.</span>
+    <p>The door to "outside" no longer always pays exactly <strong>100</strong>. Each time the agent walks out, it actually receives <strong>100 ± noise</strong> — same door, different payout every time. Two agents watch the <em>same</em> walk and the <em>same</em> noisy paycheck: one uses α = 1 (Level 1/2's behavior — fully trust the newest number), the other uses your adjustable α (blend the new number into what it already believed). Watch which one's Q-value jitters and which one settles.</p>
+  </div>
+  <div class="layout">
+    <div class="col">
+      <div class="card">
+        <h2>Room map</h2>
+        <div class="diagram-wrap">
+          <div id="l3-svg"></div>
+          <div class="diagram-legend">
+            <span><span class="swatch" style="background:var(--accent)"></span> current room</span>
+            <span><span class="swatch line" style="background:var(--amber)"></span> door just used</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Controls</h2>
+        <div class="btn-row">
+          <button class="primary" id="l3-step">Step</button>
+          <button id="l3-episode">Run 1 episode</button>
+          <button id="l3-reset">Reset</button>
+        </div>
+        <div class="n-row">
+          <button id="l3-runn">Run</button>
+          <input type="number" id="l3-n" value="20" min="1" max="500">
+          <span class="hint">episodes fast-forward</span>
+        </div>
+        <div class="stat-strip">
+          <div class="stat"><div class="n" id="l3-stat-ep">0</div><div class="l">episode</div></div>
+          <div class="stat"><div class="n" id="l3-stat-step">0</div><div class="l">total steps</div></div>
+          <div class="stat"><div class="n" id="l3-stat-eps">1.00</div><div class="l">ε epsilon</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Parameters</h2>
+        <div class="param-grid">
+          <div class="param"><label>α alpha (your agent)</label><input type="range" id="l3-alpha" min="0.05" max="1" step="0.05" value="0.2"><span class="val" id="l3-alphaVal">0.20</span></div>
+          <div class="param"><label>γ gamma</label><input type="range" id="l3-gamma" min="0" max="0.99" step="0.01" value="0.8"><span class="val" id="l3-gammaVal">0.80</span></div>
+          <div class="param"><label>ε decay / episode</label><input type="range" id="l3-decay" min="0.5" max="0.99" step="0.01" value="0.85"><span class="val" id="l3-decayVal">0.85</span></div>
+          <div class="param"><label>noise amplitude (±)</label><input type="range" id="l3-noise" min="0" max="50" step="5" value="30"><span class="val" id="l3-noiseVal">30</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h2>Last outside payout <span class="sub">— noisy reward log</span></h2>
+        <div class="table-scroll"><table id="l3-goallog"></table></div>
+        <p class="qtable-note">Compare the two right-hand columns: the α=1 column jumps to match each new number exactly; your column eases toward it.</p>
+      </div>
+      <div class="card">
+        <h2>Q-table comparison <span class="sub">— same walk, two learners</span></h2>
+        <div class="agent-compare-head">
+          <div class="chip ref">Reference — α = 1</div>
+          <div class="chip mine">Yours — α adjustable</div>
+        </div>
+        <div class="table-scroll"><table id="l3-qtable-a"></table></div>
+        <div style="height:0.7rem"></div>
+        <div class="table-scroll"><table id="l3-qtable-b"></table></div>
+      </div>
+      <div class="card">
+        <h2>Last update, worked out</h2>
+        <div class="formula-block"><span class="k">Q(s,a) ← Q(s,a) + α · [ r + γ·max<sub>a′</sub>Q(s′,a′) − Q(s,a) ]</span></div>
+        <div class="trace" id="l3-trace">Press <strong>Step</strong> to take the first action.</div>
+        <div class="log-list" id="l3-log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LEVEL 4 ============ -->
+<div class="level-panel" id="panel-l4">
+  <div class="level-intro">
+    <span class="whatsnew">What's new: nothing in the formula — same one from Level 3, on a grid instead of rooms.</span>
+    <p>3×3 Frozen Lake: start top-left, hole in the middle-right, goal bottom-right. Same α, same γ, same decaying ε, same Bellman update. Flip on <strong>slippery ice</strong> to make the environment noisy the way Level 3 made the reward noisy — except this time it's the <em>move itself</em> that's unreliable, not the paycheck.</p>
+  </div>
+  <div class="layout">
+    <div class="col">
+      <div class="card">
+        <h2>Environment</h2>
+        <div class="diagram-wrap">
+          <div class="grid3" id="l4-lake"></div>
+          <div class="diagram-legend">
+            <span><span class="swatch" style="background:var(--accent)"></span> agent</span>
+            <span><span class="swatch" style="background:var(--danger)"></span> hole (terminal, r=0)</span>
+            <span><span class="swatch" style="background:var(--amber)"></span> goal (terminal, r=+1)</span>
+          </div>
+          <label class="toggle-row"><input type="checkbox" id="l4-showpolicy"> show greedy policy arrows</label>
+          <label class="toggle-row"><input type="checkbox" id="l4-slippery"> slippery ice (noisy transitions)</label>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Controls</h2>
+        <div class="btn-row">
+          <button class="primary" id="l4-step">Step</button>
+          <button id="l4-episode">Run 1 episode</button>
+          <button id="l4-reset">Reset</button>
+        </div>
+        <div class="n-row">
+          <button id="l4-runn">Run</button>
+          <input type="number" id="l4-n" value="20" min="1" max="500">
+          <span class="hint">episodes fast-forward</span>
+        </div>
+        <div class="stat-strip">
+          <div class="stat"><div class="n" id="l4-stat-ep">0</div><div class="l">episode</div></div>
+          <div class="stat"><div class="n" id="l4-stat-step">0</div><div class="l">total steps</div></div>
+          <div class="stat"><div class="n" id="l4-stat-eps">1.00</div><div class="l">ε epsilon</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Parameters</h2>
+        <div class="param-grid">
+          <div class="param"><label>α alpha</label><input type="range" id="l4-alpha" min="0.05" max="1" step="0.05" value="0.5"><span class="val" id="l4-alphaVal">0.50</span></div>
+          <div class="param"><label>γ gamma</label><input type="range" id="l4-gamma" min="0" max="0.99" step="0.01" value="0.9"><span class="val" id="l4-gammaVal">0.90</span></div>
+          <div class="param"><label>ε decay / episode</label><input type="range" id="l4-decay" min="0.5" max="0.99" step="0.01" value="0.85"><span class="val" id="l4-decayVal">0.85</span></div>
+          <div class="param"><label>ε floor</label><input type="range" id="l4-floor" min="0" max="0.3" step="0.01" value="0.05"><span class="val" id="l4-floorVal">0.05</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h2>Reward rule <span class="sub">— too many (s,a) pairs to list at 3×3</span></h2>
+        <div class="diagram-wrap" style="align-items:flex-start">
+          <div class="reward-mini-grid" id="l4-rewardgrid"></div>
+        </div>
+        <p class="qtable-note">Reward depends only on which tile you land on: +1 entering the goal, 0 everywhere else. Hole and goal both end the episode.</p>
+      </div>
+      <div class="card">
+        <h2>Q-table <span class="sub">— 9 states × 4 actions</span></h2>
+        <div class="table-scroll"><table id="l4-qtable"></table></div>
+      </div>
+      <div class="card">
+        <h2>Last update, worked out</h2>
+        <div class="formula-block"><span class="k">Q(s,a) ← Q(s,a) + α · [ r + γ·max<sub>a′</sub>Q(s′,a′) − Q(s,a) ]</span></div>
+        <div class="trace" id="l4-trace">Press <strong>Step</strong> to take the first action.</div>
+        <div class="log-list" id="l4-log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  function fmt(n) { return n.toFixed(3); }
+  function fmt1(n) { return n.toFixed(1); }
+  function fmt2(n) { return n.toFixed(2); }
+  function qColor(v, scale) {
+    var m = Math.max(0, Math.min(1, v / (scale || 100)));
+    var a = 0.06 + m * 0.55;
+    return "rgba(31, 111, 156, " + a.toFixed(2) + ")";
+  }
+
+  // ---------------- tab switching ----------------
+  var tabs = document.querySelectorAll(".tab");
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () {
+      tabs.forEach(function (x) { x.classList.remove("active"); });
+      document.querySelectorAll(".level-panel").forEach(function (p) { p.classList.remove("active"); });
+      t.classList.add("active");
+      document.getElementById(t.dataset.target).classList.add("active");
+    });
+  });
+
+  // ================= ROOM ENVIRONMENT (shared by L1/L2/L3) =================
+  var ROOM_R = {
+    0: { 4: 0 },
+    1: { 3: 0, 5: 100 },
+    2: { 3: 0 },
+    3: { 1: 0, 2: 0, 4: 0 },
+    4: { 0: 0, 3: 0, 5: 100 },
+    5: { 1: 0, 4: 0, 5: 100 }
+  };
+  var ROOM_GOAL = 5;
+  var ROOM_POS = { 0: { x: 46, y: 46 }, 4: { x: 46, y: 150 }, 3: { x: 168, y: 150 }, 2: { x: 168, y: 46 }, 1: { x: 168, y: 254 }, 5: { x: 288, y: 200 } };
+  var ROOM_EDGES = [[0, 4], [4, 3], [3, 2], [3, 1], [1, 5], [4, 5]];
+
+  function rGet(s, a) { return ROOM_R[s].hasOwnProperty(a) ? ROOM_R[s][a] : -1; }
+  function validRoomActions(s) { return Object.keys(ROOM_R[s]).map(Number); }
+  function bestValid(row, actions) { var m = -Infinity; actions.forEach(function (a) { if (row[a] > m) m = row[a]; }); return m; }
+  function argmaxRandom(row, actions) {
+    var m = bestValid(row, actions);
+    var ties = actions.filter(function (a) { return Math.abs(row[a] - m) < 1e-9; });
+    return ties[Math.floor(Math.random() * ties.length)];
+  }
+  function pureArgmax(row, actions) {
+    var m = -Infinity, best = actions[0];
+    actions.forEach(function (a) { if (row[a] > m) { m = row[a]; best = a; } });
+    return best;
+  }
+  function randomStartRoom() { return Math.floor(Math.random() * 5); } // 0..4
+
+  function freshRoomQ() { var q = {}; for (var s = 0; s <= 5; s++) q[s] = [0, 0, 0, 0, 0, 0]; return q; }
+
+  function renderRoomSVG(containerId, pos, lastUpdate, showPolicy, Q) {
+    var svg = '<svg viewBox="0 0 330 300" width="100%" height="250" role="img" aria-label="room diagram">';
+    ROOM_EDGES.forEach(function (e) {
+      var p1 = ROOM_POS[e[0]], p2 = ROOM_POS[e[1]];
+      svg += '<line x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '" stroke="var(--border)" stroke-width="3"/>';
+    });
+    if (showPolicy) {
+      [0, 1, 2, 3, 4].forEach(function (s) {
+        var actions = validRoomActions(s);
+        var hasVal = actions.some(function (a) { return Q[s][a] !== 0; });
+        if (hasVal) {
+          var best = pureArgmax(Q[s], actions);
+          var p1 = ROOM_POS[s], p2 = ROOM_POS[best];
+          svg += '<line x1="' + p1.x + '" y1="' + p1.y + '" x2="' + p2.x + '" y2="' + p2.y + '" stroke="var(--accent)" stroke-width="3" stroke-dasharray="5,4" opacity="0.85"/>';
+        }
+      });
+    }
+    if (lastUpdate && lastUpdate.s !== lastUpdate.a) {
+      var lp1 = ROOM_POS[lastUpdate.s], lp2 = ROOM_POS[lastUpdate.a];
+      svg += '<line x1="' + lp1.x + '" y1="' + lp1.y + '" x2="' + lp2.x + '" y2="' + lp2.y + '" stroke="var(--amber)" stroke-width="4"/>';
+    }
+    var out = ROOM_POS[5];
+    svg += '<ellipse cx="' + (out.x + 30) + '" cy="' + (out.y - 20) + '" rx="11" ry="8" fill="none" stroke="var(--amber)" stroke-width="2"><title>outside loops to itself</title></ellipse>';
+    [0, 1, 2, 3, 4, 5].forEach(function (s) {
+      var p = ROOM_POS[s];
+      var isCurrent = s === pos;
+      var fill = s === 5 ? "var(--amber-soft)" : "var(--surface)";
+      var stroke = s === 5 ? "var(--amber)" : "var(--border)";
+      svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="25" fill="' + fill + '" stroke="' + (isCurrent ? "var(--accent)" : stroke) + '" stroke-width="' + (isCurrent ? 4 : 2) + '"/>';
+      svg += '<text x="' + p.x + '" y="' + (p.y + 5) + '" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="700" font-size="14" fill="var(--ink)">' + (s === 5 ? "OUT" : s) + '</text>';
+    });
+    svg += "</svg>";
+    document.getElementById(containerId).innerHTML = svg;
+  }
+
+  function renderRoomRewardTable(tableId) {
+    var el = document.getElementById(tableId);
+    var head = "<tr><th>state</th>";
+    for (var a = 0; a <= 5; a++) head += "<th>→" + (a === 5 ? "OUT" : a) + "</th>";
+    head += "</tr>";
+    var body = "";
+    for (var s = 0; s <= 5; s++) {
+      body += "<tr><td class=\"state-label\">" + (s === 5 ? "OUT" : "room " + s) + "</td>";
+      for (var a2 = 0; a2 <= 5; a2++) {
+        var v = rGet(s, a2);
+        body += "<td class=\"" + (v > 0 ? "pos" : "") + "\">" + v + "</td>";
+      }
+      body += "</tr>";
+    }
+    el.innerHTML = head + body;
+  }
+
+  function renderRoomQTable(tableId, Q, lastUpdate) {
+    var el = document.getElementById(tableId);
+    var head = "<tr><th>state</th>";
+    for (var a = 0; a <= 5; a++) head += "<th>→" + (a === 5 ? "OUT" : a) + "</th>";
+    head += "</tr>";
+    var body = "";
+    for (var s = 0; s <= 5; s++) {
+      body += "<tr><td class=\"state-label\">" + (s === 5 ? "OUT" : "room " + s) + "</td>";
+      for (var a2 = 0; a2 <= 5; a2++) {
+        if (rGet(s, a2) === -1) { body += "<td class=\"terminal\">—</td>"; continue; }
+        var v = Q[s][a2];
+        var isUp = lastUpdate && lastUpdate.s === s && lastUpdate.a === a2;
+        body += "<td class=\"qcell" + (isUp ? " updated" : "") + "\" style=\"background:" + qColor(v, 100) + "\">" + fmt(v) + "</td>";
+      }
+      body += "</tr>";
+    }
+    el.innerHTML = head + body;
+  }
+
+  // ================= LEVEL 1 =================
+  (function () {
+    var Q, pos, episode, totalSteps, lastUpdate, log;
+    function reset() { Q = freshRoomQ(); pos = randomStartRoom(); episode = 0; totalSteps = 0; lastUpdate = null; log = []; render(); document.getElementById("l1-trace").innerHTML = "Press <strong>Step</strong> to take the first action."; }
+    function gamma() { return parseFloat(document.getElementById("l1-gamma").value); }
+
+    function step() {
+      var actions = validRoomActions(pos);
+      var a = actions[Math.floor(Math.random() * actions.length)];
+      var s = pos, next = a, r = rGet(s, a);
+      var maxNext = next === ROOM_GOAL ? Math.max.apply(null, validRoomActions(next).map(function (x) { return Q[next][x]; })) : Math.max.apply(null, validRoomActions(next).map(function (x) { return Q[next][x]; }));
+      var oldQ = Q[s][a];
+      var newQ = r + gamma() * maxNext;
+      Q[s][a] = newQ;
+      lastUpdate = { s: s, a: a, next: next, r: r, maxNext: maxNext, oldQ: oldQ, newQ: newQ };
+      log.unshift(lastUpdate); if (log.length > 12) log.pop();
+      pos = next; totalSteps++;
+      if (next === ROOM_GOAL) { episode++; pos = randomStartRoom(); }
+    }
+    function runEpisode() { var guard = 0; while (pos !== ROOM_GOAL && guard < 40) { var before = episode; step(); guard++; if (episode !== before) break; } render(); }
+    function runN(n) { for (var i = 0; i < n; i++) runEpisodeSilent(); render(); }
+    function runEpisodeSilent() { var guard = 0; var startEp = episode; while (episode === startEp && guard < 40) { step(); guard++; } }
+
+    function render() {
+      renderRoomSVG("l1-svg", pos, lastUpdate, false, Q);
+      renderRoomQTable("l1-qtable", Q, lastUpdate);
+      document.getElementById("l1-stat-ep").textContent = episode;
+      document.getElementById("l1-stat-step").textContent = totalSteps;
+      document.getElementById("l1-stat-room").textContent = pos;
+      if (lastUpdate) {
+        var u = lastUpdate;
+        document.getElementById("l1-trace").innerHTML =
+          "Room " + u.s + ", random door chosen → OUT/room " + (u.next === 5 ? "OUT" : u.next) + ",  reward r = <span class=\"tag-reward\">" + u.r + "</span>\n\n" +
+          "max Q(next, ·) = " + fmt(u.maxNext) + "\n\n" +
+          "Q(" + u.s + "," + (u.a === 5 ? "OUT" : u.a) + ") ← " + u.r + " + " + fmt2(gamma()) + "·" + fmt(u.maxNext) + "\n" +
+          "                  ← <span class=\"hl\">" + fmt(u.newQ) + "</span>";
+        document.getElementById("l1-log").innerHTML = log.map(function (e, i) {
+          return "<div class=\"log-entry" + (i === 0 ? " first" : "") + "\">room " + e.s + " →" + (e.a === 5 ? "OUT" : e.a) + "  r=" + e.r + "   Q: " + fmt(e.oldQ) + " → <b>" + fmt(e.newQ) + "</b></div>";
+        }).join("");
+      }
+    }
+
+    document.getElementById("l1-step").addEventListener("click", function () { step(); render(); });
+    document.getElementById("l1-episode").addEventListener("click", runEpisode);
+    document.getElementById("l1-reset").addEventListener("click", reset);
+    document.getElementById("l1-runn").addEventListener("click", function () { runN(Math.max(1, Math.min(500, parseInt(document.getElementById("l1-n").value, 10) || 1))); });
+    document.getElementById("l1-gamma").addEventListener("input", function (e) { document.getElementById("l1-gammaVal").textContent = parseFloat(e.target.value).toFixed(2); });
+
+    renderRoomRewardTable("l1-rtable");
+    reset();
+  })();
+
+  // ================= LEVEL 2 =================
+  (function () {
+    var Q, pos, episode, totalSteps, epsilon, lastUpdate, log;
+    function params() { return { gamma: parseFloat(document.getElementById("l2-gamma").value), decay: parseFloat(document.getElementById("l2-decay").value), floor: parseFloat(document.getElementById("l2-floor").value) }; }
+    function reset() { Q = freshRoomQ(); pos = randomStartRoom(); episode = 0; totalSteps = 0; epsilon = 1.0; lastUpdate = null; log = []; render(); document.getElementById("l2-trace").innerHTML = "Press <strong>Step</strong> to take the first action."; }
+
+    function step() {
+      var p = params();
+      var actions = validRoomActions(pos);
+      var explore = Math.random() < epsilon;
+      var a = explore ? actions[Math.floor(Math.random() * actions.length)] : argmaxRandom(Q[pos], actions);
+      var s = pos, next = a, r = rGet(s, a);
+      var maxNext = Math.max.apply(null, validRoomActions(next).map(function (x) { return Q[next][x]; }));
+      var oldQ = Q[s][a];
+      var target = r + p.gamma * maxNext;
+      var newQ = oldQ + 1 * (target - oldQ);
+      Q[s][a] = newQ;
+      lastUpdate = { s: s, a: a, next: next, r: r, maxNext: maxNext, oldQ: oldQ, newQ: newQ, explore: explore, gamma: p.gamma };
+      log.unshift(lastUpdate); if (log.length > 12) log.pop();
+      pos = next; totalSteps++;
+      if (next === ROOM_GOAL) { episode++; epsilon = Math.max(p.floor, epsilon * p.decay); pos = randomStartRoom(); }
+    }
+    function runEpisode() { var startEp = episode, guard = 0; while (episode === startEp && guard < 40) { step(); guard++; } render(); }
+    function runN(n) { for (var i = 0; i < n; i++) { var startEp = episode, guard = 0; while (episode === startEp && guard < 40) { step(); guard++; } } render(); }
+
+    function render() {
+      var showPolicy = document.getElementById("l2-showpolicy").checked;
+      renderRoomSVG("l2-svg", pos, lastUpdate, showPolicy, Q);
+      renderRoomQTable("l2-qtable", Q, lastUpdate);
+      document.getElementById("l2-stat-ep").textContent = episode;
+      document.getElementById("l2-stat-step").textContent = totalSteps;
+      document.getElementById("l2-stat-eps").textContent = epsilon.toFixed(2);
+      if (lastUpdate) {
+        var u = lastUpdate;
+        var tag = u.explore ? '<span class="pill explore">EXPLORE (random)</span>' : '<span class="pill exploit">EXPLOIT (greedy)</span>';
+        document.getElementById("l2-trace").innerHTML =
+          "Room " + u.s + "  " + tag + "  → door to " + (u.next === 5 ? "OUT" : u.next) + ",  reward r = <span class=\"tag-reward\">" + u.r + "</span>\n\n" +
+          "max Q(next, ·) = " + fmt(u.maxNext) + "\n\n" +
+          "Q(" + u.s + "," + (u.a === 5 ? "OUT" : u.a) + ") ← " + fmt(u.oldQ) + " + 1·[ " + u.r + " + " + fmt2(u.gamma) + "·" + fmt(u.maxNext) + " − " + fmt(u.oldQ) + " ]\n" +
+          "                  ← <span class=\"hl\">" + fmt(u.newQ) + "</span>";
+        document.getElementById("l2-log").innerHTML = log.map(function (e, i) {
+          return "<div class=\"log-entry" + (i === 0 ? " first" : "") + "\">room " + e.s + " →" + (e.a === 5 ? "OUT" : e.a) + "  r=" + e.r + "   Q: " + fmt(e.oldQ) + " → <b>" + fmt(e.newQ) + "</b>  " + (e.explore ? '<span class="pill explore">explore</span>' : '<span class="pill exploit">exploit</span>') + "</div>";
+        }).join("");
+      }
+    }
+
+    document.getElementById("l2-step").addEventListener("click", function () { step(); render(); });
+    document.getElementById("l2-episode").addEventListener("click", runEpisode);
+    document.getElementById("l2-reset").addEventListener("click", reset);
+    document.getElementById("l2-runn").addEventListener("click", function () { runN(Math.max(1, Math.min(500, parseInt(document.getElementById("l2-n").value, 10) || 1))); });
+    document.getElementById("l2-showpolicy").addEventListener("change", render);
+    ["l2-gamma", "l2-decay", "l2-floor"].forEach(function (id) {
+      document.getElementById(id).addEventListener("input", function (e) { document.getElementById(id + "Val").textContent = parseFloat(e.target.value).toFixed(2); });
+    });
+
+    renderRoomRewardTable("l2-rtable");
+    reset();
+  })();
+
+  // ================= LEVEL 3 =================
+  (function () {
+    var Qa, Qb, pos, episode, totalSteps, epsilon, lastUpdate, log, goalLog;
+    function params() { return { alpha: parseFloat(document.getElementById("l3-alpha").value), gamma: parseFloat(document.getElementById("l3-gamma").value), decay: parseFloat(document.getElementById("l3-decay").value), noise: parseFloat(document.getElementById("l3-noise").value) }; }
+    function reset() {
+      Qa = freshRoomQ(); Qb = freshRoomQ(); pos = randomStartRoom(); episode = 0; totalSteps = 0; epsilon = 1.0; lastUpdate = null; log = []; goalLog = [];
+      render(); document.getElementById("l3-trace").innerHTML = "Press <strong>Step</strong> to take the first action.";
+      document.getElementById("l3-goallog").innerHTML = "<tr><th>step</th><th>noisy reward</th><th>ref α=1 → Q</th><th>yours → Q</th></tr>";
+    }
+
+    function step() {
+      var p = params();
+      var actions = validRoomActions(pos);
+      var explore = Math.random() < epsilon;
+      var a = explore ? actions[Math.floor(Math.random() * actions.length)] : argmaxRandom(Qb[pos], actions);
+      var s = pos, next = a;
+      var rawR = rGet(s, a);
+      var isGoalPayout = (a === ROOM_GOAL);
+      var r = isGoalPayout ? (100 + (Math.random() * 2 - 1) * p.noise) : rawR;
+
+      var maxA = Math.max.apply(null, validRoomActions(next).map(function (x) { return Qa[next][x]; }));
+      var maxB = Math.max.apply(null, validRoomActions(next).map(function (x) { return Qb[next][x]; }));
+      var oldA = Qa[s][a], oldB = Qb[s][a];
+      var targetA = r + p.gamma * maxA, targetB = r + p.gamma * maxB;
+      var newA = oldA + 1.0 * (targetA - oldA);
+      var newB = oldB + p.alpha * (targetB - oldB);
+      Qa[s][a] = newA; Qb[s][a] = newB;
+
+      lastUpdate = { s: s, a: a, next: next, r: r, maxA: maxA, maxB: maxB, oldA: oldA, oldB: oldB, newA: newA, newB: newB, explore: explore, gamma: p.gamma, alpha: p.alpha, isGoalPayout: isGoalPayout };
+      log.unshift(lastUpdate); if (log.length > 12) log.pop();
+      if (isGoalPayout) { goalLog.unshift({ step: totalSteps + 1, r: r, newA: newA, newB: newB }); if (goalLog.length > 8) goalLog.pop(); }
+
+      pos = next; totalSteps++;
+      if (next === ROOM_GOAL) { episode++; epsilon = Math.max(0.05, epsilon * p.decay); pos = randomStartRoom(); }
+    }
+    function runEpisode() { var startEp = episode, guard = 0; while (episode === startEp && guard < 40) { step(); guard++; } render(); }
+    function runN(n) { for (var i = 0; i < n; i++) { var startEp = episode, guard = 0; while (episode === startEp && guard < 40) { step(); guard++; } } render(); }
+
+    function render() {
+      renderRoomSVG("l3-svg", pos, lastUpdate, false, Qb);
+      renderRoomQTable("l3-qtable-a", Qa, lastUpdate ? { s: lastUpdate.s, a: lastUpdate.a } : null);
+      renderRoomQTable("l3-qtable-b", Qb, lastUpdate ? { s: lastUpdate.s, a: lastUpdate.a } : null);
+      document.getElementById("l3-stat-ep").textContent = episode;
+      document.getElementById("l3-stat-step").textContent = totalSteps;
+      document.getElementById("l3-stat-eps").textContent = epsilon.toFixed(2);
+      document.getElementById("l3-goallog").innerHTML = "<tr><th>step</th><th>noisy reward</th><th>ref α=1 → Q</th><th>yours → Q</th></tr>" +
+        goalLog.map(function (g) { return "<tr><td>" + g.step + "</td><td class=\"pos\">" + fmt1(g.r) + "</td><td>" + fmt(g.newA) + "</td><td>" + fmt(g.newB) + "</td></tr>"; }).join("");
+      if (lastUpdate) {
+        var u = lastUpdate;
+        var tag = u.explore ? '<span class="pill explore">EXPLORE</span>' : '<span class="pill exploit">EXPLOIT</span>';
+        document.getElementById("l3-trace").innerHTML =
+          "Room " + u.s + "  " + tag + "  → door to " + (u.next === 5 ? "OUT" : u.next) + (u.isGoalPayout ? '  <span class="tag-reward">noisy payout!</span>' : "") + "\n" +
+          "reward received r = <span class=\"tag-reward\">" + fmt1(u.r) + "</span>\n\n" +
+          '<span class="pill ref">reference α=1</span>  Q ← ' + fmt(u.oldA) + " + 1.00·[ " + fmt1(u.r) + " + " + fmt2(u.gamma) + "·" + fmt(u.maxA) + " − " + fmt(u.oldA) + " ] ← <span class=\"hl-ref\">" + fmt(u.newA) + "</span>\n" +
+          '<span class="pill mine">yours α=' + fmt2(u.alpha) + '</span>  Q ← ' + fmt(u.oldB) + " + " + fmt2(u.alpha) + "·[ " + fmt1(u.r) + " + " + fmt2(u.gamma) + "·" + fmt(u.maxB) + " − " + fmt(u.oldB) + " ] ← <span class=\"hl\">" + fmt(u.newB) + "</span>";
+        document.getElementById("l3-log").innerHTML = log.map(function (e, i) {
+          return "<div class=\"log-entry" + (i === 0 ? " first" : "") + "\">room " + e.s + " →" + (e.a === 5 ? "OUT" : e.a) + "  r=" + fmt1(e.r) + "   ref:" + fmt(e.newA) + "  yours:<b>" + fmt(e.newB) + "</b></div>";
+        }).join("");
+      }
+    }
+
+    document.getElementById("l3-step").addEventListener("click", function () { step(); render(); });
+    document.getElementById("l3-episode").addEventListener("click", runEpisode);
+    document.getElementById("l3-reset").addEventListener("click", reset);
+    document.getElementById("l3-runn").addEventListener("click", function () { runN(Math.max(1, Math.min(500, parseInt(document.getElementById("l3-n").value, 10) || 1))); });
+    ["l3-alpha", "l3-gamma", "l3-decay"].forEach(function (id) {
+      document.getElementById(id).addEventListener("input", function (e) { document.getElementById(id + "Val").textContent = parseFloat(e.target.value).toFixed(2); });
+    });
+    document.getElementById("l3-noise").addEventListener("input", function (e) { document.getElementById("l3-noiseVal").textContent = e.target.value; });
+
+    reset();
+  })();
+
+  // ================= LEVEL 4 : FROZEN LAKE 3x3 =================
+  (function () {
+    var START = 0, HOLE = 5, GOAL = 8;
+    var ACTION_NAMES = ["LEFT", "DOWN", "RIGHT", "UP"];
+    var TERMINALS = {}; TERMINALS[HOLE] = true; TERMINALS[GOAL] = true;
+    function rc(s) { return { r: Math.floor(s / 3), c: s % 3 }; }
+    function idx(r, c) { return r * 3 + c; }
+    function moveDir(s, dir) {
+      var p = rc(s), r = p.r, c = p.c;
+      if (dir === 0) c = Math.max(0, c - 1);
+      else if (dir === 1) r = Math.min(2, r + 1);
+      else if (dir === 2) c = Math.min(2, c + 1);
+      else if (dir === 3) r = Math.max(0, r - 1);
+      return idx(r, c);
+    }
+    function perpendiculars(dir) { return (dir === 0 || dir === 2) ? [1, 3] : [0, 2]; }
+    function applyAction(s, dir, slippery) {
+      var actualDir = dir;
+      if (slippery) {
+        var roll = Math.random();
+        if (roll < 0.8) actualDir = dir;
+        else { var perp = perpendiculars(dir); actualDir = roll < 0.9 ? perp[0] : perp[1]; }
+      }
+      return moveDir(s, actualDir);
+    }
+    function reward(nextState) { return nextState === GOAL ? 1 : 0; }
+    function freshQ9() { var q = {}; for (var s = 0; s < 9; s++) q[s] = [0, 0, 0, 0]; return q; }
+    function argmaxRandom4(row) {
+      var m = Math.max.apply(null, row);
+      var ties = []; for (var i = 0; i < 4; i++) if (Math.abs(row[i] - m) < 1e-9) ties.push(i);
+      return ties[Math.floor(Math.random() * ties.length)];
+    }
+    function pureArgmax4(row) { var m = -Infinity, best = 0; for (var i = 0; i < 4; i++) if (row[i] > m) { m = row[i]; best = i; } return best; }
+
+    var Q, pos, episode, totalSteps, stepInEp, epsilon, lastUpdate, log;
+    function params() { return { alpha: parseFloat(document.getElementById("l4-alpha").value), gamma: parseFloat(document.getElementById("l4-gamma").value), decay: parseFloat(document.getElementById("l4-decay").value), floor: parseFloat(document.getElementById("l4-floor").value), slippery: document.getElementById("l4-slippery").checked }; }
+    function reset() { Q = freshQ9(); pos = START; episode = 0; totalSteps = 0; stepInEp = 0; epsilon = 1.0; lastUpdate = null; log = []; render(); document.getElementById("l4-trace").innerHTML = "Press <strong>Step</strong> to take the first action."; }
+
+    function step() {
+      if (TERMINALS[pos]) { finishEpisode(); return; }
+      var p = params();
+      var explore = Math.random() < epsilon;
+      var a = explore ? Math.floor(Math.random() * 4) : argmaxRandom4(Q[pos]);
+      var s = pos;
+      var sNext = applyAction(s, a, p.slippery);
+      var r = reward(sNext);
+      var maxNext = TERMINALS[sNext] ? 0 : Math.max.apply(null, Q[sNext]);
+      var oldQ = Q[s][a];
+      var target = r + p.gamma * maxNext;
+      var newQ = oldQ + p.alpha * (target - oldQ);
+      Q[s][a] = newQ;
+      lastUpdate = { s: s, a: a, sNext: sNext, r: r, maxNext: maxNext, oldQ: oldQ, newQ: newQ, explore: explore, gamma: p.gamma, alpha: p.alpha, terminalNext: !!TERMINALS[sNext], slipped: p.slippery && sNext !== moveDir(s, a) };
+      log.unshift(lastUpdate); if (log.length > 12) log.pop();
+      pos = sNext; stepInEp++; totalSteps++;
+      if (TERMINALS[sNext] || stepInEp >= 30) finishEpisode();
+    }
+    function finishEpisode() { var p = params(); episode++; epsilon = Math.max(p.floor, epsilon * p.decay); pos = START; stepInEp = 0; }
+    function runEpisode() { var guard = 0; while (!TERMINALS[pos] && guard < 30) { step(); guard++; } if (!TERMINALS[pos]) finishEpisode(); render(); }
+    function runN(n) { for (var i = 0; i < n; i++) { var guard = 0; while (!TERMINALS[pos] && guard < 30) { step(); guard++; } if (!TERMINALS[pos]) finishEpisode(); } render(); }
+
+    function renderLake() {
+      var el = document.getElementById("l4-lake");
+      var showPolicy = document.getElementById("l4-showpolicy").checked;
+      var glyph = ["←", "↓", "→", "↑"];
+      var labelMap = {}; labelMap[START] = "S"; labelMap[HOLE] = "H"; labelMap[GOAL] = "G";
+      el.innerHTML = "";
+      for (var s = 0; s < 9; s++) {
+        var div = document.createElement("div");
+        div.className = "cell3" + (s === HOLE ? " hole" : "") + (s === GOAL ? " goal" : "") + (s === START ? " start" : "") + (s === pos ? " current" : "");
+        var tag = document.createElement("div"); tag.className = "tag"; tag.textContent = labelMap[s] || "F"; div.appendChild(tag);
+        var ix = document.createElement("div"); ix.className = "idx"; ix.textContent = "s" + s; div.appendChild(ix);
+        if (s === pos) { var agent = document.createElement("div"); agent.className = "agent"; agent.textContent = "●"; div.appendChild(agent); }
+        else if (showPolicy && !TERMINALS[s] && Q[s].some(function (v) { return v !== 0; })) {
+          var arrow = document.createElement("div"); arrow.className = "policy-arrow"; arrow.textContent = glyph[pureArgmax4(Q[s])]; div.appendChild(arrow);
+        }
+        el.appendChild(div);
+      }
+    }
+    function renderRewardGrid() {
+      var el = document.getElementById("l4-rewardgrid");
+      var labelMap = {}; labelMap[START] = "S"; labelMap[HOLE] = "H"; labelMap[GOAL] = "G";
+      el.innerHTML = "";
+      for (var s = 0; s < 9; s++) {
+        var div = document.createElement("div");
+        div.className = "rcell" + (s === HOLE ? " hole" : "") + (s === GOAL ? " goal" : "");
+        var tag = document.createElement("div"); tag.style.fontSize = "0.6rem"; tag.style.color = "var(--ink-faint)"; tag.textContent = (labelMap[s] || "F") + " · s" + s; div.appendChild(tag);
+        var rv = document.createElement("div"); rv.className = "rv"; rv.textContent = "r=" + (s === GOAL ? "+1" : "0"); div.appendChild(rv);
+        el.appendChild(div);
+      }
+    }
+    function renderQTable() {
+      var el = document.getElementById("l4-qtable");
+      var head = "<tr><th>state</th><th>LEFT</th><th>DOWN</th><th>RIGHT</th><th>UP</th></tr>";
+      var labelMap = {}; labelMap[START] = "S"; labelMap[HOLE] = "H"; labelMap[GOAL] = "G";
+      var body = "";
+      for (var s = 0; s < 9; s++) {
+        body += "<tr><td class=\"state-label\">s" + s + " (" + (labelMap[s] || "F") + ")</td>";
+        for (var a = 0; a < 4; a++) {
+          if (TERMINALS[s]) { body += "<td class=\"terminal\">—</td>"; continue; }
+          var v = Q[s][a];
+          var isUp = lastUpdate && lastUpdate.s === s && lastUpdate.a === a;
+          body += "<td class=\"qcell" + (isUp ? " updated" : "") + "\" style=\"background:" + qColor(v, 1) + "\">" + fmt(v) + "</td>";
+        }
+        body += "</tr>";
+      }
+      el.innerHTML = head + body;
+    }
+    function render() {
+      renderLake(); renderQTable();
+      document.getElementById("l4-stat-ep").textContent = episode;
+      document.getElementById("l4-stat-step").textContent = totalSteps;
+      document.getElementById("l4-stat-eps").textContent = epsilon.toFixed(2);
+      if (lastUpdate) {
+        var u = lastUpdate;
+        var tag = u.explore ? '<span class="pill explore">EXPLORE</span>' : '<span class="pill exploit">EXPLOIT</span>';
+        var maxStr = u.terminalNext ? "0.000 (terminal)" : fmt(u.maxNext);
+        document.getElementById("l4-trace").innerHTML =
+          "State s" + u.s + ", action " + ACTION_NAMES[u.a] + "  " + tag + (u.slipped ? '  <span class="tag-reward">slipped!</span>' : "") + "\n" +
+          "→ next s" + u.sNext + ",  reward r = <span class=\"tag-reward\">" + u.r + "</span>\n\n" +
+          "max Q(s′,·) = " + maxStr + "\n\n" +
+          "Q(s" + u.s + "," + ACTION_NAMES[u.a] + ") ← " + fmt(u.oldQ) + " + " + fmt2(u.alpha) + "·[ " + u.r + " + " + fmt2(u.gamma) + "·" + maxStr.split(" ")[0] + " − " + fmt(u.oldQ) + " ]\n" +
+          "                  ← <span class=\"hl\">" + fmt(u.newQ) + "</span>";
+        document.getElementById("l4-log").innerHTML = log.map(function (e, i) {
+          return "<div class=\"log-entry" + (i === 0 ? " first" : "") + "\">s" + e.s + " " + ACTION_NAMES[e.a] + " → s" + e.sNext + "  r=" + e.r + "   Q: " + fmt(e.oldQ) + " → <b>" + fmt(e.newQ) + "</b>  " + (e.explore ? '<span class="pill explore">explore</span>' : '<span class="pill exploit">exploit</span>') + "</div>";
+        }).join("");
+      }
+    }
+
+    document.getElementById("l4-step").addEventListener("click", function () { step(); render(); });
+    document.getElementById("l4-episode").addEventListener("click", runEpisode);
+    document.getElementById("l4-reset").addEventListener("click", reset);
+    document.getElementById("l4-runn").addEventListener("click", function () { runN(Math.max(1, Math.min(500, parseInt(document.getElementById("l4-n").value, 10) || 1))); });
+    document.getElementById("l4-showpolicy").addEventListener("change", renderLake);
+    document.getElementById("l4-slippery").addEventListener("change", function () {});
+    ["l4-alpha", "l4-gamma", "l4-decay", "l4-floor"].forEach(function (id) {
+      document.getElementById(id).addEventListener("input", function (e) { document.getElementById(id + "Val").textContent = parseFloat(e.target.value).toFixed(2); });
+    });
+
+    renderRewardGrid();
+    reset();
+  })();
+
+})();
+</script>
