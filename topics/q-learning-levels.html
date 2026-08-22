@@ -70,9 +70,12 @@
 
   .tabbar {
     max-width: 1180px; margin: 0 auto 1.75rem;
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.7rem;
   }
   @media (max-width: 720px) { .tabbar { grid-template-columns: repeat(2, 1fr); } }
+  .tab.revision { border-color: var(--amber); }
+  .tab.revision.active { background: var(--amber-soft); border-color: var(--amber); }
+  .tab.revision.active .tnum { color: var(--amber); }
   .tab {
     font-family: 'Sora', sans-serif;
     text-align: left; cursor: pointer;
@@ -219,6 +222,41 @@
   ::-webkit-scrollbar { height: 8px; width: 8px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
 
+  /* ---- revision tab ---- */
+  .rev-section { margin-bottom: 2.2rem; }
+  .rev-section:last-child { margin-bottom: 0; }
+  .section-head { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem; }
+  .section-head h2 { font-size: clamp(1.15rem, 2vw, 1.4rem); font-weight: 700; color: var(--ink); text-transform: none; letter-spacing: 0; }
+  .section-head p { margin: 0; color: var(--ink-soft); font-size: 0.92rem; max-width: 72ch; }
+  .rev-divider { border: none; border-top: 1.5px dashed var(--border); margin: 2.2rem 0; }
+
+  .fact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; margin-bottom: 1.3rem; }
+  .fact-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 0.9rem; }
+  .fact-card .fk { font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; margin-bottom: 0.25rem; }
+  .fact-card .fv { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; color: var(--ink); line-height: 1.45; }
+
+  .term-list { display: flex; flex-direction: column; gap: 0.55rem; margin: 1rem 0 1.4rem; }
+  .term-row { display: grid; grid-template-columns: 120px 1fr; gap: 0.9rem; align-items: baseline; }
+  @media (max-width: 640px) { .term-row { grid-template-columns: 1fr; gap: 0.15rem; } }
+  .term-row .tsym { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent-strong); font-size: 0.95rem; }
+  .term-row .tdef { color: var(--ink-soft); font-size: 0.9rem; }
+
+  .knob-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  @media (max-width: 760px) { .knob-grid { grid-template-columns: 1fr; } }
+  .knob-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.95rem 1.05rem; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 0.6rem; }
+  .knob-name { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--ink); }
+  .knob-desc { font-size: 0.82rem; color: var(--ink-soft); }
+  .knob-rows { display: flex; flex-direction: column; gap: 0.5rem; }
+  .knob-row { display: grid; grid-template-columns: 84px 1fr; gap: 0.7rem; align-items: start; border-top: 1px dashed var(--border); padding-top: 0.5rem; }
+  .knob-row:first-child { border-top: none; padding-top: 0; }
+  .knob-row .kdir { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.76rem; padding: 0.15rem 0.4rem; border-radius: 6px; text-align: center; height: fit-content; }
+  .knob-row .kdir.up { background: var(--accent-soft); color: var(--accent-strong); }
+  .knob-row .kdir.down { background: var(--ref-soft); color: var(--ref); }
+  .knob-row .keff { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
+
+  .compare-table td, .compare-table th { text-align: left; }
+  .compare-table td:first-child, .compare-table th:first-child { color: var(--ink-faint); font-weight: 600; }
+
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
@@ -233,6 +271,7 @@
   <button class="tab" data-target="panel-l2"><span class="tnum">Level 2</span><span class="tlabel">+ ε epsilon-greedy</span></button>
   <button class="tab" data-target="panel-l3"><span class="tnum">Level 3</span><span class="tlabel">+ α learning rate (noisy)</span></button>
   <button class="tab" data-target="panel-l4"><span class="tnum">Level 4</span><span class="tlabel">Frozen Lake 3×3</span></button>
+  <button class="tab revision" data-target="panel-rev"><span class="tnum">Revision</span><span class="tlabel">Summary & cheat-sheet</span></button>
 </div>
 
 <!-- ============ LEVEL 1 ============ -->
@@ -505,6 +544,174 @@
         <div class="trace" id="l4-trace">Press <strong>Step</strong> to take the first action.</div>
         <div class="log-list" id="l4-log"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ REVISION / SUMMARY ============ -->
+<div class="level-panel" id="panel-rev">
+  <div class="level-intro">
+    <span class="whatsnew">Reference page — nothing to click, just the whole course on one page.</span>
+    <p>Come back here any time you want to refresh the concepts without re-running the simulations. The shared formula first, then the Escape Room and Frozen Lake kept in their own separate blocks so nothing gets mixed together.</p>
+  </div>
+
+  <div class="card rev-section">
+    <div class="section-head">
+      <span class="eyebrow">Shared foundation</span>
+      <h2>The one formula behind every level</h2>
+      <p>Every table you touched in this whole page — rooms or lake — is being updated by exactly this one line. Nothing else changes between levels except which pieces of it are "switched on."</p>
+    </div>
+    <div class="formula-block" style="font-size:0.95rem"><span class="k">Q(s,a) ← Q(s,a) + α · [ r + γ · max<sub>a′</sub> Q(s′,a′) − Q(s,a) ]</span></div>
+    <div class="term-list">
+      <div class="term-row"><span class="tsym">s</span><span class="tdef">the state you're currently in — a room, or a grid tile</span></div>
+      <div class="term-row"><span class="tsym">a</span><span class="tdef">the action you take from there — which door, or which direction</span></div>
+      <div class="term-row"><span class="tsym">r</span><span class="tdef">the reward you actually received for that one step (comes from the static reward table/rule — never learned, never changes)</span></div>
+      <div class="term-row"><span class="tsym">s′</span><span class="tdef">the state you land in afterward</span></div>
+      <div class="term-row"><span class="tsym">max<sub>a′</sub> Q(s′,a′)</span><span class="tdef">the best value your table currently believes is reachable from s′ — this is how value from the goal "reaches backward" into earlier states, one episode at a time</span></div>
+      <div class="term-row"><span class="tsym">γ (gamma)</span><span class="tdef">discount factor — how much future reward is worth compared to reward right now. Fixed for the whole run, never decays on its own</span></div>
+      <div class="term-row"><span class="tsym">α (alpha)</span><span class="tdef">learning rate — how much of the newest evidence you accept vs. how much of your old belief you keep. α=1 means "fully replace"; smaller α means "blend a little"</span></div>
+      <div class="term-row"><span class="tsym">ε (epsilon)</span><span class="tdef">exploration rate — the one thing here NOT inside the formula. It only decides which action you try in the first place: random (explore) below ε, best-known (exploit) above it. Decays after every episode</span></div>
+    </div>
+    <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:0.3rem"><strong>Why "add, then subtract the same value"?</strong> The bracket <code>[r + γ·maxQ − Q(s,a)]</code> is the <em>TD-error</em> — the gap between what you just observed (evidence) and what you currently believe (Q(s,a)). Multiplying that gap by α and adding it back is exactly a weighted average: <code>new = (1−α)·old + α·evidence</code>. Set α=1 and it collapses to a full overwrite — which is the plain <code>Q ← R + γ·maxQ</code> formula from Level 1.</p>
+  </div>
+
+  <hr class="rev-divider">
+
+  <div class="rev-section">
+    <div class="section-head">
+      <span class="eyebrow">Section A</span>
+      <h2>Escape Room — 5 rooms + Outside</h2>
+      <p>Levels 1–3 all run on this exact same map. Nothing about the rooms or doors ever changes — only how the agent picks actions (ε) and how much it trusts new evidence (α) change, level by level.</p>
+    </div>
+
+    <div class="fact-grid">
+      <div class="fact-card"><div class="fk">States</div><div class="fv">6 total — rooms 0–4, plus room 5 = "Outside" (the goal, terminal)</div></div>
+      <div class="fact-card"><div class="fk">Action means</div><div class="fv">"walk to room N" — the action number IS the target room</div></div>
+      <div class="fact-card"><div class="fk">Reward rule R(s,a)</div><div class="fv">−1 = no door · 0 = ordinary door · 100 = door leads Outside</div></div>
+      <div class="fact-card"><div class="fk">Episode ends</div><div class="fv">the instant you step into room 5 (safety cap: 40 steps)</div></div>
+    </div>
+
+    <div class="table-scroll" style="margin-bottom:1.3rem">
+      <table class="compare-table">
+        <tr><th>Level</th><th>Action choice</th><th>Update formula</th><th>What it teaches</th></tr>
+        <tr><td>1</td><td>always uniformly random</td><td>Q ← R + γ·maxQ (α=1 implicit)</td><td>the bare Bellman backup, value crawling backward from the goal one episode at a time</td></tr>
+        <tr><td>2</td><td>ε-greedy, ε decays every episode</td><td>same formula, α still = 1, written with the subtraction spelled out</td><td>explore-vs-exploit — separate from the update math entirely</td></tr>
+        <tr><td>3</td><td>ε-greedy (unchanged)</td><td>real α blending, on a noisy Outside payout</td><td>why you'd ever want α &lt; 1 — averaging away noise</td></tr>
+      </table>
+    </div>
+
+    <div class="knob-grid">
+      <div class="knob-card">
+        <div class="knob-name">γ — gamma (discount factor)</div>
+        <div class="knob-desc">How far the +100 "Outside" reward is allowed to reach back into earlier rooms.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">↑ up (→0.99)</span><span class="keff">Reward barely shrinks per hop, so it propagates almost fully across the whole graph — even distant rooms end up with sizeable Q-values, and the agent happily takes long routes since they're barely "penalized" for length.</span></div>
+          <div class="knob-row"><span class="kdir down">↓ down (→0)</span><span class="keff">Only rooms with a <em>direct</em> door to Outside ever get a nonzero value. Everything else stays at 0 forever — the agent can't learn multi-step paths at all, since a future reward is worth almost nothing today.</span></div>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="knob-name">α — alpha (learning rate, Level 3 only)</div>
+        <div class="knob-desc">How much of each noisy Outside payout gets absorbed into the Q-value.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">↑ up (→1)</span><span class="keff">Learns "fast" in the sense of reacting instantly, but with noise&gt;0 it never settles — the Q-value keeps snapping to whatever random payout just arrived, forever.</span></div>
+          <div class="knob-row"><span class="kdir down">↓ down (→0.05)</span><span class="keff">Each single noisy sample barely moves the value, so it takes many more episodes to get there — but it ends up parked in a tight, stable band near the true average payout.</span></div>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="knob-name">ε decay rate (Levels 2–3)</div>
+        <div class="knob-desc">How quickly random wandering gives way to following the best-known door.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">↑ up (→0.99, slow decay)</span><span class="keff">Keeps exploring for longer, so it's more likely to have actually compared every route before settling — but the "clean best path" behavior takes longer to show up.</span></div>
+          <div class="knob-row"><span class="kdir down">↓ down (→0.5, fast decay)</span><span class="keff">Locks onto a path quickly — risky if that path only looked good because of a lucky early episode; it may never revisit and discover a better alternative.</span></div>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="knob-name">ε floor</div>
+        <div class="knob-desc">The minimum random-move probability that never goes away.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">↑ up</span><span class="keff">Even a fully "trained" agent keeps taking a chunk of random detours forever — the policy display looks a little noisy/inconsistent even after convergence.</span></div>
+          <div class="knob-row"><span class="kdir down">↓ down (→0)</span><span class="keff">Once learned, the policy becomes perfectly repeatable — but with zero ongoing exploration, it can never adapt if anything about the map changed.</span></div>
+        </div>
+      </div>
+      <div class="knob-card" style="grid-column: 1 / -1">
+        <div class="knob-name">Noise amplitude (Level 3 only)</div>
+        <div class="knob-desc">How far the actual Outside payout can swing away from the nominal 100.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">↑ up</span><span class="keff">Makes the α=1 reference agent's jitter much more obvious — a great side-by-side demo of exactly why you'd want a smaller α.</span></div>
+          <div class="knob-row"><span class="kdir down">↓ down (→0)</span><span class="keff">Removes the noise entirely — at 0, the two agents behave almost identically, same as Level 2, since there's nothing left to smooth.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rev-divider">
+
+  <div class="rev-section">
+    <div class="section-head">
+      <span class="eyebrow">Section B</span>
+      <h2>Frozen Lake — 3×3 grid</h2>
+      <p>Level 4 only. Exact same formula and exact same knobs as the Escape Room — just relocated onto a grid, with "slippery ice" standing in for Level 3's noise, applied to movement instead of reward.</p>
+    </div>
+
+    <div class="fact-grid">
+      <div class="fact-card"><div class="fk">States</div><div class="fv">9 tiles, row-major: S=0 (start), H=5 (hole), G=8 (goal) — both H and G terminal</div></div>
+      <div class="fact-card"><div class="fk">Action means</div><div class="fv">move LEFT / DOWN / RIGHT / UP — walls just bounce you back to the same tile</div></div>
+      <div class="fact-card"><div class="fk">Reward rule</div><div class="fv">+1 for entering the Goal tile, 0 for everything else — depends only on the tile you land on, not the action</div></div>
+      <div class="fact-card"><div class="fk">Episode ends</div><div class="fv">landing on Hole or Goal (safety cap: 30 steps — not a real environment rule, just a timeout)</div></div>
+    </div>
+
+    <div class="knob-grid">
+      <div class="knob-card">
+        <div class="knob-name">γ — gamma (discount factor)</div>
+        <div class="knob-desc">Same job as in the rooms: how far the +1 goal reward reaches back across the grid.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">↑ up (→0.99)</span><span class="keff">The goal's value spreads almost undiminished across the whole 3×3 grid, so the agent can plan a full multi-step route confidently from the very start tile.</span></div>
+          <div class="knob-row"><span class="kdir down">↓ down (→0)</span><span class="keff">The agent is effectively blind to the goal until it's one tile away — it can't learn a real route, only "what to do once I'm already right next to it."</span></div>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="knob-name">α — alpha (learning rate)</div>
+        <div class="knob-desc">Identical trade-off to Level 3 — just tested against noisy movement instead of noisy reward.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">↑ up</span><span class="keff">With slippery OFF, converges fast with no downside (transitions are deterministic, so there's no noise to protect against). With slippery ON, learns fast but the table keeps visibly jittering in a wide band, forever.</span></div>
+          <div class="knob-row"><span class="kdir down">↓ down</span><span class="keff">Slower to learn either way, but with slippery ON it settles into a much narrower, steadier band — same lesson as Level 3, now visible across the whole table instead of one cell.</span></div>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="knob-name">Slippery ice (on/off)</div>
+        <div class="knob-desc">80% chance the move goes where intended, 10%/10% it slides to one of the two perpendicular directions instead.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">On</span><span class="keff">The same (tile, direction) pair can now land you in one of three different next tiles. The bootstrapped target becomes a random variable, so with a constant α the Q-table never perfectly freezes — it settles into a tight oscillating band instead of a fixed number. Models a real, unreliable action — like actual ice.</span></div>
+          <div class="knob-row"><span class="kdir down">Off</span><span class="keff">Transitions are fully deterministic again — every visit to (tile, direction) always produces the same outcome, so the Q-table genuinely converges and stops changing.</span></div>
+        </div>
+      </div>
+      <div class="knob-card">
+        <div class="knob-name">ε decay / floor</div>
+        <div class="knob-desc">Same idea as the rooms, but the stakes are higher here — a bad early lock-in can mean a route that skirts the hole.</div>
+        <div class="knob-rows">
+          <div class="knob-row"><span class="kdir up">Slow decay / high floor</span><span class="keff">More thorough search of the grid before committing — important with slippery ice on, since a route can only be judged "safe" after it's been tried enough times to see how often it slips into the hole.</span></div>
+          <div class="knob-row"><span class="kdir down">Fast decay / low floor</span><span class="keff">Commits to a route quickly. With slippery ice on, this risks locking onto a route that hugs the hole dangerously, simply because it hadn't been unlucky yet often enough to learn otherwise.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rev-divider">
+
+  <div class="rev-section">
+    <div class="section-head">
+      <span class="eyebrow">Side by side</span>
+      <h2>Same math, two different maps</h2>
+    </div>
+    <div class="table-scroll">
+      <table class="compare-table">
+        <tr><th></th><th>Escape Room</th><th>Frozen Lake</th></tr>
+        <tr><td>States</td><td>6 (rooms 0–4 + Outside)</td><td>9 (3×3 grid tiles)</td></tr>
+        <tr><td>Action means</td><td>"walk to room N"</td><td>move Left / Down / Right / Up</td></tr>
+        <tr><td>Reward rule</td><td>+100 for the door to Outside, 0 elsewhere</td><td>+1 for entering the Goal, 0 elsewhere</td></tr>
+        <tr><td>Noise taught here</td><td>noisy <strong>reward</strong> (Level 3)</td><td>noisy <strong>transition</strong> — "slippery ice" (Level 4)</td></tr>
+        <tr><td>What never changes</td><td>the R matrix / doors</td><td>the grid layout / action deltas</td></tr>
+      </table>
     </div>
   </div>
 </div>

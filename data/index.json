@@ -1,0 +1,256 @@
+[
+  {
+    "id": "20260818-130000",
+    "slug": "bit-manipulation-leetcode",
+    "title": "Bit Manipulation - Leetcode Questions",
+    "date": "2026-08-18",
+    "timestamp": "2026-08-18T13:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "bit-manipulation",
+      "leetcode",
+      "python",
+      "revision"
+    ],
+    "summary": "Leetcode Bit Manipulation questions — brief prompts, Python solutions, and time/space complexity for quick revision.",
+    "file": "content/bit-manipulation-leetcode.html"
+  },
+  {
+    "id": "20260818-120000",
+    "slug": "2d-matrix-leetcode",
+    "title": "2D Matrix - Leetcode Questions",
+    "date": "2026-08-18",
+    "timestamp": "2026-08-18T12:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "matrix",
+      "arrays",
+      "leetcode",
+      "python",
+      "revision"
+    ],
+    "summary": "Leetcode 2D Matrix questions — brief prompts, Python solutions, and time/space complexity for quick revision.",
+    "file": "content/2d-matrix-leetcode.html"
+  },
+  {
+    "id": "20260818-110000",
+    "slug": "sliding-window-leetcode",
+    "title": "Sliding Window - Leetcode Questions",
+    "date": "2026-08-18",
+    "timestamp": "2026-08-18T11:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "sliding-window",
+      "arrays",
+      "strings",
+      "leetcode",
+      "python",
+      "revision"
+    ],
+    "summary": "Leetcode Sliding Window questions — brief prompts, Python solutions, and time/space complexity for quick revision.",
+    "file": "content/sliding-window-leetcode.html"
+  },
+  {
+    "id": "20260818-100000",
+    "slug": "binary-search-leetcode",
+    "title": "Binary Search - Leetcode Questions",
+    "date": "2026-08-18",
+    "timestamp": "2026-08-18T10:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "binary-search",
+      "arrays",
+      "leetcode",
+      "python",
+      "revision"
+    ],
+    "summary": "Leetcode Binary Search questions — brief prompts, Python solutions, and time/space complexity for quick revision.",
+    "file": "content/binary-search-leetcode.html"
+  },
+  {
+    "id": "20260818-090000",
+    "slug": "linked-list-leetcode",
+    "title": "Linked List - Leetcode Questions",
+    "date": "2026-08-18",
+    "timestamp": "2026-08-18T09:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "linked-list",
+      "leetcode",
+      "python",
+      "two-pointers",
+      "revision"
+    ],
+    "summary": "Leetcode Linked List questions — brief prompts, Python solutions, and time/space complexity for quick revision.",
+    "file": "content/linked-list-leetcode.html"
+  },
+  {
+    "id": "20260817-140000",
+    "slug": "two-pointers-leetcode",
+    "title": "Two Pointers - Leetcode Questions",
+    "date": "2026-08-17",
+    "timestamp": "2026-08-17T14:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "two-pointers",
+      "arrays",
+      "leetcode",
+      "python",
+      "revision"
+    ],
+    "summary": "Leetcode Two Pointer questions — brief prompts, Python solutions, and time/space complexity for quick revision.",
+    "file": "content/two-pointers-leetcode.html"
+  },
+  {
+    "id": "20260817-130000",
+    "slug": "hashmaps-and-sets-leetcode",
+    "title": "Hashmaps and Sets - Leetcode Questions",
+    "date": "2026-08-17",
+    "timestamp": "2026-08-17T13:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "hashmap",
+      "set",
+      "leetcode",
+      "python",
+      "frequency-array",
+      "prefix-sum",
+      "revision"
+    ],
+    "summary": "Leetcode Hashmap & Set questions — brief prompts, Python solutions (frequency-array and Counter variants included), and time/space complexity for quick revision.",
+    "file": "content/hashmaps-and-sets-leetcode.html"
+  },
+  {
+    "id": "20260817-120000",
+    "slug": "arrays-and-strings-leetcode",
+    "title": "Arrays and Strings - Leetcode Questions",
+    "date": "2026-08-17",
+    "timestamp": "2026-08-17T12:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "arrays",
+      "strings",
+      "leetcode",
+      "python",
+      "two-pointers",
+      "prefix-sum",
+      "revision"
+    ],
+    "summary": "Leetcode Arrays & Strings questions — brief prompts, Python solutions, and time/space complexity for quick revision.",
+    "file": "content/arrays-and-strings-leetcode.html"
+  },
+  {
+    "id": "20260715-210000",
+    "slug": "binary-trees-leetcode",
+    "title": "Binary Trees - Leetcode Questions",
+    "date": "2026-07-15",
+    "timestamp": "2026-07-15T21:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "binary-tree",
+      "trees",
+      "dfs",
+      "bfs",
+      "leetcode",
+      "python",
+      "revision"
+    ],
+    "summary": "Leetcode Binary Tree questions with BFS and DFS solutions, complexity analysis, and quick revision index.",
+    "file": "content/binary-trees-leetcode.html"
+  },
+  {
+    "id": "20260714-090000",
+    "slug": "binary-trees",
+    "title": "Binary Trees - Fundamentals and Traversals",
+    "date": "2026-07-14",
+    "timestamp": "2026-07-14T09:00:00Z",
+    "type": "dsa",
+    "tags": [
+      "dsa",
+      "binary-tree",
+      "trees",
+      "dfs",
+      "bfs",
+      "python",
+      "revision"
+    ],
+    "summary": "Comprehensive notes on Binary Trees covering terminology, mathematical properties, traversal algorithms, Python implementations, interview tips, and revision cheatsheet.",
+    "file": "content/binary-trees.html"
+  },
+  {
+    "id": "20260606-180000",
+    "slug": "linux-basics-and-essential-commands",
+    "title": "Linux Basics and Essential Commands",
+    "date": "2026-06-06",
+    "timestamp": "2026-06-06T18:00:00Z",
+    "type": "learning",
+    "tags": [
+      "linux",
+      "terminal",
+      "bash",
+      "cli",
+      "ubuntu",
+      "commands",
+      "filesystem"
+    ],
+    "summary": "Introduction to Linux terminal usage, filesystem navigation, file management, directory operations, and essential commands every developer should know.",
+    "file": "content/linux-basics-and-essential-commands.html"
+  },
+  {
+    "id": "20260606-143025",
+    "slug": "django-authentication",
+    "title": "Django Authentication",
+    "date": "2026-06-06",
+    "timestamp": "2026-06-06T14:30:25Z",
+    "type": "learning",
+    "tags": [
+      "django",
+      "backend",
+      "authentication",
+      "python"
+    ],
+    "summary": "Deep dive into Django's built-in authentication system — sessions, middleware, and custom user models.",
+    "file": "content/django-authentication.html"
+  },
+  {
+    "id": "20260605-091510",
+    "slug": "python-generators",
+    "title": "Python Generators",
+    "date": "2026-06-05",
+    "timestamp": "2026-06-05T09:15:10Z",
+    "type": "learning",
+    "tags": [
+      "python",
+      "generators",
+      "iterators",
+      "performance"
+    ],
+    "summary": "Understanding Python generators — lazy evaluation, memory efficiency, and practical patterns for data pipelines.",
+    "file": "content/python-generators.html"
+  },
+  {
+    "id": "20260604-162045",
+    "slug": "group-theory-basics",
+    "title": "Group Theory Basics",
+    "date": "2026-06-04",
+    "timestamp": "2026-06-04T16:20:45Z",
+    "type": "learning",
+    "tags": [
+      "mathematics",
+      "algebra",
+      "group-theory",
+      "abstract-algebra"
+    ],
+    "summary": "Introduction to group theory — definitions, axioms, examples of groups, and why they matter across mathematics.",
+    "file": "content/group-theory-basics.html"
+  }
+]
