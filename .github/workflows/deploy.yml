@@ -41,14 +41,17 @@ jobs:
 
           cp index.html site/
           cp note.html site/
+          cp topics.html site/
 
           cp -r assets site/
 
           mkdir -p site/content
           mkdir -p site/data
+          mkdir -p site/topics
 
           cp -r content/* site/content/ || true
           cp -r data/* site/data/ || true
+          cp -r topics/* site/topics/ || true
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3

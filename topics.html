@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topics — Knowledge Vault</title>
+  <meta name="description" content="Standalone deep-dive topic pages in the Knowledge Vault.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="container">
+      <a href="index.html" class="header__brand">
+        <div class="header__icon">🧠</div>
+        <span class="header__title">Knowledge Vault</span>
+      </a>
+      <div class="header__actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="page-hero" id="page-hero">
+    <div class="container">
+      <h1 class="page-hero__title">Topics</h1>
+      <p class="page-hero__subtitle">Full standalone deep-dives — each one is its own self-contained page. Click through and use your browser's back button to return.</p>
+    </div>
+  </section>
+
+  <!-- Topics List -->
+  <main id="notes-container">
+    <div class="container">
+      <div class="notes-grid" id="topics-grid">
+
+        <a href="topics/rl-mini-project.html" class="note-card">
+          <div class="note-card__header">
+            <h2 class="note-card__title">Q-Learning: A Mini Project Handbook</h2>
+            <span class="note-card__arrow">→</span>
+          </div>
+          <p class="note-card__summary">A hands-on walkthrough of Q-learning fundamentals — from the Bellman update to a working mini project.</p>
+          <div class="note-card__tags">
+            <span class="tag">#reinforcement-learning</span>
+            <span class="tag">#q-learning</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>Knowledge Vault — Built with ❤️ for learning</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/topics.js"></script>
+</body>
+</html>

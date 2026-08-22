@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q-Learning: A Mini Project Handbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#101219;
+  --surface:#181B25;
+  --surface-2:#1F232F;
+  --line:#2B303F;
+  --line-soft:#232734;
+  --ink:#E9E7E2;
+  --ink-dim:#9DA2B3;
+  --ink-faint:#6B7186;
+  --cold:#3E7CB1;
+  --warm:#E8A33D;
+  --hot:#E4603C;
+  --mint:#5FBFA0;
+  --mono:'IBM Plex Mono', ui-monospace, monospace;
+  --serif:'Literata', Georgia, serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--serif);font-size:17px;line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:820px;margin:0 auto;padding:0 22px}
+
+/* ---------- top bar ---------- */
+.bar{
+  position:sticky;top:0;z-index:60;background:rgba(16,18,25,.9);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft);
+}
+.bar-in{max-width:820px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:14px}
+.bar-mark{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);white-space:nowrap}
+.bar-mark i{color:var(--warm);font-style:normal}
+.bar-nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.bar-nav::-webkit-scrollbar{display:none}
+.bar-nav a{
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;
+  color:var(--ink-faint);text-decoration:none;padding:5px 8px;border-radius:5px;white-space:nowrap;
+}
+.bar-nav a:hover,.bar-nav a:focus-visible{color:var(--ink);background:var(--surface-2)}
+.progress{height:2px;background:var(--warm);width:0;transition:width .1s linear}
+
+/* ---------- hero ---------- */
+.hero{padding:52px 0 8px}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--warm);margin:0 0 18px;font-weight:600;
+}
+h1{
+  font-family:var(--mono);font-weight:700;font-size:clamp(30px,7.5vw,52px);
+  line-height:1.06;letter-spacing:-.02em;margin:0 0 20px;
+}
+h1 span{color:var(--ink-faint)}
+.lede{font-size:19px;color:var(--ink-dim);margin:0 0 6px;max-width:60ch}
+.lede strong{color:var(--ink);font-weight:600}
+
+/* ---------- demo ---------- */
+.demo{
+  margin:34px 0 10px;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;overflow:hidden;
+}
+.demo-head{
+  padding:13px 16px;border-bottom:1px solid var(--line-soft);
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.demo-title{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.demo-sub{font-size:13px;color:var(--ink-faint);font-family:var(--mono)}
+.demo-body{padding:16px}
+.demo-cols{display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:660px){.demo-cols{grid-template-columns:minmax(0,300px) 1fr}}
+
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;aspect-ratio:1;max-width:300px;margin:0 auto;width:100%}
+.cell{
+  position:relative;border-radius:6px;border:1px solid var(--line-soft);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;transition:background .18s ease;
+}
+.cell .arrow{font-size:19px;line-height:1;opacity:.92}
+.cell .qv{position:absolute;bottom:2px;right:4px;font-size:8.5px;color:rgba(255,255,255,.5)}
+.cell .tag{position:absolute;top:2px;left:4px;font-size:9px;font-weight:700;letter-spacing:.06em}
+.cell.hole{background:#141722 !important;border-style:dashed;border-color:#343A4C}
+.cell.goal{border-color:var(--mint)}
+.cell.agent{outline:2px solid var(--ink);outline-offset:1px}
+
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:7px;padding:8px 9px}
+.stat b{display:block;font-family:var(--mono);font-size:17px;font-weight:600;line-height:1.2}
+.stat span{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+canvas#curve{width:100%;height:92px;display:block;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:7px}
+.curve-cap{font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin:5px 0 0;letter-spacing:.05em}
+
+.btns{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0 0}
+button{
+  font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.04em;
+  background:var(--surface-2);color:var(--ink);border:1px solid var(--line);
+  padding:8px 12px;border-radius:6px;cursor:pointer;transition:background .15s,border-color .15s;
+}
+button:hover{background:#272C3B;border-color:#3A4152}
+button:focus-visible{outline:2px solid var(--warm);outline-offset:2px}
+button.primary{background:var(--warm);color:#1A1206;border-color:var(--warm);font-weight:600}
+button.primary:hover{background:#F2B355}
+button:disabled{opacity:.45;cursor:not-allowed}
+
+.sliders{margin-top:14px;padding-top:13px;border-top:1px solid var(--line-soft);display:grid;gap:10px}
+.slider{display:grid;grid-template-columns:88px 1fr 46px;align-items:center;gap:10px}
+.slider label{font-family:var(--mono);font-size:11px;color:var(--ink-dim)}
+.slider output{font-family:var(--mono);font-size:11px;color:var(--warm);text-align:right}
+input[type=range]{width:100%;accent-color:var(--warm);background:transparent}
+.hint{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin:12px 0 0;line-height:1.55}
+
+/* ---------- sections ---------- */
+section{padding:56px 0 8px;border-top:1px solid var(--line-soft);margin-top:48px}
+.stage-mark{
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 10px;font-weight:600;
+}
+.stage-mark b{color:var(--warm);font-weight:700}
+h2{font-family:var(--mono);font-weight:600;font-size:clamp(23px,5vw,31px);line-height:1.18;letter-spacing:-.01em;margin:0 0 16px}
+h3{font-family:var(--mono);font-weight:600;font-size:16px;letter-spacing:.01em;margin:34px 0 10px;color:var(--ink)}
+h4{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--warm);margin:26px 0 8px}
+p{margin:0 0 15px;max-width:66ch}
+ul,ol{max-width:66ch;padding-left:20px;margin:0 0 15px}
+li{margin-bottom:7px}
+strong{font-weight:600;color:#FFF}
+em{color:var(--ink-dim)}
+code{font-family:var(--mono);font-size:.87em;background:var(--surface-2);padding:1.5px 5px;border-radius:4px;color:var(--warm)}
+
+.card{background:var(--surface);border:1px solid var(--line-soft);border-radius:9px;padding:16px 17px;margin:0 0 13px}
+.card p:last-child{margin-bottom:0}
+.card-t{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--warm);margin:0 0 7px}
+.card.note{border-left:2px solid var(--cold)}
+.card.note .card-t{color:var(--cold)}
+.card.warn{border-left:2px solid var(--hot)}
+.card.warn .card-t{color:var(--hot)}
+.card.win{border-left:2px solid var(--mint)}
+.card.win .card-t{color:var(--mint)}
+
+.defs{display:grid;gap:9px;margin:18px 0 22px}
+.def{background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;padding:13px 15px}
+.def dt{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--warm);margin-bottom:4px}
+.def dd{margin:0;font-size:15.5px;color:var(--ink-dim);line-height:1.6}
+.def dd b{color:var(--ink);font-weight:500}
+
+/* equation */
+.eq{
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:20px 16px;margin:20px 0;text-align:center;overflow-x:auto;
+}
+.eq-main{font-family:var(--mono);font-size:15px;line-height:2;white-space:nowrap}
+.t-old{color:var(--cold)}.t-a{color:var(--warm)}.t-r{color:var(--mint)}.t-g{color:#C08BD8}.t-max{color:var(--hot)}
+.eq-key{display:grid;gap:7px;margin:16px 0 0;text-align:left;font-family:var(--mono);font-size:12px;line-height:1.6}
+.eq-key div{display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:start}
+.eq-key span:first-child{font-weight:600;white-space:nowrap}
+.eq-key span:last-child{color:var(--ink-dim)}
+
+/* code */
+.code{margin:16px 0;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#0C0E14}
+.code-head{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--surface);border-bottom:1px solid var(--line-soft);
+}
+.code-file{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);letter-spacing:.05em}
+.code-copy{margin-left:auto;font-size:10.5px;padding:4px 9px}
+.code pre{margin:0;padding:14px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.65;color:#C9CEDC}
+.c-com{color:#5E6577;font-style:italic}
+.c-str{color:#9BC48A}
+.c-kw{color:#D89A5A}
+.c-num{color:#7FB6D9}
+
+/* details */
+details{background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;margin:0 0 9px;overflow:hidden}
+summary{
+  padding:12px 15px;cursor:pointer;font-family:var(--mono);font-size:13px;
+  font-weight:500;list-style:none;display:flex;align-items:center;gap:9px;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'+';color:var(--warm);font-weight:700;font-size:15px;line-height:1}
+details[open] summary::before{content:'–'}
+summary:hover{background:var(--surface-2)}
+summary:focus-visible{outline:2px solid var(--warm);outline-offset:-2px}
+.details-body{padding:0 15px 14px;font-size:15.5px;color:var(--ink-dim)}
+.details-body p:last-child{margin-bottom:0}
+.details-body code{font-size:.85em}
+
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+td:first-child{font-family:var(--mono);font-size:12.5px;color:var(--warm);white-space:nowrap}
+
+footer{padding:46px 0 60px;margin-top:44px;border-top:1px solid var(--line-soft);color:var(--ink-faint);font-family:var(--mono);font-size:12px;line-height:1.8}
+::selection{background:var(--warm);color:#12100A}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="bar-mark"><i>◆</i> Q-LEARNING</div>
+    <nav class="bar-nav">
+      <a href="#idea">IDEA</a><a href="#algo">ALGORITHM</a><a href="#setup">SETUP</a>
+      <a href="#s1">01 LAKE</a><a href="#s2">02 POLE</a><a href="#s3">03 BIRD</a>
+      <a href="#debug">DEBUG</a><a href="#report">REPORT</a>
+    </nav>
+  </div>
+  <div class="progress" id="prog"></div>
+</div>
+
+<div class="wrap">
+
+<div class="hero">
+  <p class="eyebrow">Mini project handbook · Reinforcement Learning</p>
+  <h1>Teach a program<br>to play games<br><span>by letting it lose<br>ten thousand times.</span></h1>
+  <p class="lede">You have never written reinforcement learning code before. By the end of this document you will have written it <strong>three times</strong>, each one harder than the last, and you will understand every line.</p>
+</div>
+
+<!-- ============ LIVE DEMO ============ -->
+<div class="demo">
+  <div class="demo-head">
+    <div class="demo-title">Live · FrozenLake</div>
+    <div class="demo-sub">this is Stage 01, running in your browser</div>
+  </div>
+  <div class="demo-body">
+    <div class="demo-cols">
+      <div>
+        <div class="grid4" id="grid"></div>
+        <p class="hint" id="legend">Dark = the agent thinks this square is worthless. Bright = it thinks this square leads to the goal. Arrows = the action it would pick. <b>S</b> start, <b>H</b> hole, <b>G</b> goal.</p>
+      </div>
+      <div>
+        <div class="readout">
+          <div class="stat"><b id="st-ep">0</b><span>episodes</span></div>
+          <div class="stat"><b id="st-sr">0%</b><span>win rate</span></div>
+          <div class="stat"><b id="st-eps">1.00</b><span>epsilon</span></div>
+        </div>
+        <canvas id="curve" width="600" height="184"></canvas>
+        <p class="curve-cap">LEARNING CURVE · win rate over last 100 episodes</p>
+        <div class="btns">
+          <button class="primary" id="b100">Train 100 episodes</button>
+          <button id="b1">Train 1</button>
+          <button id="bfast">Train 2000</button>
+          <button id="bplay">Watch it play</button>
+          <button id="breset">Reset</button>
+        </div>
+        <div class="sliders">
+          <div class="slider">
+            <label for="sa">alpha</label>
+            <input type="range" id="sa" min="0.05" max="1" step="0.05" value="0.8">
+            <output id="oa">0.80</output>
+          </div>
+          <div class="slider">
+            <label for="sg">gamma</label>
+            <input type="range" id="sg" min="0.5" max="0.999" step="0.01" value="0.95">
+            <output id="og">0.95</output>
+          </div>
+          <div class="slider">
+            <label for="se">eps decay</label>
+            <input type="range" id="se" min="0.99" max="0.9999" step="0.0005" value="0.999">
+            <output id="oe">0.9990</output>
+          </div>
+        </div>
+        <p class="hint">Try it: drag <b>gamma</b> to 0.5 and hit Reset, then Train 2000. The agent stops caring about the far-away goal and the board never lights up. That single slider is the difference between an agent that plans and one that doesn't.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ IDEA ============ -->
+<section id="idea">
+  <p class="stage-mark"><b>00</b> · The idea, in plain words</p>
+  <h2>Nobody tells the agent the right answer</h2>
+
+  <p>You already know linear regression. There, you hand the model a table: hours studied → marks scored. Every row comes with the correct answer attached. The model's job is to fit a line through answers it has already been shown.</p>
+
+  <p>Reinforcement learning has no such table. There is no dataset. There is a game, and a player who starts out pressing buttons at random, and a score. That's it.</p>
+
+  <p>The player presses buttons. Sometimes the score goes up. Sometimes the player dies. Slowly — over thousands of games — it works out which buttons to press in which situations. <strong>It generates its own training data by playing.</strong> Nobody ever tells it "at this moment, jump." It works that out from the fact that jumping tended to be followed, eventually, by points.</p>
+
+  <div class="card note">
+    <p class="card-t">Why this matters for your project</p>
+    <p>When your teacher asks "where is your dataset?", the honest answer is: <em>there isn't one, and that's the point.</em> The environment is the dataset. This is the third branch of ML, alongside supervised (regression, Naive Bayes) and unsupervised (k-means). It is fully on-topic.</p>
+  </div>
+
+  <h3>The six words you need</h3>
+  <p>Every RL problem, from FrozenLake to a robot arm, is described with the same six words. Learn them now and the rest of this document reads easily.</p>
+
+  <div class="defs">
+    <dl class="def"><dt>Agent</dt><dd>The thing that is learning. <b>Your code.</b> In Flappy Bird, the agent is the decision-maker that chooses flap or don't-flap — not the bird sprite itself.</dd></dl>
+    <dl class="def"><dt>Environment</dt><dd>The world the agent acts in. <b>The game.</b> It receives an action and replies with a new situation and a number. You do not write the environment; you install it.</dd></dl>
+    <dl class="def"><dt>State</dt><dd>What the agent can see right now. <b>A snapshot.</b> On FrozenLake it's simply "which of the 16 squares am I on". In Flappy Bird you will design it yourself, and that design is the hardest and most interesting decision in your project.</dd></dl>
+    <dl class="def"><dt>Action</dt><dd>What the agent can do. <b>A choice from a short list.</b> FrozenLake: left, down, right, up. Flappy Bird: flap, or don't. That's the whole list.</dd></dl>
+    <dl class="def"><dt>Reward</dt><dd>A single number the environment hands back after every action. <b>The only feedback that exists.</b> +1 for reaching the goal, −1 for dying. Not a label, not a correction — just a number.</dd></dl>
+    <dl class="def"><dt>Episode</dt><dd>One complete play-through, from reset until the agent wins or dies. <b>One game.</b> "Training for 5000 episodes" means it played 5000 games.</dd></dl>
+  </div>
+
+  <p>The loop that connects them never changes, in any RL program ever written:</p>
+
+  <div class="card">
+    <p><strong>look</strong> at the state → <strong>choose</strong> an action → environment returns a <strong>reward</strong> and a new state → <strong>learn</strong> from what just happened → repeat until the episode ends</p>
+  </div>
+</section>
+
+<!-- ============ ALGORITHM ============ -->
+<section id="algo">
+  <p class="stage-mark"><b>01</b> · The algorithm</p>
+  <h2>Q-learning is a table of guesses that corrects itself</h2>
+
+  <p>There are dozens of RL algorithms. You are going to use exactly one: <strong>Q-learning</strong>. It is the oldest, the simplest, and the only one where you can literally print the model and read it. That last property is worth more to you right now than any amount of performance.</p>
+
+  <h3>What the model actually is</h3>
+  <p>The entire model is a table. Rows are states. Columns are actions. FrozenLake has 16 squares and 4 moves, so the model is a 16×4 grid of numbers — 64 numbers total.</p>
+
+  <p>The number in row <em>s</em>, column <em>a</em> is called <strong>Q(s, a)</strong>, and it means one specific thing:</p>
+
+  <div class="card win">
+    <p class="card-t">Definition · commit this to memory</p>
+    <p><strong>Q(s, a) = "if I am in state s and I take action a, how much total reward do I expect to collect from here until the end of the episode?"</strong></p>
+  </div>
+
+  <p>Not the reward for this step alone — the reward for this step <em>plus everything that follows</em>. That's why a square two moves from the goal can have a high value even though standing on it scores nothing.</p>
+
+  <p>Once the table is filled in correctly, playing is trivial: look at your current row, pick the column with the biggest number. The hard part is filling it in, and you start with all zeros — sixty-four wrong guesses.</p>
+
+  <h3>The update rule</h3>
+  <p>After every single action, one cell of the table gets nudged. This is the whole of Q-learning:</p>
+
+  <div class="eq">
+    <div class="eq-main">
+      <span class="t-old">Q(s,a)</span> ← <span class="t-old">Q(s,a)</span> + <span class="t-a">α</span> · [ <span class="t-r">r</span> + <span class="t-g">γ</span> · <span class="t-max">max Q(s',·)</span> − <span class="t-old">Q(s,a)</span> ]
+    </div>
+    <div class="eq-key">
+      <div><span class="t-old">Q(s,a)</span><span>the old guess for the action you just took</span></div>
+      <div><span class="t-r">r</span><span>the reward you actually just received</span></div>
+      <div><span class="t-max">max Q(s',·)</span><span>the best value in the row of the state you landed in — your estimate of how good your new position is</span></div>
+      <div><span class="t-g">γ</span><span>discount, 0→1. How much future reward is worth compared to immediate reward</span></div>
+      <div><span class="t-a">α</span><span>learning rate, 0→1. How big a step to take toward the new estimate</span></div>
+    </div>
+  </div>
+
+  <p>Read the bracket as one thing. It is the <strong>surprise</strong>: what I now think this move was worth, minus what I previously thought it was worth. If the surprise is zero, the guess was already right and nothing changes. If it's positive, that move was better than expected, so nudge it up. Alpha decides how far to nudge.</p>
+
+  <details>
+    <summary>Why does this ever converge? A worked example.</summary>
+    <div class="details-body">
+      <p>Take FrozenLake, γ = 0.95, α = 1 for simplicity. Everything starts at zero.</p>
+      <p><b>Early on,</b> the agent stumbles randomly and mostly gets r = 0. The bracket is 0 + 0.95·0 − 0 = 0. Nothing changes. The table stays flat. This is normal and it is why nothing seems to happen for the first few hundred episodes.</p>
+      <p><b>Then</b> it randomly lands on the goal. That step gets r = 1. The bracket becomes 1 + 0 − 0 = 1, so the cell for "move right from square 14" becomes 1.0. <b>One cell is now non-zero.</b></p>
+      <p><b>Next time</b> it happens to reach square 14, the update uses max Q(14) = 1.0. The bracket is 0 + 0.95·1.0 − 0 = 0.95. So the cell leading into 14 becomes 0.95.</p>
+      <p>Then 0.9025, then 0.857… The value <b>flows backwards</b> from the goal, one square per visit, discounted by γ each step. That's what you are watching when the demo grid lights up from the bottom-right corner outward. Squares far from the goal end up worth less, which is exactly right — they take longer to cash in.</p>
+      <p>And now γ makes sense: it's the exchange rate between "reward now" and "reward later". At γ = 0.5 the signal halves every step and dies before it travels four squares. At γ = 0.95 it survives the whole board.</p>
+    </div>
+  </details>
+
+  <h3>Explore or exploit</h3>
+  <p>One problem remains. If the agent always picks the highest number in its row, it will lock onto the first mediocre route it stumbles across and never discover the better one. But if it always moves randomly, it never uses what it learned.</p>
+
+  <p>The fix is embarrassingly simple and it is called <strong>epsilon-greedy</strong>. Keep a number ε between 0 and 1. Before each move, roll a die:</p>
+
+  <ul>
+    <li>with probability ε → <strong>explore</strong>: pick a completely random action</li>
+    <li>otherwise → <strong>exploit</strong>: pick the action with the highest Q-value</li>
+  </ul>
+
+  <p>Start at ε = 1.0 (total beginner, moves at random) and multiply it by something like 0.999 after every episode, with a floor around 0.01. The agent gradually stops guessing and starts playing. Watch the epsilon readout in the demo drop as the board lights up — those two things are causally linked.</p>
+
+  <div class="card warn">
+    <p class="card-t">The single most common beginner failure</p>
+    <p>Decaying epsilon too fast. The agent turns greedy at episode 200, before it has ever seen the goal, commits forever to a bad route, and your win rate flatlines at zero. If your agent isn't learning, <strong>suspect epsilon before you suspect your update rule.</strong></p>
+  </div>
+
+  <h3>The three knobs, summarised</h3>
+  <table>
+    <tr><th>Knob</th><th>Means</th><th>Start with</th><th>If it's wrong</th></tr>
+    <tr><td>α<br>alpha</td><td>step size when correcting a guess</td><td>0.1 – 0.8</td><td>Too high: values thrash around and never settle. Too low: learns correctly but agonisingly slowly.</td></tr>
+    <tr><td>γ<br>gamma</td><td>how much you value future reward</td><td>0.95 – 0.99</td><td>Too low: short-sighted, can't plan more than a few steps ahead. Too close to 1: values can blow up in long games.</td></tr>
+    <tr><td>ε<br>epsilon</td><td>chance of a random move</td><td>1.0 → 0.01</td><td>Decays too fast: agent commits to garbage. Never decays: agent knows the answer but keeps flailing.</td></tr>
+  </table>
+</section>
+
+<!-- ============ SETUP ============ -->
+<section id="setup">
+  <p class="stage-mark"><b>02</b> · Setup</p>
+  <h2>Fifteen minutes, then you never touch this again</h2>
+
+  <p>Everything here runs on a plain laptop CPU. You do not need a GPU, Colab, or a cloud account for any of the three stages.</p>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">terminal</span><button class="code-copy" data-for="c-setup">Copy</button></div>
+    <pre><code id="c-setup"></code></pre>
+  </div>
+
+  <p>Now confirm it works. If this prints numbers, you're done with setup.</p>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">check.py</span><button class="code-copy" data-for="c-check">Copy</button></div>
+    <pre><code id="c-check"></code></pre>
+  </div>
+
+  <div class="card note">
+    <p class="card-t">gym vs gymnasium</p>
+    <p>Most YouTube tutorials use the old <code>gym</code> library, where <code>env.step()</code> returns <strong>4</strong> values. The maintained version is <code>gymnasium</code>, where it returns <strong>5</strong> (the done flag was split into <code>terminated</code> and <code>truncated</code>). All code here uses gymnasium. When a tutorial's code crashes with a value-unpacking error, this is why.</p>
+  </div>
+</section>
+
+<!-- ============ STAGE 1 ============ -->
+<section id="s1">
+  <p class="stage-mark"><b>STAGE 01</b> · FrozenLake · one evening</p>
+  <h2>Sixteen squares, sixty-four numbers</h2>
+
+  <p>A 4×4 grid. You start top-left, the goal is bottom-right, and four squares are holes that end the episode instantly. Reward is 1 for reaching the goal and 0 for literally everything else.</p>
+
+  <h4>Why start here</h4>
+  <p>Because the entire model fits on your screen. You can <code>print(Q)</code> and read all 64 numbers. When something goes wrong you can see exactly which state has the wrong value — a luxury you lose forever after this stage. Do not skip it because it looks too easy. Its job is to prove your update rule is correct, so that when Flappy Bird fails later, you know the bug isn't there.</p>
+
+  <p>We start with <code>is_slippery=False</code>, meaning moves are deterministic — press right, go right. The slippery version is a genuinely harder problem and you'll come back to it at the end of the stage.</p>
+
+  <h4>The full program</h4>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">stage1_frozenlake.py</span><button class="code-copy" data-for="c-fl">Copy</button></div>
+    <pre><code id="c-fl"></code></pre>
+  </div>
+
+  <h4>What you should see</h4>
+  <p>Win rate sits at roughly 0.00–0.05 for the first several hundred episodes while epsilon is high and the agent is basically flailing. Then it climbs, and by around episode 2000–3000 it should be pinned near 1.00. That S-shaped curve is what learning looks like. It is also what the canvas at the top of this page is drawing.</p>
+
+  <h4>Watch it actually play</h4>
+  <p>Training with graphics on is painfully slow, so you train blind, save the table, then load it and watch. This save-and-replay pattern is standard and you'll reuse it in both later stages.</p>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">stage1_watch.py</span><button class="code-copy" data-for="c-flw">Copy</button></div>
+    <pre><code id="c-flw"></code></pre>
+  </div>
+
+  <h4>Before you move on</h4>
+  <p>Don't just run it. Break it deliberately — this is where the actual learning happens, and it gives you real results to write about.</p>
+  <ul>
+    <li><strong>Print the table.</strong> <code>print(Q.round(3))</code>. Find the row for square 14 (one left of the goal). Column 2 is "right". Is it the biggest? Should be, it steps onto the goal.</li>
+    <li><strong>Set gamma = 0.5</strong> and retrain. The agent goes short-sighted. Note how far the value signal travels from the goal before it dies out.</li>
+    <li><strong>Set epsilon_decay = 0.99</strong> (very fast). Epsilon hits the floor by episode ~500. Record what happens to the win rate and why.</li>
+    <li><strong>Set is_slippery=True.</strong> Now each move has a 1/3 chance of going the intended way and 1/3 each perpendicular. Same code still learns, but slower and to a lower ceiling (~0.7–0.8), and you'll want a smaller alpha like 0.1 — with random outcomes, a big alpha means one unlucky slip overwrites everything you knew.</li>
+  </ul>
+
+  <div class="card">
+    <p class="card-t">Stage 01 complete when</p>
+    <p>You can point at any bright cell in your printed Q-table and explain, out loud, why that particular number is the size it is.</p>
+  </div>
+</section>
+
+<!-- ============ STAGE 2 ============ -->
+<section id="s2">
+  <p class="stage-mark"><b>STAGE 02</b> · CartPole · one evening</p>
+  <h2>The state is a real number. Now what?</h2>
+
+  <p>Balance a pole upright on a cart by pushing the cart left or right. Reward is +1 for every frame the pole stays up. Episode ends when it tips past ~12° or the cart runs off the screen. CartPole-v1 caps at 500 steps, so 500 is a perfect score.</p>
+
+  <h4>Why this stage exists</h4>
+  <p>FrozenLake gave you state number 7. CartPole gives you this:</p>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">the problem</span><button class="code-copy" data-for="c-cpobs">Copy</button></div>
+    <pre><code id="c-cpobs"></code></pre>
+  </div>
+
+  <p>Four continuous numbers: cart position, cart velocity, pole angle, pole angular velocity. You cannot index a table with <code>0.0273</code>. And there are infinitely many possible values, so the agent would never see the same state twice — it could never learn anything, because learning requires revisiting a situation and doing better.</p>
+
+  <p>Two ways out. The professional answer is a neural network that takes the four floats and outputs Q-values — that's DQN, and it needs a GPU and a week of your life. The answer for this stage is <strong>discretisation</strong>: chop each continuous number into buckets and treat each bucket-combination as one state.</p>
+
+  <p>Angle 0.0273 rad falls in bucket 3. Angle 0.0281 also falls in bucket 3. They're now <em>the same state</em>, so experience gathered in one applies to the other. That's the trick: you deliberately throw away precision in exchange for being able to generalise.</p>
+
+  <div class="card note">
+    <p class="card-t">The bucket count tradeoff</p>
+    <p><strong>Too few buckets:</strong> genuinely different situations get merged, and the agent can't tell "pole tipping gently left" from "pole falling hard left". It can never play well — the information simply isn't in its state.<br><br>
+    <strong>Too many buckets:</strong> the table explodes. 20 buckets per variable = 160,000 states. Each needs visiting many times. Training takes forever.<br><br>
+    We use 3×3×6×6 = <strong>324 states</strong>. Note the asymmetry: 6 buckets for the pole's angle and angular velocity, only 3 for the cart's position and velocity. That's a deliberate modelling choice — the pole is what you're balancing, the cart barely matters. <em>Deciding what your agent needs to see precisely is a design decision, and it's exactly the skill Stage 03 will demand of you.</em></p>
+  </div>
+
+  <h4>The full program</h4>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">stage2_cartpole.py</span><button class="code-copy" data-for="c-cp">Copy</button></div>
+    <pre><code id="c-cp"></code></pre>
+  </div>
+
+  <h4>What you should see</h4>
+  <p>Around 20 steps at the start (a pole falls fast when you push randomly). By episode 5000 you should be in the low hundreds; by 15000–20000 you should be regularly hitting 400–500. It is noisier than FrozenLake — the starting position is random each episode, so some episodes are just harder. Judge the trend, never a single episode.</p>
+
+  <h4>Before you move on</h4>
+  <ul>
+    <li><strong>Try BUCKETS = (1, 1, 6, 6)</strong>, ignoring the cart entirely. It still works well. Good evidence for your report that the pole variables carry nearly all the signal.</li>
+    <li><strong>Try BUCKETS = (3, 3, 2, 2).</strong> It collapses. Explaining why is a strong paragraph in your write-up.</li>
+    <li><strong>Plot the learning curve</strong> — see the reporting section below. You want this graph for CartPole and Flappy Bird both.</li>
+  </ul>
+
+  <div class="card">
+    <p class="card-t">Stage 02 complete when</p>
+    <p>You can explain, without looking, why a Q-table cannot be indexed by a float, and what you gave up to make it possible.</p>
+  </div>
+</section>
+
+<!-- ============ STAGE 3 ============ -->
+<section id="s3">
+  <p class="stage-mark"><b>STAGE 03</b> · Flappy Bird · the submission</p>
+  <h2>Now you design the state yourself</h2>
+
+  <p>This is the project you actually submit. Everything before it was preparation, and you'll find that the algorithm barely changes — it's the same update rule you wrote in Stage 01. What changes is that <strong>nobody hands you the state any more.</strong></p>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">terminal</span><button class="code-copy" data-for="c-fbinst">Copy</button></div>
+    <pre><code id="c-fbinst"></code></pre>
+  </div>
+
+  <h4>Step one: look at what you're given</h4>
+  <p>Never write code against an observation you haven't printed. Library versions differ and the ordering of these values can change between releases. Run this first, always:</p>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">stage3_inspect.py</span><button class="code-copy" data-for="c-fbin">Copy</button></div>
+    <pre><code id="c-fbin"></code></pre>
+  </div>
+
+  <p>With <code>use_lidar=False</code> you should get 12 numbers, all normalised: horizontal and vertical positions for the last, next, and next-next pipe pairs, then the bird's own y position, its vertical velocity, and its rotation.</p>
+
+  <div class="card warn">
+    <p class="card-t">Verify the indices before trusting them</p>
+    <p>The code below assumes indices 3, 4, 5 for the next pipe and 9, 10 for the bird. Confirm with the inspect script: let the bird fall and watch which value climbs steadily (that's <code>player_y</code>), and which resets sharply when a pipe is passed (that's the pipe x). If your version differs, change the five constants at the top of the file and nothing else.</p>
+  </div>
+
+  <h4>Step two: design the state</h4>
+  <p>Twelve numbers is far too many — the table would have more cells than atoms you have patience for. So ask the real question: <strong>what does a human actually look at when playing Flappy Bird?</strong></p>
+
+  <p>Not the pipes behind you. Not the pipe after next. Three things only:</p>
+
+  <ul>
+    <li><strong>dx</strong> — how far ahead the next pipe is. Controls urgency.</li>
+    <li><strong>dy</strong> — how far above or below the gap's centre you are. This is the key one: it's not raw position, it's <em>position relative to where you need to be</em>. Bird at y=0.5 means nothing on its own. Bird 0.2 below the gap means flap.</li>
+    <li><strong>vel</strong> — how fast you're falling or rising. Without it the agent can't tell a bird that's about to overshoot from one that's about to stall.</li>
+  </ul>
+
+  <p>Three numbers, bucketed to 15 × 21 × 10 = 3150 states × 2 actions. Small enough to fill by playing, rich enough to play well. <strong>This paragraph is the intellectual core of your project — say all of it in your report.</strong></p>
+
+  <h4>The full program</h4>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">stage3_flappy.py</span><button class="code-copy" data-for="c-fb">Copy</button></div>
+    <pre><code id="c-fb"></code></pre>
+  </div>
+
+  <h4>Watch it play</h4>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">stage3_watch.py</span><button class="code-copy" data-for="c-fbw">Copy</button></div>
+    <pre><code id="c-fbw"></code></pre>
+  </div>
+
+  <h4>What you should see</h4>
+  <p>This one is slow to start and then goes almost vertical. Expect near-zero pipes for the first few thousand episodes, then a long slow climb, then a fairly sudden takeoff once the agent discovers that hovering near the gap centre pays. Twenty to fifty thousand episodes is normal, and each is short, so it's minutes-to-an-hour on a laptop, not days.</p>
+
+  <p>Two notes on the code worth understanding rather than copying. First, the terminal handling: when the bird dies there is no future, so the <code>gamma * max(Q[next])</code> term must be zeroed out — otherwise the agent credits a dead bird with imaginary future points. FrozenLake tolerated skipping this; here it matters. Second, the flap-frequency line: it's a diagnostic, not a hyperparameter. Wildly high or near-zero flap rates tell you the agent has collapsed onto one action, which usually means epsilon decayed too fast.</p>
+
+  <div class="card">
+    <p class="card-t">If it plateaus at one or two pipes</p>
+    <p>In order: (1) train longer — seriously, this is the answer most of the time. (2) Widen DY_BINS resolution near zero; distinguishing "slightly below centre" from "on centre" is what precision flying needs. (3) Lower alpha to 0.05 for the last stretch so late learning stops overwriting good values. (4) Only then consider changing the reward.</p>
+  </div>
+</section>
+
+<!-- ============ DEBUG ============ -->
+<section id="debug">
+  <p class="stage-mark"><b>03</b> · When it doesn't work</p>
+  <h2>It will not work the first time</h2>
+
+  <p>That's the normal experience, not a sign you've misunderstood something. RL fails silently — no crash, no error, just a flat line where a learning curve should be. Work through these in order.</p>
+
+  <details><summary>The reward never changes. Flat line at zero, forever.</summary><div class="details-body">
+    <p>Check the reward is actually arriving: <code>print(reward)</code> inside the loop for one episode. If it's always 0, the agent has never once reached the goal, so there is nothing to learn from — every update computes zero surprise.</p>
+    <p>Fix: raise epsilon and keep it high longer, or lengthen the step limit per episode. On FrozenLake with <code>is_slippery=True</code>, random walking finds the goal rarely, so it can take a few thousand episodes before the first non-zero reward appears. Patience is a legitimate fix here.</p>
+  </div></details>
+
+  <details><summary>It learns, then gets worse.</summary><div class="details-body">
+    <p>Almost always alpha too high, especially in stochastic environments. With α = 0.8 a single unlucky episode overwrites a value you'd built up over hundreds. Drop to 0.1, or decay alpha over time the same way you decay epsilon.</p>
+    <p>Also check you aren't still exploring at 30% by the end — a good policy with high epsilon looks like a bad policy, because a third of its moves are random. Print epsilon alongside your score.</p>
+  </div></details>
+
+  <details><summary>ValueError: too many values to unpack</summary><div class="details-body">
+    <p>You mixed gymnasium's 5-value API with a tutorial's 4-value gym API. Gymnasium: <code>obs, reward, terminated, truncated, info = env.step(a)</code> and <code>obs, info = env.reset()</code>. Old gym: <code>obs, reward, done, info</code> and <code>obs = env.reset()</code>. Pick gymnasium and convert any tutorial code you borrow.</p>
+  </div></details>
+
+  <details><summary>IndexError or TypeError when indexing Q</summary><div class="details-body">
+    <p>You're indexing a multi-dimensional array with a list or numpy array instead of a tuple. <code>Q[[1,2,3]]</code> means something entirely different from <code>Q[(1,2,3)]</code>. Always return a <code>tuple(...)</code> from your discretise function — note every example here does.</p>
+    <p>An out-of-range index means a value fell outside your bin bounds. <code>np.digitize</code> happily returns <code>len(bins)</code> for anything past the last boundary, so size your table as <code>n_buckets</code> where bins has <code>n_buckets − 1</code> entries, exactly as the helper here does.</p>
+  </div></details>
+
+  <details><summary>It works while training but plays terribly when I watch it</summary><div class="details-body">
+    <p>You're not loading the trained table — check the <code>np.load</code> path actually points at the file you saved. Or you're still sampling random actions in the watch script: at playback time there should be no epsilon at all, only <code>np.argmax</code>.</p>
+    <p>Third possibility: your discretise function differs between the two files. If training bucketed with one set of bounds and playback uses another, every lookup hits the wrong row. Keep the function in one file and import it, or copy it character for character.</p>
+  </div></details>
+
+  <details><summary>Training is unbearably slow</summary><div class="details-body">
+    <p>Never pass <code>render_mode="human"</code> during training — drawing frames is hundreds of times slower than simulating them. Train headless, save, then render only for the demo video. Also remove per-step <code>print</code> calls; printing thousands of lines a second genuinely dominates the runtime.</p>
+  </div></details>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section id="report">
+  <p class="stage-mark"><b>04</b> · The write-up</p>
+  <h2>What gets you the marks</h2>
+
+  <p>A working agent is table stakes. What separates a good mini project from a forgettable one is showing that you understood the choices you made. You have three environments of increasing difficulty and a clean narrative running through them — use it.</p>
+
+  <h4>Plot your learning curves</h4>
+  <p>Every RL report lives or dies on this graph. Save the score list from each run and plot it with a moving average, because raw per-episode scores are far too noisy to read.</p>
+
+  <div class="code">
+    <div class="code-head"><span class="code-file">plot_curve.py</span><button class="code-copy" data-for="c-plot">Copy</button></div>
+    <pre><code id="c-plot"></code></pre>
+  </div>
+
+  <h4>Structure that works</h4>
+  <ol>
+    <li><strong>Problem.</strong> What RL is and how it differs from the supervised methods covered in class. Two paragraphs, in your own words.</li>
+    <li><strong>Algorithm.</strong> The Q-table, the update rule, and the meaning of each term. Include the equation. Explain the exploration/exploitation tradeoff.</li>
+    <li><strong>Stage 01 — FrozenLake.</strong> Baseline. Include the printed Q-table and explain why the values increase toward the goal. Compare slippery vs non-slippery.</li>
+    <li><strong>Stage 02 — CartPole.</strong> The discretisation problem and how you solved it. Your bucket-count experiments belong here — they're real ablation results.</li>
+    <li><strong>Stage 03 — Flappy Bird.</strong> The main event. Justify your three-feature state design at length: what you included, what you discarded from the 12 raw values, and why.</li>
+    <li><strong>Results.</strong> Learning curves for all three. A table of final scores. Your hyperparameter comparisons.</li>
+    <li><strong>Limitations and next steps.</strong> Where tabular Q-learning breaks down, and what DQN would change. This section is short, cheap, and disproportionately impressive.</li>
+  </ol>
+
+  <div class="card win">
+    <p class="card-t">Include your failures</p>
+    <p>"Epsilon decay of 0.99 caused premature convergence and the agent plateaued at a 12% win rate; slowing it to 0.999 fixed it" is worth more than any successful run. It proves you diagnosed a system rather than copied one. Keep notes as you go — you will not remember these details a week later.</p>
+  </div>
+
+  <h4>Record a video</h4>
+  <p>Set <code>render_mode="human"</code> in the watch scripts and screen-record thirty seconds of each agent. A clip of the bird clearing pipes does more in a demo than any slide.</p>
+</section>
+
+<!-- ============ GLOSSARY ============ -->
+<section id="glossary">
+  <p class="stage-mark"><b>05</b> · Reference</p>
+  <h2>Glossary</h2>
+  <table>
+    <tr><th>Term</th><th>Meaning</th></tr>
+    <tr><td>agent</td><td>The learner. Your code.</td></tr>
+    <tr><td>environment</td><td>The game. Takes an action, returns a state and a reward.</td></tr>
+    <tr><td>state / observation</td><td>What the agent sees at one moment.</td></tr>
+    <tr><td>action</td><td>One choice from the available list.</td></tr>
+    <tr><td>reward</td><td>The number returned after each action. The only feedback.</td></tr>
+    <tr><td>episode</td><td>One full game, reset to game-over.</td></tr>
+    <tr><td>policy</td><td>The agent's strategy: state in, action out. Yours is "pick the largest Q in the row".</td></tr>
+    <tr><td>Q-value</td><td>Expected total future reward from taking action a in state s.</td></tr>
+    <tr><td>Q-table</td><td>The whole model. Rows = states, columns = actions.</td></tr>
+    <tr><td>alpha (α)</td><td>Learning rate. Step size when correcting a Q-value.</td></tr>
+    <tr><td>gamma (γ)</td><td>Discount factor. How much future reward is worth now.</td></tr>
+    <tr><td>epsilon (ε)</td><td>Probability of a random action.</td></tr>
+    <tr><td>epsilon-greedy</td><td>The explore-or-exploit rule.</td></tr>
+    <tr><td>discretisation</td><td>Chopping continuous values into buckets so a table can index them.</td></tr>
+    <tr><td>terminated</td><td>Episode ended by the game's rules — won or died.</td></tr>
+    <tr><td>truncated</td><td>Episode ended by a time limit, not by the rules.</td></tr>
+    <tr><td>convergence</td><td>Q-values stop changing much. Learning is done.</td></tr>
+    <tr><td>tabular RL</td><td>RL where the model is a literal table. What you're doing.</td></tr>
+    <tr><td>DQN</td><td>Deep Q-Network. Replaces the table with a neural network for huge state spaces. Your "next steps".</td></tr>
+  </table>
+</section>
+
+<footer>
+  Written as a starting point, not a substitute for reading the docs.<br>
+  gymnasium.farama.org · Sutton &amp; Barto, <em>Reinforcement Learning: An Introduction</em>, ch. 6<br>
+  Run the code. Break the code. Write down what broke.
+</footer>
+
+</div>
+
+<!-- ================= CODE SOURCES ================= -->
+<script type="text/plain" id="src-setup">
+# Python 3.9 or newer. Run these one at a time.
+
+pip install gymnasium numpy matplotlib
+pip install "gymnasium[toy-text]"      # FrozenLake  (Stage 01)
+pip install "gymnasium[classic-control]"  # CartPole (Stage 02)
+pip install flappy-bird-gymnasium      # Flappy Bird (Stage 03)
+
+# If pip is not found, try  python -m pip install ...
+# On Linux you may also need:  sudo apt install python3-dev
+</script>
+
+<script type="text/plain" id="src-check">
+import gymnasium as gym
+import numpy as np
+
+env = gym.make("FrozenLake-v1", map_name="4x4", is_slippery=False)
+
+print("number of states :", env.observation_space.n)   # expect 16
+print("number of actions:", env.action_space.n)        # expect 4
+
+state, info = env.reset()
+print("starting state   :", state)                     # expect 0
+
+env.close()
+</script>
+
+<script type="text/plain" id="src-fl">
+"""
+STAGE 01 - FrozenLake with tabular Q-learning.
+
+The board (4x4):
+    S F F F        S = start        F = frozen, safe
+    F H F H        H = hole, you die and the episode ends
+    F F F H        G = goal, reward = 1
+    H F F G
+
+Actions: 0 = LEFT   1 = DOWN   2 = RIGHT   3 = UP
+Reward is 1 for reaching G and 0 for absolutely everything else.
+"""
+
+import gymnasium as gym
+import numpy as np
+import random
+
+# ---------------------------------------------------------------
+# 1. THE ENVIRONMENT
+# ---------------------------------------------------------------
+# is_slippery=False makes moves deterministic: press RIGHT, go RIGHT.
+# Set it to True once this version works - it is a much harder problem.
+env = gym.make("FrozenLake-v1", map_name="4x4", is_slippery=False)
+
+n_states = env.observation_space.n     # 16
+n_actions = env.action_space.n         # 4
+
+# ---------------------------------------------------------------
+# 2. THE MODEL  --  this is the entire thing being learned
+# ---------------------------------------------------------------
+# Q[state][action] = expected total future reward.
+# Start at zero: 64 guesses, all of them wrong.
+Q = np.zeros((n_states, n_actions))
+
+# ---------------------------------------------------------------
+# 3. HYPERPARAMETERS
+# ---------------------------------------------------------------
+alpha = 0.8            # learning rate: how far to move toward a new estimate
+gamma = 0.95           # discount: how much a future reward is worth today
+epsilon = 1.0          # start fully random
+epsilon_min = 0.01     # never stop exploring completely
+epsilon_decay = 0.999  # multiply epsilon by this after every episode
+episodes = 5000
+max_steps = 100        # give up on an episode after this many moves
+
+history = []           # reward per episode, for the learning curve
+
+# ---------------------------------------------------------------
+# 4. THE TRAINING LOOP
+# ---------------------------------------------------------------
+for ep in range(episodes):
+
+    state, info = env.reset()
+    total_reward = 0
+
+    for step in range(max_steps):
+
+        # --- CHOOSE: epsilon-greedy -----------------------------
+        if random.random() < epsilon:
+            action = env.action_space.sample()     # explore
+        else:
+            action = int(np.argmax(Q[state]))      # exploit
+
+        # --- ACT ------------------------------------------------
+        new_state, reward, terminated, truncated, info = env.step(action)
+
+        # --- LEARN: the Q-learning update -----------------------
+        old_value = Q[state, action]
+        best_future = np.max(Q[new_state])         # best we can do from where we landed
+        target = reward + gamma * best_future      # what we now think it was worth
+        Q[state, action] = old_value + alpha * (target - old_value)
+
+        # --- MOVE ON --------------------------------------------
+        state = new_state
+        total_reward += reward
+
+        if terminated or truncated:
+            break
+
+    # decay exploration once per episode, not once per step
+    epsilon = max(epsilon_min, epsilon * epsilon_decay)
+    history.append(total_reward)
+
+    if (ep + 1) % 500 == 0:
+        recent = np.mean(history[-500:])
+        print(f"episode {ep+1:5d} | win rate {recent:.2f} | epsilon {epsilon:.3f}")
+
+env.close()
+
+# ---------------------------------------------------------------
+# 5. INSPECT AND SAVE
+# ---------------------------------------------------------------
+print("\nFinal Q-table (rows = squares 0-15, cols = L D R U):")
+print(Q.round(3))
+
+np.save("frozenlake_q.npy", Q)
+np.save("frozenlake_history.npy", np.array(history))
+print("\nsaved frozenlake_q.npy")
+</script>
+
+<script type="text/plain" id="src-flw">
+"""Load the trained table and watch it play. No learning happens here."""
+
+import gymnasium as gym
+import numpy as np
+import time
+
+env = gym.make("FrozenLake-v1", map_name="4x4",
+               is_slippery=False, render_mode="human")
+
+Q = np.load("frozenlake_q.npy")
+
+state, info = env.reset()
+
+for step in range(100):
+    action = int(np.argmax(Q[state]))          # always greedy - no epsilon
+    state, reward, terminated, truncated, info = env.step(action)
+    time.sleep(0.4)
+
+    if terminated or truncated:
+        print("reached the goal!" if reward > 0 else "fell in a hole")
+        break
+
+env.close()
+</script>
+
+<script type="text/plain" id="src-cpobs">
+import gymnasium as gym
+
+env = gym.make("CartPole-v1")
+obs, info = env.reset()
+print(obs)
+
+# [ 0.0273  -0.0041   0.0189   0.0332 ]
+#    ^        ^        ^        ^
+#    |        |        |        pole angular velocity (rad/s)
+#    |        |        pole angle (radians)
+#    |        cart velocity (m/s)
+#    cart position (m)
+</script>
+
+<script type="text/plain" id="src-cp">
+"""
+STAGE 02 - CartPole with discretised Q-learning.
+
+The observation is four continuous floats, so we bucket each one and use
+the bucket indices as our table coordinates.
+
+Reward: +1 for every frame the pole stays up. Max score is 500.
+Actions: 0 = push cart LEFT   1 = push cart RIGHT
+"""
+
+import gymnasium as gym
+import numpy as np
+import random
+
+env = gym.make("CartPole-v1")
+
+# ---------------------------------------------------------------
+# 1. DISCRETISATION
+# ---------------------------------------------------------------
+# More buckets for the pole (what we actually care about), fewer for the cart.
+BUCKETS = (3, 3, 6, 6)          # cart pos, cart vel, pole angle, pole ang vel
+
+BOUNDS = [
+    (-2.4,  2.4),               # cart position - track limit
+    (-3.0,  3.0),               # cart velocity - unbounded, clipped by hand
+    (-0.21, 0.21),              # pole angle - episode ends at about +/- 0.21 rad
+    (-2.0,  2.0),               # pole angular velocity - clipped by hand
+]
+
+def make_bins(low, high, n_buckets):
+    """n_buckets buckets need n_buckets-1 internal boundaries."""
+    return np.linspace(low, high, n_buckets + 1)[1:-1]
+
+BINS = [make_bins(lo, hi, n) for (lo, hi), n in zip(BOUNDS, BUCKETS)]
+
+def discretise(obs):
+    """Four floats -> a tuple of four bucket indices, usable as a table index."""
+    return tuple(int(np.digitize(obs[i], BINS[i])) for i in range(4))
+
+# ---------------------------------------------------------------
+# 2. THE MODEL
+# ---------------------------------------------------------------
+# Shape (3, 3, 6, 6, 2) = 324 states x 2 actions = 648 numbers.
+Q = np.zeros(BUCKETS + (env.action_space.n,))
+
+# ---------------------------------------------------------------
+# 3. HYPERPARAMETERS
+# ---------------------------------------------------------------
+alpha = 0.1            # lower than FrozenLake - this environment is noisier
+gamma = 0.99           # episodes are long, so future reward matters a lot
+epsilon = 1.0
+epsilon_min = 0.01
+epsilon_decay = 0.9995
+episodes = 20000
+
+history = []
+
+# ---------------------------------------------------------------
+# 4. TRAINING LOOP  --  identical logic to Stage 01
+# ---------------------------------------------------------------
+for ep in range(episodes):
+
+    obs, info = env.reset()
+    state = discretise(obs)
+    total_reward = 0
+    done = False
+
+    while not done:
+
+        if random.random() < epsilon:
+            action = env.action_space.sample()
+        else:
+            action = int(np.argmax(Q[state]))
+
+        obs, reward, terminated, truncated, info = env.step(action)
+        new_state = discretise(obs)
+        done = terminated or truncated
+
+        # The bird/pole is dead: there is no future, so zero that term out.
+        future = 0.0 if terminated else np.max(Q[new_state])
+
+        old_value = Q[state + (action,)]
+        target = reward + gamma * future
+        Q[state + (action,)] = old_value + alpha * (target - old_value)
+
+        state = new_state
+        total_reward += reward
+
+    epsilon = max(epsilon_min, epsilon * epsilon_decay)
+    history.append(total_reward)
+
+    if (ep + 1) % 1000 == 0:
+        recent = np.mean(history[-1000:])
+        print(f"episode {ep+1:6d} | avg steps {recent:6.1f} | epsilon {epsilon:.3f}")
+
+env.close()
+
+np.save("cartpole_q.npy", Q)
+np.save("cartpole_history.npy", np.array(history))
+print("\nsaved cartpole_q.npy")
+print("states actually visited:", int(np.sum(np.any(Q != 0, axis=-1))), "of", np.prod(BUCKETS))
+</script>
+
+<script type="text/plain" id="src-fbinst">
+pip install flappy-bird-gymnasium
+</script>
+
+<script type="text/plain" id="src-fbin">
+"""Run this FIRST. Never write code against an observation you haven't printed."""
+
+import gymnasium as gym
+import flappy_bird_gymnasium      # importing registers "FlappyBird-v0"
+import numpy as np
+
+env = gym.make("FlappyBird-v0", use_lidar=False)
+obs, info = env.reset()
+
+print("observation length:", len(obs))
+print("observation:", np.round(obs, 3))
+
+# Take a few no-flap steps and watch which numbers move.
+# The one that climbs steadily is the bird falling -> that's player_y.
+for i in range(5):
+    obs, reward, terminated, truncated, info = env.step(0)   # 0 = do nothing
+    print(f"step {i}  reward={reward:6.2f}  obs={np.round(obs, 3)}")
+
+env.close()
+</script>
+
+<script type="text/plain" id="src-fb">
+"""
+STAGE 03 - Flappy Bird with a hand-designed state.
+
+The environment hands us 12 numbers. We use 3 of them, because those 3 are
+what a human actually looks at. Designing this is the real work of the project.
+
+Actions: 0 = do nothing   1 = flap
+"""
+
+import gymnasium as gym
+import flappy_bird_gymnasium
+import numpy as np
+import random
+
+env = gym.make("FlappyBird-v0", use_lidar=False)
+
+# ---------------------------------------------------------------
+# 1. WHICH RAW VALUES WE READ
+#    VERIFY THESE with stage3_inspect.py before trusting them.
+# ---------------------------------------------------------------
+IDX_NEXT_PIPE_X = 3        # horizontal distance to the next pipe
+IDX_NEXT_TOP_Y = 4         # bottom edge of the upper pipe
+IDX_NEXT_BOTTOM_Y = 5      # top edge of the lower pipe
+IDX_PLAYER_Y = 9           # bird's vertical position
+IDX_PLAYER_VEL = 10        # bird's vertical velocity
+
+# ---------------------------------------------------------------
+# 2. THE STATE DESIGN
+# ---------------------------------------------------------------
+# dx  : how far ahead the pipe is         -> urgency
+# dy  : bird's offset from the gap CENTRE -> the single most useful number
+# vel : how fast we are rising or falling -> tells us where we'll be next frame
+#
+# dy matters far more than raw height. "Bird at y = 0.5" is meaningless.
+# "Bird 0.2 below the gap" means flap, right now.
+
+DX_BINS = np.linspace(0.0, 1.0, 16)[1:-1]     # 15 buckets
+DY_BINS = np.linspace(-0.5, 0.5, 22)[1:-1]    # 21 buckets, finest resolution
+VEL_BINS = np.linspace(-1.0, 1.0, 11)[1:-1]   # 10 buckets
+
+SHAPE = (15, 21, 10)
+
+def get_state(obs):
+    dx = obs[IDX_NEXT_PIPE_X]
+    gap_centre = (obs[IDX_NEXT_TOP_Y] + obs[IDX_NEXT_BOTTOM_Y]) / 2.0
+    dy = obs[IDX_PLAYER_Y] - gap_centre
+    vel = obs[IDX_PLAYER_VEL]
+
+    return (
+        int(np.digitize(dx,  DX_BINS)),
+        int(np.digitize(dy,  DY_BINS)),
+        int(np.digitize(vel, VEL_BINS)),
+    )
+
+# ---------------------------------------------------------------
+# 3. THE MODEL
+# ---------------------------------------------------------------
+# 15 x 21 x 10 x 2 = 6300 numbers. Small enough to fill by playing.
+Q = np.zeros(SHAPE + (env.action_space.n,))
+
+# ---------------------------------------------------------------
+# 4. HYPERPARAMETERS
+# ---------------------------------------------------------------
+alpha = 0.1
+gamma = 0.99
+epsilon = 1.0
+epsilon_min = 0.01
+epsilon_decay = 0.9998      # slow: there is a lot of state space to see
+episodes = 30000
+
+history = []
+best = 0
+
+# ---------------------------------------------------------------
+# 5. TRAINING LOOP  --  same five lines of learning as Stage 01
+# ---------------------------------------------------------------
+for ep in range(episodes):
+
+    obs, info = env.reset()
+    state = get_state(obs)
+    total_reward = 0
+    flaps = 0
+    steps = 0
+    done = False
+
+    while not done:
+
+        if random.random() < epsilon:
+            action = env.action_space.sample()
+        else:
+            action = int(np.argmax(Q[state]))
+
+        obs, reward, terminated, truncated, info = env.step(action)
+        new_state = get_state(obs)
+        done = terminated or truncated
+
+        # Dead bird has no future. This term MUST be zeroed on termination.
+        future = 0.0 if terminated else np.max(Q[new_state])
+
+        old_value = Q[state + (action,)]
+        target = reward + gamma * future
+        Q[state + (action,)] = old_value + alpha * (target - old_value)
+
+        state = new_state
+        total_reward += reward
+        flaps += action
+        steps += 1
+
+    epsilon = max(epsilon_min, epsilon * epsilon_decay)
+    history.append(total_reward)
+
+    if total_reward > best:
+        best = total_reward
+        np.save("flappy_q_best.npy", Q)
+
+    if (ep + 1) % 1000 == 0:
+        recent = np.mean(history[-1000:])
+        rate = flaps / max(steps, 1)
+        print(f"ep {ep+1:6d} | avg {recent:7.2f} | best {best:7.2f} "
+              f"| eps {epsilon:.3f} | flap rate {rate:.2f}")
+
+env.close()
+
+np.save("flappy_q.npy", Q)
+np.save("flappy_history.npy", np.array(history))
+print("\nsaved flappy_q.npy")
+
+# Flap rate is a DIAGNOSTIC, not a setting. If it sits near 0.0 or near 1.0
+# the agent has collapsed onto a single action - usually epsilon decayed
+# too fast and it committed before it had explored.
+</script>
+
+<script type="text/plain" id="src-fbw">
+"""Watch the trained bird. Copy get_state() over EXACTLY - if the buckets
+differ between training and playback, every lookup hits the wrong row."""
+
+import gymnasium as gym
+import flappy_bird_gymnasium
+import numpy as np
+
+IDX_NEXT_PIPE_X, IDX_NEXT_TOP_Y, IDX_NEXT_BOTTOM_Y = 3, 4, 5
+IDX_PLAYER_Y, IDX_PLAYER_VEL = 9, 10
+
+DX_BINS = np.linspace(0.0, 1.0, 16)[1:-1]
+DY_BINS = np.linspace(-0.5, 0.5, 22)[1:-1]
+VEL_BINS = np.linspace(-1.0, 1.0, 11)[1:-1]
+
+def get_state(obs):
+    dx = obs[IDX_NEXT_PIPE_X]
+    gap_centre = (obs[IDX_NEXT_TOP_Y] + obs[IDX_NEXT_BOTTOM_Y]) / 2.0
+    dy = obs[IDX_PLAYER_Y] - gap_centre
+    vel = obs[IDX_PLAYER_VEL]
+    return (int(np.digitize(dx, DX_BINS)),
+            int(np.digitize(dy, DY_BINS)),
+            int(np.digitize(vel, VEL_BINS)))
+
+env = gym.make("FlappyBird-v0", use_lidar=False, render_mode="human")
+Q = np.load("flappy_q_best.npy")
+
+obs, info = env.reset()
+state = get_state(obs)
+score = 0
+done = False
+
+while not done:
+    action = int(np.argmax(Q[state]))       # greedy only - no epsilon
+    obs, reward, terminated, truncated, info = env.step(action)
+    state = get_state(obs)
+    score += reward
+    done = terminated or truncated
+
+print("final score:", round(score, 2))
+env.close()
+</script>
+
+<script type="text/plain" id="src-plot">
+"""Raw per-episode scores are too noisy to read. Always smooth them."""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+history = np.load("flappy_history.npy")     # or cartpole_history.npy
+
+window = 100
+smooth = np.convolve(history, np.ones(window) / window, mode="valid")
+
+plt.figure(figsize=(9, 4))
+plt.plot(history, alpha=0.2, linewidth=0.5, label="per episode")
+plt.plot(smooth, linewidth=2, label=f"{window}-episode moving average")
+plt.xlabel("episode")
+plt.ylabel("total reward")
+plt.title("Q-learning on Flappy Bird")
+plt.legend()
+plt.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig("learning_curve.png", dpi=150)
+plt.show()
+</script>
+
+<script>
+/* ============ syntax highlighting + copy ============ */
+(function(){
+  const KW = /\b(import|from|as|def|return|for|in|while|if|elif|else|break|continue|True|False|None|and|or|not|with|class|lambda|try|except|print|pass|is)\b/g;
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  function plain(t){
+    let e = esc(t);
+    e = e.replace(KW, '<span class="c-kw">$1</span>');
+    e = e.replace(/(?<![\w"#-])(\d+\.?\d*)/g, '<span class="c-num">$1</span>');
+    return e;
+  }
+  function highlight(src){
+    const re = /(#[^\n]*)|("""[\s\S]*?"""|'''[\s\S]*?'''|"(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')/g;
+    let out='', last=0, m;
+    while((m = re.exec(src))){
+      out += plain(src.slice(last, m.index));
+      out += m[1] ? '<span class="c-com">'+esc(m[1])+'</span>'
+                  : '<span class="c-str">'+esc(m[2])+'</span>';
+      last = re.lastIndex;
+    }
+    return out + plain(src.slice(last));
+  }
+
+  const map = {'c-setup':'src-setup','c-check':'src-check','c-fl':'src-fl','c-flw':'src-flw',
+    'c-cpobs':'src-cpobs','c-cp':'src-cp','c-fbinst':'src-fbinst','c-fbin':'src-fbin',
+    'c-fb':'src-fb','c-fbw':'src-fbw','c-plot':'src-plot'};
+
+  const raw = {};
+  for(const [target, source] of Object.entries(map)){
+    const s = document.getElementById(source), t = document.getElementById(target);
+    if(!s || !t) continue;
+    const txt = s.textContent.replace(/^\n/,'').replace(/\s+$/,'');
+    raw[target] = txt;
+    try{ t.innerHTML = highlight(txt); }catch(e){ t.textContent = txt; }
+  }
+
+  document.querySelectorAll('.code-copy').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const txt = raw[btn.dataset.for] || '';
+      try{ await navigator.clipboard.writeText(txt); }
+      catch(e){
+        const ta=document.createElement('textarea');
+        ta.value=txt;document.body.appendChild(ta);ta.select();
+        try{document.execCommand('copy');}catch(_){}
+        ta.remove();
+      }
+      const o=btn.textContent; btn.textContent='Copied';
+      setTimeout(()=>btn.textContent=o,1200);
+    });
+  });
+})();
+
+/* ============ reading progress ============ */
+(function(){
+  const bar=document.getElementById('prog');
+  const upd=()=>{
+    const h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?Math.min(100,(window.scrollY/h)*100):0)+'%';
+  };
+  window.addEventListener('scroll',upd,{passive:true});
+  window.addEventListener('resize',upd);upd();
+})();
+
+/* ============ LIVE FROZENLAKE Q-LEARNING ============ */
+(function(){
+  const MAP   = "SFFFFHFHFFFHHFFG".split('');
+  const HOLES = new Set([5,7,11,12]);
+  const GOAL  = 15;
+  const ARROW = ['←','↓','→','↑'];
+
+  let Q, ep, eps, results, curve, playing=false, playTimer=null, agentPos=null;
+  let alpha=0.8, gamma=0.95, decay=0.999;
+  const EPS_MIN=0.01;
+
+  const $=id=>document.getElementById(id);
+  const gridEl=$('grid'), cvs=$('curve'), ctx=cvs.getContext('2d');
+  const cells=[];
+
+  for(let i=0;i<16;i++){
+    const d=document.createElement('div');
+    d.className='cell';
+    if(HOLES.has(i)) d.classList.add('hole');
+    if(i===GOAL) d.classList.add('goal');
+    d.innerHTML='<span class="tag"></span><span class="arrow"></span><span class="qv"></span>';
+    const tag = i===0?'S' : HOLES.has(i)?'H' : i===GOAL?'G' : '';
+    d.querySelector('.tag').textContent=tag;
+    gridEl.appendChild(d); cells.push(d);
+  }
+
+  function reset(){
+    Q=Array.from({length:16},()=>[0,0,0,0]);
+    ep=0; eps=1.0; results=[]; curve=[]; agentPos=null;
+    stopPlay(); render(); drawCurve();
+  }
+
+  function step(s,a){
+    let r=Math.floor(s/4), c=s%4;
+    if(a===0) c=Math.max(0,c-1);
+    else if(a===1) r=Math.min(3,r+1);
+    else if(a===2) c=Math.min(3,c+1);
+    else r=Math.max(0,r-1);
+    const ns=r*4+c;
+    return {ns, reward: ns===GOAL?1:0, done: HOLES.has(ns)||ns===GOAL};
+  }
+
+  function runEpisode(){
+    let s=0, total=0;
+    for(let t=0;t<100;t++){
+      let a;
+      if(Math.random()<eps) a=Math.floor(Math.random()*4);
+      else{ let b=0; for(let k=1;k<4;k++) if(Q[s][k]>Q[s][b]) b=k; a=b; }
+      const {ns,reward,done}=step(s,a);
+      const best=Math.max(...Q[ns]);
+      Q[s][a]+=alpha*(reward+gamma*best-Q[s][a]);
+      s=ns; total+=reward;
+      if(done) break;
+    }
+    eps=Math.max(EPS_MIN, eps*decay);
+    ep++; results.push(total);
+    if(results.length>100) results.shift();
+    if(ep%10===0) curve.push(results.reduce((x,y)=>x+y,0)/results.length);
+    if(curve.length>400) curve.shift();
+  }
+
+  function ramp(t){
+    t=Math.max(0,Math.min(1,t));
+    const stops=[[0,[36,42,60]],[0.30,[46,95,146]],[0.62,[201,138,60]],[1,[232,98,60]]];
+    for(let i=0;i<stops.length-1;i++){
+      const [p0,c0]=stops[i],[p1,c1]=stops[i+1];
+      if(t<=p1){
+        const f=(t-p0)/(p1-p0||1);
+        return `rgb(${c0.map((v,j)=>Math.round(v+(c1[j]-v)*f)).join(',')})`;
+      }
+    }
+    return 'rgb(232,98,60)';
+  }
+
+  function render(){
+    let maxQ=0;
+    for(let s=0;s<16;s++) maxQ=Math.max(maxQ, Math.max(...Q[s]));
+    for(let s=0;s<16;s++){
+      const el=cells[s], v=Math.max(...Q[s]);
+      const arrow=el.querySelector('.arrow'), qv=el.querySelector('.qv');
+      if(HOLES.has(s)){ arrow.textContent=''; qv.textContent=''; }
+      else{
+        el.style.background = maxQ>0 ? ramp(v/maxQ) : 'rgb(36,42,60)';
+        if(v>0.0001){
+          let b=0; for(let k=1;k<4;k++) if(Q[s][k]>Q[s][b]) b=k;
+          arrow.textContent = s===GOAL ? '★' : ARROW[b];
+          qv.textContent = v.toFixed(2);
+        } else { arrow.textContent=''; qv.textContent=''; }
+      }
+      el.classList.toggle('agent', agentPos===s);
+    }
+    $('st-ep').textContent=ep;
+    const sr=results.length?results.reduce((x,y)=>x+y,0)/results.length:0;
+    $('st-sr').textContent=Math.round(sr*100)+'%';
+    $('st-eps').textContent=eps.toFixed(2);
+  }
+
+  function drawCurve(){
+    const w=cvs.width,h=cvs.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='#2B303F'; ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){
+      const y=8+(h-22)*(i/4);
+      ctx.beginPath(); ctx.moveTo(8,y); ctx.lineTo(w-8,y); ctx.stroke();
+    }
+    if(curve.length<2) return;
+    ctx.strokeStyle='#E8A33D'; ctx.lineWidth=2.5;
+    ctx.lineJoin='round'; ctx.beginPath();
+    curve.forEach((v,i)=>{
+      const x=8+(w-16)*(i/Math.max(1,curve.length-1));
+      const y=8+(h-22)*(1-v);
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    });
+    ctx.stroke();
+  }
+
+  function train(n, cb){
+    let done=0;
+    const chunk=()=>{
+      const size=Math.min(200,n-done);
+      for(let i=0;i<size;i++) runEpisode();
+      done+=size; render(); drawCurve();
+      if(done<n) requestAnimationFrame(chunk); else if(cb) cb();
+    };
+    chunk();
+  }
+
+  function stopPlay(){
+    playing=false;
+    if(playTimer){clearTimeout(playTimer);playTimer=null;}
+    agentPos=null;
+  }
+
+  function play(){
+    stopPlay(); playing=true; agentPos=0; render();
+    let s=0,t=0;
+    const tick=()=>{
+      if(!playing) return;
+      let b=0; for(let k=1;k<4;k++) if(Q[s][k]>Q[s][b]) b=k;
+      const {ns,done}=step(s,b);
+      s=ns; agentPos=s; render(); t++;
+      if(done||t>40){ playTimer=setTimeout(()=>{stopPlay();render();},900); return; }
+      playTimer=setTimeout(tick,340);
+    };
+    playTimer=setTimeout(tick,340);
+  }
+
+  const bind=(id,fn)=>$(id).addEventListener('click',fn);
+  bind('b1',()=>{stopPlay();train(1);});
+  bind('b100',()=>{stopPlay();train(100);});
+  bind('bfast',()=>{
+    stopPlay();
+    const b=$('bfast'); b.disabled=true; b.textContent='Training…';
+    train(2000,()=>{b.disabled=false;b.textContent='Train 2000';});
+  });
+  bind('bplay',play);
+  bind('breset',reset);
+
+  const slide=(sid,oid,fmt,set)=>{
+    const s=$(sid),o=$(oid);
+    const upd=()=>{const v=parseFloat(s.value); set(v); o.textContent=fmt(v);};
+    s.addEventListener('input',upd); upd();
+  };
+  slide('sa','oa',v=>v.toFixed(2),v=>alpha=v);
+  slide('sg','og',v=>v.toFixed(2),v=>gamma=v);
+  slide('se','oe',v=>v.toFixed(4),v=>decay=v);
+
+  reset();
+})();
+</script>
+
+</body>
+</html>

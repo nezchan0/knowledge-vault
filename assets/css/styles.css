@@ -203,6 +203,34 @@ input {
   gap: var(--space-sm);
 }
 
+/* ---------- Header Nav Link ---------- */
+.header__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  transition: all var(--transition-fast);
+}
+
+.header__link:hover {
+  color: var(--accent-primary);
+  background: var(--accent-glow);
+  border-color: var(--accent-primary);
+}
+
+@media (max-width: 600px) {
+  .header__link span:last-child {
+    display: none;
+  }
+}
+
 /* ---------- Theme Toggle ---------- */
 .theme-toggle {
   width: 40px;
