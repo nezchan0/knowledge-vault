@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CartPole — From Q-Tables to Neural Networks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0D1418;
+  --ink2:#111C22;
+  --panel:#15222A;
+  --panel2:#1B2C36;
+  --rule:#263B47;
+  --rule2:#33505F;
+  --chalk:#E8F1F5;
+  --dim:#8AA2AF;
+  --dim2:#5F7683;
+  --amber:#FFB03A;
+  --amber-d:#8A5F1C;
+  --signal:#5AC8E8;
+  --signal-d:#1F5C70;
+  --fail:#FF6E6E;
+  --live:#7ED9A0;
+  --violet:#B08CE0;
+  --disp:'IBM Plex Sans',system-ui,sans-serif;
+  --lab:'Chakra Petch',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+body{
+  margin:0;background:var(--ink);color:var(--chalk);
+  font-family:var(--disp);font-size:16px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+/* ---------- generic type ---------- */
+h1,h2,h3,h4{margin:0;line-height:1.18;font-weight:600;letter-spacing:-.015em}
+p{margin:0 0 1em}
+p:last-child{margin-bottom:0}
+b,strong{font-weight:600;color:#fff}
+code{font-family:var(--mono);font-size:.88em;background:var(--panel2);
+  border:1px solid var(--rule);padding:.1em .38em;border-radius:3px;color:var(--amber)}
+a{color:var(--signal)}
+
+.lab{font-family:var(--lab);font-weight:600;text-transform:uppercase;
+  letter-spacing:.16em;font-size:11px;color:var(--dim2)}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ---------- hero ---------- */
+.hero{border-bottom:1px solid var(--rule);background:
+  radial-gradient(1100px 380px at 50% -8%, #17303C 0%, transparent 70%), var(--ink);
+  padding:52px 0 0}
+.hero-head{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-end;justify-content:space-between}
+.hero h1{font-size:clamp(34px,6vw,60px);font-weight:700;letter-spacing:-.03em;max-width:16ch}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero-sub{color:var(--dim);max-width:44ch;font-size:15px}
+.hero-stage{margin-top:34px;border:1px solid var(--rule);border-bottom:none;
+  border-radius:10px 10px 0 0;background:var(--ink2);overflow:hidden}
+.hero-canvas-holder{position:relative}
+.hero canvas{display:block;width:100%;height:auto}
+.hero-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(13,20,24,.82);text-align:center;padding:20px;cursor:pointer}
+.hero-overlay.gone{display:none}
+.hero-overlay h3{font-size:19px;margin-bottom:6px}
+.hero-overlay p{font-size:13px;color:var(--dim);max-width:34ch;margin:0 auto}
+.telemetry{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--rule);
+  background:var(--panel)}
+.tel{padding:9px 12px;border-right:1px solid var(--rule)}
+.tel:last-child{border-right:none}
+.tel .k{font-family:var(--lab);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim2)}
+.tel .v{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--chalk)}
+.tel .v.warn{color:var(--amber)}
+.tel .v.bad{color:var(--fail)}
+.hero-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  padding:12px 0 30px;font-size:12.5px;color:var(--dim2);font-family:var(--mono)}
+
+/* ---------- layout ---------- */
+.main{display:grid;grid-template-columns:180px 1fr;gap:44px;padding:0 0 90px}
+.rail{position:sticky;top:0;align-self:start;padding:34px 0;max-height:100vh;overflow-y:auto}
+.rail ol{list-style:none;margin:0;padding:0}
+.rail li{margin-bottom:1px}
+.rail a{display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--dim2);
+  padding:7px 10px;border-left:2px solid var(--rule);font-size:13px;transition:.15s}
+.rail a:hover{color:var(--chalk);background:var(--panel)}
+.rail a.on{color:var(--chalk);border-left-color:var(--amber);background:var(--panel)}
+.rail a .n{font-family:var(--mono);font-size:11px;color:var(--dim2)}
+.rail a.on .n{color:var(--amber)}
+.rail .rail-title{font-family:var(--lab);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dim2);padding:0 10px 10px}
+
+/* ---------- level sections ---------- */
+.level{padding:46px 0 10px;border-top:1px solid var(--rule);scroll-margin-top:16px}
+.level:first-child{border-top:none}
+.level-tag{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.level-num{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink);
+  background:var(--amber);padding:2px 9px;border-radius:3px;letter-spacing:.04em}
+.level-num.net{background:var(--signal)}
+.level h2{font-size:clamp(24px,3.4vw,33px);margin-bottom:10px}
+.lede{font-size:16.5px;color:var(--dim);max-width:66ch;margin-bottom:22px}
+.lede b{color:var(--chalk)}
+.prose{max-width:70ch;color:#C4D6DF;font-size:15.3px}
+.prose b{color:#fff}
+
+/* whats-new strip */
+.whatsnew{display:flex;gap:12px;align-items:flex-start;border-left:2px solid var(--amber);
+  background:linear-gradient(90deg,rgba(255,176,58,.07),transparent 70%);
+  padding:11px 15px;margin:0 0 22px;font-size:14.2px;max-width:70ch}
+.whatsnew.net{border-left-color:var(--signal);
+  background:linear-gradient(90deg,rgba(90,200,232,.08),transparent 70%)}
+.whatsnew .lab{flex:0 0 auto;padding-top:3px}
+
+/* ---------- panels ---------- */
+.bay{border:1px solid var(--rule);border-radius:10px;background:var(--ink2);
+  margin:24px 0;overflow:hidden}
+.bay-head{display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--panel);flex-wrap:wrap}
+.bay-body{padding:16px}
+.bay-split{display:grid;grid-template-columns:1fr 250px;gap:0}
+.bay-split>.sim{padding:14px;border-right:1px solid var(--rule);min-width:0}
+.bay-split>.side{padding:14px;min-width:0}
+canvas{display:block;max-width:100%;border-radius:5px}
+.simcanvas{width:100%;height:auto;background:#0A1216;border:1px solid var(--rule)}
+.chartcanvas{width:100%;height:auto;background:#0A1216;border:1px solid var(--rule);margin-top:12px}
+
+/* readouts */
+.readout{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-family:var(--mono);
+  font-size:13px;align-items:baseline}
+.readout .k{color:var(--dim2);font-size:11.5px;letter-spacing:.04em}
+.readout .v{text-align:right;font-weight:500}
+.readout .v.amber{color:var(--amber)}
+.readout .v.signal{color:var(--signal)}
+.readout .v.live{color:var(--live)}
+.readout .v.fail{color:var(--fail)}
+.readout hr{grid-column:1/-1;border:none;border-top:1px solid var(--rule);margin:7px 0}
+
+/* stat blocks */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;
+  background:var(--rule);border:1px solid var(--rule);border-radius:7px;overflow:hidden;margin:14px 0}
+.stat{background:var(--panel);padding:10px 13px}
+.stat .k{font-family:var(--lab);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim2)}
+.stat .v{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:-.02em;line-height:1.3}
+.stat .v.amber{color:var(--amber)}
+.stat .v.signal{color:var(--signal)}
+.stat .v.fail{color:var(--fail)}
+.stat .v.live{color:var(--live)}
+.stat .sfx{font-size:11px;color:var(--dim2);font-family:var(--mono)}
+
+/* ---------- controls ---------- */
+.ctrls{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:0 0 12px}
+button{font-family:var(--disp);font-size:13px;font-weight:500;color:var(--chalk);
+  background:var(--panel2);border:1px solid var(--rule2);border-radius:5px;
+  padding:6px 13px;cursor:pointer;transition:.13s;line-height:1.5}
+button:hover:not(:disabled){background:var(--rule2);border-color:var(--dim2)}
+button:disabled{opacity:.36;cursor:not-allowed}
+button.go{background:var(--amber);color:#26180A;border-color:var(--amber);font-weight:600}
+button.go:hover:not(:disabled){background:#FFC463;border-color:#FFC463}
+button.net{background:var(--signal);color:#08222B;border-color:var(--signal);font-weight:600}
+button.net:hover:not(:disabled){background:#7FD8F0;border-color:#7FD8F0}
+button.ghost{background:transparent}
+
+.params{display:grid;grid-template-columns:repeat(auto-fit,minmax(184px,1fr));gap:13px 20px;
+  padding:14px;border-top:1px solid var(--rule);background:var(--panel)}
+.param label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  font-size:12.5px;color:var(--dim);margin-bottom:3px}
+.param label .val{font-family:var(--mono);font-size:12.5px;color:var(--amber);font-weight:500}
+.param label .val.signal{color:var(--signal)}
+.param .hint{font-size:11px;color:var(--dim2);margin-top:1px;line-height:1.45}
+input[type=range]{width:100%;height:18px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--rule2);border-radius:2px}
+input[type=range]::-moz-range-track{height:3px;background:var(--rule2);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+  background:var(--amber);margin-top:-5px;border:none}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--amber);border:none}
+input[type=range].sig::-webkit-slider-thumb{background:var(--signal)}
+input[type=range].sig::-moz-range-thumb{background:var(--signal)}
+
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);cursor:pointer;
+  user-select:none;padding:4px 0}
+.toggle input{appearance:none;-webkit-appearance:none;width:34px;height:19px;border-radius:10px;
+  background:var(--rule2);position:relative;cursor:pointer;transition:.16s;flex:0 0 auto;margin:0;border:none}
+.toggle input:checked{background:var(--amber-d)}
+.toggle input.sig:checked{background:var(--signal-d)}
+.toggle input::after{content:'';position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;
+  border-radius:50%;background:var(--dim);transition:.16s}
+.toggle input:checked::after{transform:translateX(15px);background:var(--amber)}
+.toggle input.sig:checked::after{background:var(--signal)}
+
+/* ---------- tracer (level 2 signature) ---------- */
+.tracer{display:grid;grid-template-columns:78px 1fr 92px;gap:0;font-family:var(--mono);font-size:12px}
+.tracer>div{padding:7px 9px;border-bottom:1px solid var(--rule);display:flex;align-items:center}
+.tracer .tname{color:var(--dim);flex-direction:column;align-items:flex-start;gap:0;line-height:1.3}
+.tracer .tname small{font-size:9.5px;color:var(--dim2);font-family:var(--lab);letter-spacing:.1em;text-transform:uppercase}
+.tracer .tout{justify-content:flex-end;color:var(--amber);font-weight:600}
+.binbar{display:flex;gap:2px;width:100%;height:19px}
+.binbar span{flex:1;background:var(--panel2);border-radius:2px;position:relative;
+  border:1px solid transparent;transition:.1s}
+.binbar span.hit{background:var(--amber);border-color:var(--amber)}
+.rowcalc{font-family:var(--mono);font-size:12.5px;color:var(--dim);padding:11px 9px;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.rowcalc b{color:var(--amber);font-weight:600}
+
+/* ---------- tables ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:13.2px;margin:16px 0}
+.tbl th,.tbl td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl th{font-family:var(--lab);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--dim2);font-weight:600;border-bottom-color:var(--rule2)}
+.tbl td{color:#C4D6DF}
+.tbl td.m{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+
+/* q-cell grid for neighbour inspector */
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(122px,1fr));gap:8px;margin-top:12px}
+.qcell{border:1px solid var(--rule);border-radius:6px;padding:9px 11px;background:var(--panel);font-family:var(--mono)}
+.qcell.self{border-color:var(--amber);background:rgba(255,176,58,.09)}
+.qcell .qk{font-size:10px;color:var(--dim2);letter-spacing:.05em}
+.qcell .qv{font-size:15px;font-weight:600;color:var(--chalk);margin-top:2px}
+.qcell .qv.zero{color:var(--dim2)}
+.qcell.self .qv{color:var(--amber)}
+
+/* callouts */
+.note{border:1px solid var(--rule);border-left:2px solid var(--dim2);border-radius:0 7px 7px 0;
+  padding:13px 16px;background:var(--panel);font-size:14.2px;color:#C4D6DF;margin:20px 0;max-width:72ch}
+.note.key{border-left-color:var(--amber)}
+.note.net{border-left-color:var(--signal)}
+.note .lab{display:block;margin-bottom:5px}
+
+.formula{font-family:var(--mono);font-size:14.5px;color:var(--chalk);background:var(--panel);
+  border:1px solid var(--rule);border-radius:7px;padding:15px 17px;margin:18px 0;
+  overflow-x:auto;white-space:nowrap;letter-spacing:-.01em}
+.formula .hl{color:var(--amber)}
+.formula .hl2{color:var(--signal)}
+
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11.5px;color:var(--dim2);
+  font-family:var(--mono);margin-top:9px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+
+.kbd{font-family:var(--mono);font-size:11.5px;background:var(--panel2);border:1px solid var(--rule2);
+  border-bottom-width:2px;border-radius:4px;padding:2px 7px;color:var(--chalk)}
+
+footer{border-top:1px solid var(--rule);padding:26px 0 50px;color:var(--dim2);font-size:12.5px;
+  font-family:var(--mono)}
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr;gap:0}
+  .rail{position:static;max-height:none;padding:20px 0 0;border-bottom:1px solid var(--rule);margin-bottom:8px}
+  .rail ol{display:flex;flex-wrap:wrap;gap:5px}
+  .rail li{margin:0}
+  .rail a{border-left:none;border-bottom:2px solid var(--rule);border-radius:4px 4px 0 0;padding:6px 9px}
+  .rail a.on{border-bottom-color:var(--amber)}
+  .rail .rail-title{width:100%;padding-bottom:7px}
+  .bay-split{grid-template-columns:1fr}
+  .bay-split>.sim{border-right:none;border-bottom:1px solid var(--rule)}
+  .telemetry{grid-template-columns:repeat(3,1fr)}
+  .tel:nth-child(3){border-right:none}
+  .wrap{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-head">
+      <div>
+        <div class="lab" style="margin-bottom:10px">CartPole-v1 · Continuous state · Module 2</div>
+        <h1>Where the <em>Q-table</em> stops working</h1>
+      </div>
+      <p class="hero-sub">Frozen Lake had 16 states you could print on a napkin. This has infinity. Same formula, and it falls apart — here's exactly where, and what replaces it.</p>
+    </div>
+
+    <div class="hero-stage">
+      <div class="hero-canvas-holder">
+        <canvas id="heroC" width="1120" height="300"></canvas>
+        <div class="hero-overlay" id="heroOv">
+          <div>
+            <h3>Try balancing it yourself</h3>
+            <p>Click here, then hold <span class="kbd">←</span> or <span class="kbd">→</span> to push the cart. You have 500 steps. Most people last about 40.</p>
+          </div>
+        </div>
+      </div>
+      <div class="telemetry">
+        <div class="tel"><div class="k">cart x</div><div class="v" id="tel-x">0.000</div></div>
+        <div class="tel"><div class="k">cart velocity</div><div class="v" id="tel-xd">0.000</div></div>
+        <div class="tel"><div class="k">pole angle θ</div><div class="v" id="tel-th">0.000</div></div>
+        <div class="tel"><div class="k">pole ang. vel.</div><div class="v" id="tel-thd">0.000</div></div>
+        <div class="tel"><div class="k">steps survived</div><div class="v" id="tel-t">0</div></div>
+      </div>
+    </div>
+    <div class="hero-foot">
+      <span id="heroMsg">Your best: <b id="heroBest" style="color:var(--amber)">—</b></span>
+      <span style="color:var(--rule2)">|</span>
+      <span>A random agent averages <b style="color:var(--fail)">22</b></span>
+      <span style="color:var(--rule2)">|</span>
+      <span>"Solved" is <b style="color:var(--live)">475</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="main">
+
+  <!-- ============ RAIL ============ -->
+  <nav class="rail">
+    <div class="rail-title">The ladder</div>
+    <ol>
+      <li><a href="#L0" class="on"><span class="n">00</span><span>The game</span></a></li>
+      <li><a href="#L1"><span class="n">01</span><span>Random baseline</span></a></li>
+      <li><a href="#L2"><span class="n">02</span><span>Binning</span></a></li>
+      <li><a href="#L3"><span class="n">03</span><span>Tabular Q</span></a></li>
+      <li><a href="#L4"><span class="n">04</span><span>The breakdown</span></a></li>
+      <li><a href="#L5"><span class="n">05</span><span>Neural network</span></a></li>
+      <li><a href="#REV"><span class="n">··</span><span>Revision</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+  <!-- ============ LEVEL 0 ============ -->
+  <section class="level" id="L0">
+    <div class="level-tag"><span class="level-num">00</span><span class="lab">The environment</span></div>
+    <h2>What CartPole actually is</h2>
+    <p class="lede">A cart slides on a frictionless rail. A pole is <b>hinged</b> to the top of it — free to rotate, not attached rigidly. You cannot touch the pole. You can only shove the cart left or right, and the pole's job is to not fall over.</p>
+
+    <div class="prose">
+      <p>It's an inverted pendulum, a genuine control-theory benchmark from decades before machine learning. The pole is unstable by default: leave it alone and it falls. The only way to keep it up is to <b>drive the cart underneath the pole's centre of mass</b> — the same thing you do balancing a broomstick on your palm.</p>
+      <p>That's the trick that makes it a good next step after Frozen Lake. In Frozen Lake, moving right means you end up one tile right. Here, pushing right makes the cart go right <em>and the pole tip left</em>. The action and the consequence point in opposite directions.</p>
+    </div>
+
+    <div class="bay">
+      <div class="bay-head">
+        <span class="lab">Anatomy of one step</span>
+        <div class="ctrls" style="margin:0">
+          <button id="l0-play" class="go">Run physics</button>
+          <button id="l0-reset" class="ghost">Reset</button>
+        </div>
+      </div>
+      <div class="bay-split">
+        <div class="sim">
+          <canvas id="l0-c" class="simcanvas" width="700" height="300"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--fail)"></i>failure limits: |θ| &gt; 12° or |x| &gt; 2.4</span>
+            <span><i style="background:var(--amber)"></i>force applied this step</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="readout">
+            <span class="k">x — cart position</span><span class="v" id="l0-x">0.000</span>
+            <span class="k">ẋ — cart velocity</span><span class="v" id="l0-xd">0.000</span>
+            <span class="k">θ — pole angle (rad)</span><span class="v" id="l0-th">0.000</span>
+            <span class="k">θ̇ — pole ang. velocity</span><span class="v" id="l0-thd">0.000</span>
+            <hr>
+            <span class="k">action taken</span><span class="v amber" id="l0-a">—</span>
+            <span class="k">reward this step</span><span class="v live" id="l0-r">—</span>
+            <span class="k">total return</span><span class="v" id="l0-ret">0</span>
+            <span class="k">status</span><span class="v" id="l0-st">ready</span>
+          </div>
+          <div style="margin-top:14px;font-size:12px;color:var(--dim2);line-height:1.6">
+            Physics runs at 50 Hz — each step is 0.02 seconds of simulated time. The cart is being pushed by a fixed ±10 N force, so "how hard" is never a choice. Only "which way".
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:18px;margin:30px 0 10px">The four numbers, and why each one matters</h3>
+    <table class="tbl">
+      <tr><th>Variable</th><th>Meaning</th><th>Range you'll see</th><th>Fails at</th></tr>
+      <tr><td class="m">x</td><td>Cart position along the rail</td><td class="m">−2.4 … 2.4</td><td class="m">|x| &gt; 2.4</td></tr>
+      <tr><td class="m">ẋ</td><td>How fast the cart is sliding</td><td class="m">≈ −3 … 3</td><td class="m">never (unbounded)</td></tr>
+      <tr><td class="m">θ</td><td>Pole angle from vertical, radians</td><td class="m">−0.21 … 0.21</td><td class="m">|θ| &gt; 0.2095 (12°)</td></tr>
+      <tr><td class="m">θ̇</td><td>How fast the pole is rotating</td><td class="m">≈ −2.5 … 2.5</td><td class="m">never (unbounded)</td></tr>
+    </table>
+
+    <div class="prose">
+      <p>Two of them are never directly fatal — but θ̇ is arguably the most important number on the list. By the time θ is large you have already lost. A good agent reacts to the pole's <em>rotation</em>, not its position, the same way you catch a falling broom before it's visibly tilted.</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">state space</div><div class="v amber">∞</div><div class="sfx">4 real numbers</div></div>
+      <div class="stat"><div class="k">actions</div><div class="v">2</div><div class="sfx">push left / push right</div></div>
+      <div class="stat"><div class="k">reward</div><div class="v live">+1</div><div class="sfx">every step you survive</div></div>
+      <div class="stat"><div class="k">episode cap</div><div class="v">500</div><div class="sfx">max possible return</div></div>
+    </div>
+
+    <div class="note key">
+      <span class="lab">The objective, stated exactly</span>
+      There is no goal tile. The reward is <b>+1 for every single step the pole stays up</b>, and the episode ends the instant it tips past 12° or the cart runs off the rail. So "maximise total reward" and "survive as long as possible" are the same sentence. An episode's score <em>is</em> its length.
+    </div>
+
+    <div class="prose">
+      <p>Compare that to your Frozen Lake page: there, reward was <code>0</code> everywhere and <code>+1</code> once, at the very end, and the hard part was getting that single reward to propagate backwards. Here reward is <b>dense</b> — you get feedback on literally every step. That part is easier. The hard part has moved somewhere else entirely.</p>
+    </div>
+  </section>
+
+  <!-- ============ LEVEL 1 ============ -->
+  <section class="level" id="L1">
+    <div class="level-tag"><span class="level-num">01</span><span class="lab">Baseline</span></div>
+    <h2>Random actions — the number to beat</h2>
+    <div class="whatsnew"><span class="lab">What's new</span><span>No learning at all. Coin-flip every step. This is Level 1 of your Q-learning page before any Q-values existed — except here we measure it, because we need a floor.</span></div>
+
+    <div class="prose">
+      <p>Before any algorithm, you need to know what "doing nothing clever" scores. Run a few hundred episodes of pure coin-flipping and watch the distribution. It's tight and it's bad: almost every episode dies between 8 and 60 steps, and the average sits around <b>22</b>.</p>
+    </div>
+
+    <div class="bay">
+      <div class="bay-head">
+        <span class="lab">Random agent · 2 actions, 50/50, forever</span>
+        <div class="ctrls" style="margin:0">
+          <button id="l1-ep" class="ghost">Watch 1 episode</button>
+          <button id="l1-run" class="go">Run 300 episodes</button>
+          <button id="l1-reset" class="ghost">Reset</button>
+        </div>
+      </div>
+      <div class="bay-split">
+        <div class="sim">
+          <canvas id="l1-c" class="simcanvas" width="700" height="240"></canvas>
+          <canvas id="l1-chart" class="chartcanvas" width="700" height="200"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--amber)"></i>episode length</span>
+            <span><i style="background:var(--chalk)"></i>running mean of last 30</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="readout">
+            <span class="k">episodes run</span><span class="v" id="l1-n">0</span>
+            <span class="k">mean length</span><span class="v amber" id="l1-mean">—</span>
+            <span class="k">best episode</span><span class="v live" id="l1-best">—</span>
+            <span class="k">worst episode</span><span class="v fail" id="l1-worst">—</span>
+            <hr>
+            <span class="k">reached 475+</span><span class="v" id="l1-solved">0</span>
+          </div>
+          <div style="margin-top:14px;font-size:12px;color:var(--dim2);line-height:1.6">
+            Keep this number in your head. Everything after this level is measured against <b style="color:var(--amber)">22</b>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <span class="lab">Why so consistent?</span>
+      Random pushing is close to applying zero net force, so the pole just falls at its natural rate. The variance is small because the physics is deterministic — the only randomness is the tiny starting nudge and your coin flips. This is a <b>hard floor</b>, not a lucky-or-unlucky spread.
+    </div>
+  </section>
+
+  <!-- ============ LEVEL 2 ============ -->
+  <section class="level" id="L2">
+    <div class="level-tag"><span class="level-num">02</span><span class="lab">Discretisation</span></div>
+    <h2>Forcing infinity into a table</h2>
+    <div class="whatsnew"><span class="lab">What's new</span><span>Binning. We chop each of the 4 continuous numbers into a fixed number of slots, so a state becomes a row index again — and your Frozen Lake code becomes usable. Still no learning in this level; we're only building the lookup.</span></div>
+
+    <div class="prose">
+      <p>Your Q-table needs <code>Q[state][action]</code>. But <code>state</code> here is <code>(0.0231, -0.4417, 0.0089, 0.2260)</code> — a point in 4D space, and you will <b>never see that exact point twice</b>. Not once in a million episodes.</p>
+      <p>So we cheat. Pick a range for each variable, chop it into <em>n</em> equal slices, and record which slice the value fell in. Four small integers instead of four real numbers. Those four integers combine into one row number, exactly like your 3×3 grid tiles were numbered 0–8.</p>
+    </div>
+
+    <div class="bay">
+      <div class="bay-head">
+        <span class="lab">Live state → bins → row index</span>
+        <div class="ctrls" style="margin:0">
+          <button id="l2-play" class="go">Run physics</button>
+          <button id="l2-step" class="ghost">Step once</button>
+          <button id="l2-reset" class="ghost">Reset</button>
+        </div>
+      </div>
+      <div class="bay-body" style="padding:0">
+        <div style="padding:14px 14px 0"><canvas id="l2-c" class="simcanvas" width="700" height="180"></canvas></div>
+        <div style="padding:14px">
+          <div class="tracer" id="l2-tracer">
+            <div class="tname">x<small>position</small></div><div><div class="binbar" id="bb-0"></div></div><div class="tout" id="to-0">–</div>
+            <div class="tname">ẋ<small>cart vel</small></div><div><div class="binbar" id="bb-1"></div></div><div class="tout" id="to-1">–</div>
+            <div class="tname">θ<small>angle</small></div><div><div class="binbar" id="bb-2"></div></div><div class="tout" id="to-2">–</div>
+            <div class="tname">θ̇<small>ang vel</small></div><div><div class="binbar" id="bb-3"></div></div><div class="tout" id="to-3">–</div>
+          </div>
+          <div class="rowcalc" id="l2-rowcalc">Press <b>Run physics</b> to start the trace.</div>
+        </div>
+      </div>
+      <div class="params">
+        <div class="param">
+          <label>bins for <b>x</b> <span class="val" id="v-b0">3</span></label>
+          <input type="range" id="b0" min="1" max="12" step="1" value="3">
+          <div class="hint">Position matters least — the cart has a lot of rail.</div>
+        </div>
+        <div class="param">
+          <label>bins for <b>ẋ</b> <span class="val" id="v-b1">3</span></label>
+          <input type="range" id="b1" min="1" max="12" step="1" value="3">
+          <div class="hint">Set any slider to 1 to ignore that variable completely.</div>
+        </div>
+        <div class="param">
+          <label>bins for <b>θ</b> <span class="val" id="v-b2">6</span></label>
+          <input type="range" id="b2" min="1" max="12" step="1" value="6">
+          <div class="hint">The whole legal range is only 24°, so slices are fine already.</div>
+        </div>
+        <div class="param">
+          <label>bins for <b>θ̇</b> <span class="val" id="v-b3">12</span></label>
+          <input type="range" id="b3" min="1" max="12" step="1" value="12">
+          <div class="hint">Give this one the most resolution. It's the early-warning signal.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">table rows</div><div class="v amber" id="l2-rows">648</div><div class="sfx" id="l2-mult">3 × 3 × 6 × 12</div></div>
+      <div class="stat"><div class="k">cells to fill</div><div class="v" id="l2-cells">1296</div><div class="sfx">rows × 2 actions</div></div>
+      <div class="stat"><div class="k">frozen lake was</div><div class="v" style="color:var(--dim)">36</div><div class="sfx">9 tiles × 4 moves</div></div>
+      <div class="stat"><div class="k">if all sliders hit 12</div><div class="v fail">41 472</div><div class="sfx">12⁴ × 2 cells</div></div>
+    </div>
+
+    <div class="note key">
+      <span class="lab">The exponent is the problem</span>
+      Adding one more slice to a single variable doesn't add a few rows — it multiplies. Ten bins each across four variables is 10 000 rows. A robot arm with 12 joint angles at ten bins each would need 10¹² rows. This is the <b>curse of dimensionality</b>, and it's not a tuning annoyance, it's a wall.
+    </div>
+
+    <div class="prose">
+      <p>Notice what binning actually threw away. Every θ inside one slice is now <b>literally the same state</b> to the agent — a pole at 3.9° and a pole at 5.9° are indistinguishable if they share a bin. Meanwhile 5.9° and 6.1° might land in <em>different</em> bins and become two totally unrelated rows that share nothing. Both of those are wrong, in opposite directions. Hold that thought for Level 4.</p>
+    </div>
+  </section>
+
+  <!-- ============ LEVEL 3 ============ -->
+  <section class="level" id="L3">
+    <div class="level-tag"><span class="level-num">03</span><span class="lab">Tabular Q-learning</span></div>
+    <h2>Your Frozen Lake code, unchanged</h2>
+    <div class="whatsnew"><span class="lab">What's new</span><span>Learning switches on. &alpha;, &gamma;, &epsilon; &mdash; the same three knobs and the same update line from your Q-learning page. The only difference in the entire algorithm is how the row index is computed.</span></div>
+
+    <div class="formula">Q(s,a) &larr; Q(s,a) + <span class="hl">&alpha;</span> &middot; [ r + <span class="hl">&gamma;</span> &middot; max<sub>a&prime;</sub> Q(s&prime;,a&prime;) &minus; Q(s,a) ]</div>
+
+    <div class="prose">
+      <p>Nothing here is new maths. <code>s</code> is now the row index that came out of Level 2's binning, <code>a</code> is 0 or 1, <code>r</code> is +1, and the TD-error bracket does what it always did: measure the gap between what you observed and what you believed, then close a fraction &alpha; of it.</p>
+      <p>One thing Frozen Lake never showed you: because reward is +1 <em>every</em> step and &gamma; is close to 1, Q-values here grow large &mdash; a state that can survive 300 more steps is worth roughly 95, not 1. The Q-value is now literally an estimate of <b>how many more steps I can survive from here</b>.</p>
+    </div>
+
+    <div class="bay">
+      <div class="bay-head">
+        <span class="lab">Tabular agent &middot; binned state</span>
+        <div class="ctrls" style="margin:0">
+          <button id="l3-ep" class="ghost">1 episode</button>
+          <button id="l3-run" class="go">Train 600 episodes</button>
+          <button id="l3-watch" class="ghost">Watch greedy</button>
+          <button id="l3-reset" class="ghost">Reset table</button>
+        </div>
+      </div>
+      <div class="bay-split">
+        <div class="sim">
+          <canvas id="l3-c" class="simcanvas" width="700" height="230"></canvas>
+          <canvas id="l3-chart" class="chartcanvas" width="700" height="220"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--amber)"></i>episode length</span>
+            <span><i style="background:var(--chalk)"></i>mean of last 30</span>
+            <span><i style="background:var(--fail)"></i>random baseline (22)</span>
+            <span><i style="background:var(--live)"></i>solved (475)</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="readout">
+            <span class="k">episode</span><span class="v" id="l3-n">0</span>
+            <span class="k">&epsilon; epsilon</span><span class="v" id="l3-eps">1.00</span>
+            <span class="k">last length</span><span class="v" id="l3-last">&mdash;</span>
+            <span class="k">mean of last 30</span><span class="v amber" id="l3-mean">&mdash;</span>
+            <span class="k">best ever</span><span class="v live" id="l3-best">&mdash;</span>
+            <hr>
+            <span class="k">rows visited</span><span class="v" id="l3-cov">0</span>
+            <span class="k">table coverage</span><span class="v" id="l3-covpct">0%</span>
+            <span class="k">max Q in table</span><span class="v" id="l3-maxq">0.0</span>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--dim2);line-height:1.6">
+            <b style="color:var(--dim)">Table coverage</b> is the stat to watch. It's the fraction of rows updated even once. Rows never visited stay at exactly 0 forever.
+          </div>
+        </div>
+      </div>
+      <div class="params">
+        <div class="param">
+          <label>&alpha; alpha <span class="val" id="v-l3a">0.20</span></label>
+          <input type="range" id="l3a" min="0.02" max="1" step="0.02" value="0.2">
+          <div class="hint">Learning rate. Same blend as your escape room.</div>
+        </div>
+        <div class="param">
+          <label>&gamma; gamma <span class="val" id="v-l3g">0.99</span></label>
+          <input type="range" id="l3g" min="0.5" max="0.999" step="0.001" value="0.99">
+          <div class="hint">Must be high here &mdash; survival is a long-horizon goal.</div>
+        </div>
+        <div class="param">
+          <label>&epsilon; decay / episode <span class="val" id="v-l3d">0.995</span></label>
+          <input type="range" id="l3d" min="0.9" max="0.9995" step="0.0005" value="0.995">
+          <div class="hint">How fast wandering gives way to exploiting.</div>
+        </div>
+        <div class="param">
+          <label>&epsilon; floor <span class="val" id="v-l3f">0.01</span></label>
+          <input type="range" id="l3f" min="0" max="0.3" step="0.01" value="0.01">
+          <div class="hint">Minimum randomness that never goes away.</div>
+        </div>
+        <div class="param" style="grid-column:1/-1">
+          <label class="toggle"><input type="checkbox" id="l3pen" checked><span>Penalty on failure &mdash; give reward &minus;10 on the step where the pole falls</span></label>
+          <div class="hint">Reward shaping &mdash; not part of the real environment. Without it the fatal step earns the same +1 as every other step, so nothing marks it as the mistake. Measured effect here is real but modest: roughly 210 vs 185 average over five runs. Worth knowing that shaping is a lever; worth also knowing it is rarely a magic one.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <span class="lab">What good looks like</span>
+      With the defaults, mean length climbs off 22 within about 100 episodes and lands somewhere between <b>120 and 320</b> after 600. That range is not sloppiness on your part &mdash; identical settings on a different random seed genuinely produce 120 on one run and 320 on the next. Expect a <b>jagged</b> curve with big drops late in training too. Run it three or four times before you judge any parameter change; a single run tells you almost nothing here.
+    </div>
+
+    <div class="prose">
+      <p>Go back to Level 2's sliders and retrain here. Try <code>1, 1, 6, 12</code> &mdash; ignoring cart position and cart velocity entirely. It often learns <b>faster</b> than the full table, because 72 rows get visited far more often than 648 do. That result should bother you slightly, and Level 4 is why.</p>
+    </div>
+  </section>
+
+  <!-- ============ LEVEL 4 ============ -->
+  <section class="level" id="L4">
+    <div class="level-tag"><span class="level-num">04</span><span class="lab">Diagnosis</span></div>
+    <h2>Every row is an island</h2>
+    <div class="whatsnew"><span class="lab">What's new</span><span>Nothing added. This level takes the table you just trained apart and shows the two structural faults that no amount of tuning can fix.</span></div>
+
+    <div class="prose">
+      <p>A Q-table is a dictionary. <code>Q[391]</code> and <code>Q[392]</code> are two unrelated memory slots. Updating one has <b>zero</b> effect on the other. In Frozen Lake that was correct and harmless: tile 3 and tile 4 really are different places, and there's no reason experience should leak between them.</p>
+      <p>Here it's a catastrophe, because rows 391 and 392 might be <em>the pole tilted 4.1&deg; versus 4.3&deg;</em>. Physically almost the same situation. The right action is almost certainly the same. And the table refuses to let one teach the other.</p>
+    </div>
+
+    <div class="bay">
+      <div class="bay-head">
+        <span class="lab">Fault 1 &middot; Neighbouring states share nothing</span>
+        <div class="ctrls" style="margin:0">
+          <button id="l4-sample" class="go">Sample a live state</button>
+        </div>
+      </div>
+      <div class="bay-body">
+        <p style="font-size:13.5px;color:var(--dim);margin-bottom:4px">Below: the row the agent is currently in, and its immediate neighbours &mdash; states one bin away in a single variable. Same physical moment, give or take a hair. Look at how much the learned values disagree, and how many neighbours were never visited at all.</p>
+        <div class="qgrid" id="l4-grid"></div>
+        <div id="l4-verdict" style="margin-top:14px;font-size:13.5px;color:var(--dim);font-family:var(--mono)">Train the table in Level 3 first, then sample.</div>
+      </div>
+    </div>
+
+    <div class="bay">
+      <div class="bay-head">
+        <span class="lab">Fault 2 &middot; More resolution makes it worse, not better</span>
+        <div class="ctrls" style="margin:0">
+          <button id="l4-sweep" class="go">Run the sweep</button>
+          <span style="font-size:12px;color:var(--dim2)">trains 12 tables: 4 bin settings &times; 3 seeds</span>
+        </div>
+      </div>
+      <div class="bay-body">
+        <canvas id="l4-chart" class="chartcanvas" width="700" height="230"></canvas>
+        <div id="l4-sweeptbl"></div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p>Each curve is averaged over three seeds, because single runs here are too noisy to read. Watch the <b>coverage column</b> rather than the curves &mdash; that is the stat that behaves predictably. It falls off a cliff &mdash; near-total coverage at the coarsest setting, under 10% at the finest. By the finest setting, more than ninety percent of the table has never been touched and is still sitting at exactly zero.</p><p>That is the squeeze. The coarsest table is fully explored but hits a ceiling around 100 &mdash; it physically cannot represent a finer distinction, so it cannot act on one. The finest table <em>could</em> represent a much better policy, but it will never get enough visits to fill in. The middle settings are best, and even they are unstable. There is no bin count that gives you both, and the gap widens exponentially with every variable you add to the state.</p>
+    </div>
+
+    <div class="note key">
+      <span class="lab">The one-sentence diagnosis</span>
+      A table can <b>memorise</b> but it cannot <b>generalise</b>. It has no notion that two states are similar, so every state has to be experienced individually &mdash; and with continuous inputs there are always more states than you have lifetimes to visit.
+    </div>
+
+    <div class="prose">
+      <p>So the fix has to be something that takes the four raw numbers and returns Q-values <em>without</em> a lookup &mdash; where similar inputs automatically produce similar outputs, because that's a property of the machine itself rather than something you teach it row by row.</p>
+      <p>That thing is a function. And a neural network is just a function with adjustable knobs.</p>
+    </div>
+  </section>
+
+  <!-- ============ LEVEL 5 ============ -->
+  <section class="level" id="L5">
+    <div class="level-tag"><span class="level-num net">05</span><span class="lab">Function approximation</span></div>
+    <h2>Replace the lookup with a network</h2>
+    <div class="whatsnew net"><span class="lab">What's new</span><span>The table is gone. A small neural network &mdash; 4 inputs, 64 hidden units, 2 outputs &mdash; now <em>predicts</em> Q-values from the raw unbinned state. Everything else stays: same TD-error, same &gamma;, same &epsilon;-greedy.</span></div>
+
+    <div class="prose"><p>Read these two lines next to each other. That's the whole conceptual jump:</p></div>
+
+    <div class="formula">table&nbsp;&nbsp;&nbsp;q = <span class="hl">Q[binIndex(s)][a]</span>&nbsp;&nbsp;&nbsp;// look it up
+network&nbsp;q = <span class="hl2">net(s)[a]</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// compute it</div>
+
+    <div class="prose">
+      <p>The network takes the four raw floats &mdash; no binning, nothing thrown away &mdash; and outputs two numbers: its estimate of Q for "push left" and Q for "push right". Because it's a smooth function, feeding it 4.1&deg; and 4.3&deg; produces nearly identical outputs <b>automatically</b>. Generalisation stops being something you hope for and becomes free.</p>
+      <p>Training changes shape too. A table cell is <em>assigned</em> a value. A network is <em>nudged</em> toward one: compute the same TD target <code>r + &gamma;&middot;max Q(s&prime;,&middot;)</code>, treat it as the correct answer, and take a gradient step to shrink the error. Instead of &alpha; controlling a blend, a learning rate controls the size of that nudge &mdash; and the nudge adjusts weights that affect <em>every</em> state at once.</p>
+    </div>
+
+    <div class="note net">
+      <span class="lab">This is DQN</span>
+      What you're about to run is the Deep Q-Network algorithm &mdash; the 2013 DeepMind method that learned Atari from pixels. It is Q-learning with the table swapped for a network, plus <b>two stabilisers</b>, both of which are toggles below so you can watch what happens without them.
+    </div>
+
+    <table class="tbl">
+      <tr><th>Stabiliser</th><th>What it does</th><th>The problem it fixes</th></tr>
+      <tr>
+        <td class="m">Replay buffer</td>
+        <td>Stores the last 20 000 transitions. Trains on a random batch of 64 drawn from history, not on the step that just happened.</td>
+        <td>Consecutive steps are nearly identical, so training on them in order is like studying one flashcard 50 times in a row. The network overfits to the last few seconds and forgets everything else.</td>
+      </tr>
+      <tr>
+        <td class="m">Target network</td>
+        <td>Keeps a frozen copy of the network and uses the copy to compute <code>max Q(s&prime;,&middot;)</code>. Syncs it every 300 steps.</td>
+        <td>Otherwise the network chases a target that it itself moves every time it updates. Values spiral upward and diverge &mdash; you're chasing your own tail.</td>
+      </tr>
+    </table>
+
+    <div class="bay">
+      <div class="bay-head">
+        <span class="lab">DQN &middot; raw 4-number state, no bins</span>
+        <div class="ctrls" style="margin:0">
+          <button id="l5-run" class="net">Train</button>
+          <button id="l5-stop" class="ghost" disabled>Pause</button>
+          <button id="l5-watch" class="ghost">Watch greedy</button>
+          <button id="l5-reset" class="ghost">Reset network</button>
+        </div>
+      </div>
+      <div class="bay-split">
+        <div class="sim">
+          <canvas id="l5-c" class="simcanvas" width="700" height="230"></canvas>
+          <canvas id="l5-chart" class="chartcanvas" width="700" height="220"></canvas>
+          <div class="legend">
+            <span><i style="background:var(--signal)"></i>DQN episode length</span>
+            <span><i style="background:var(--chalk)"></i>mean of last 30</span>
+            <span><i style="background:var(--amber)"></i>your best tabular mean</span>
+            <span><i style="background:var(--live)"></i>solved (475)</span>
+          </div>
+        </div>
+        <div class="side">
+          <div class="readout">
+            <span class="k">episode</span><span class="v" id="l5-n">0</span>
+            <span class="k">env steps</span><span class="v" id="l5-steps">0</span>
+            <span class="k">&epsilon; epsilon</span><span class="v" id="l5-eps">1.00</span>
+            <span class="k">last length</span><span class="v" id="l5-last">&mdash;</span>
+            <span class="k">mean of last 30</span><span class="v signal" id="l5-mean">&mdash;</span>
+            <span class="k">best ever</span><span class="v live" id="l5-best">&mdash;</span>
+            <hr>
+            <span class="k">buffer filled</span><span class="v" id="l5-buf">0</span>
+            <span class="k">TD loss</span><span class="v" id="l5-loss">&mdash;</span>
+            <span class="k">weights in net</span><span class="v signal" id="l5-params">450</span>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--dim2);line-height:1.6">
+            Compare that last number to Level 2's cell count. The network does the job of a 1 296-cell table with fewer numbers &mdash; and it covers <em>every</em> state, not just visited ones.
+          </div>
+        </div>
+      </div>
+      <div class="params">
+        <div class="param">
+          <label>learning rate <span class="val signal" id="v-l5lr">0.0010</span></label>
+          <input type="range" class="sig" id="l5lr" min="0.0001" max="0.005" step="0.0001" value="0.001">
+          <div class="hint">The network's &alpha;. Too high and it forgets; too low and it crawls.</div>
+        </div>
+        <div class="param">
+          <label>&gamma; gamma <span class="val signal" id="v-l5g">0.99</span></label>
+          <input type="range" class="sig" id="l5g" min="0.8" max="0.999" step="0.001" value="0.99">
+          <div class="hint">Unchanged in meaning from every level before this.</div>
+        </div>
+        <div class="param">
+          <label>hidden units <span class="val signal" id="v-l5h">64</span></label>
+          <input type="range" class="sig" id="l5h" min="8" max="128" step="8" value="64">
+          <div class="hint">Capacity. Changing this resets the network.</div>
+        </div>
+        <div class="param">
+          <label>&epsilon; decay over <span class="val signal" id="v-l5d">8000</span></label>
+          <input type="range" class="sig" id="l5d" min="1000" max="20000" step="500" value="8000">
+          <div class="hint">Decayed per <em>step</em> now, not per episode &mdash; episodes vary wildly in length here.</div>
+        </div>
+        <div class="param">
+          <label class="toggle"><input type="checkbox" class="sig" id="l5rep" checked><span>Replay buffer</span></label>
+          <div class="hint">Off = train only on the newest transition. Expect collapse.</div>
+        </div>
+        <div class="param">
+          <label class="toggle"><input type="checkbox" class="sig" id="l5tgt" checked><span>Target network</span></label>
+          <div class="hint">Off = bootstrap from the live network. Expect Q-values to run away.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note net">
+      <span class="lab">The experiment worth running</span>
+      Train with both toggles on and leave it running to at least <b>40 000&ndash;50 000 env steps</b> &mdash; roughly 15&ndash;25 seconds. Below about 30 000 it looks unconvincing. Watch "best ever" hit 500 before the mean does. Then reset, switch <b>both off</b>, and run again with everything else identical. It collapses to around <b>10 steps per episode</b> &mdash; not merely worse than the network, worse than <em>random</em>, because it has actively learned a broken policy. Those two "hacks" aren't polish, they're what makes the whole thing possible.
+    </div>
+
+    <div class="prose">
+      <p>One honest caveat: DQN is <b>not</b> guaranteed to converge. Tabular Q-learning has a proof behind it; the moment you combine bootstrapping, off-policy learning and function approximation you lose that guarantee &mdash; the trio is known as the <em>deadly triad</em>. Run this five times on identical settings and you may see means of 400, 320, 90, 370 and 100 &mdash; that spread is from actual measurements of this exact code, not a caveat for form's sake. Every one of those runs touched 500 at least once. That's not you misconfiguring it, that's the actual state of the field.</p>
+    </div>
+  </section>
+
+  <!-- ============ REVISION ============ -->
+  <section class="level" id="REV">
+    <div class="level-tag"><span class="level-num" style="background:var(--dim2);color:var(--ink)">&middot;&middot;</span><span class="lab">Revision</span></div>
+    <h2>The whole module on one screen</h2>
+    <p class="lede">Nothing to click here. Come back when you want the concepts without re-running the simulations.</p>
+
+    <h3 style="font-size:17px;margin:26px 0 8px">The environment, in five lines</h3>
+    <table class="tbl">
+      <tr><td class="m" style="width:120px">State</td><td>4 real numbers: x, &#7819;, &theta;, &theta;&#775; &mdash; continuous, never repeats exactly</td></tr>
+      <tr><td class="m">Actions</td><td>2 &mdash; push cart left (&minus;10 N) or right (+10 N). Force magnitude is fixed.</td></tr>
+      <tr><td class="m">Reward</td><td>+1 per surviving step. Dense, not sparse. Episode score = episode length.</td></tr>
+      <tr><td class="m">Terminates</td><td>|&theta;| &gt; 12&deg;, or |x| &gt; 2.4, or 500 steps reached</td></tr>
+      <tr><td class="m">The twist</td><td>Push right &rarr; cart goes right, pole tips left. Action and effect are opposed.</td></tr>
+    </table>
+
+    <h3 style="font-size:17px;margin:30px 0 8px">The two representations, side by side</h3>
+    <table class="tbl">
+      <tr><th></th><th>Q-table (Levels 2&ndash;4)</th><th>Neural network (Level 5)</th></tr>
+      <tr><td class="m">Q lookup</td><td class="m">Q[row][a]</td><td class="m">net(s)[a]</td></tr>
+      <tr><td class="m">Input</td><td>Binned integers &mdash; detail discarded</td><td>Raw floats &mdash; nothing discarded</td></tr>
+      <tr><td class="m">Numbers stored</td><td>rows &times; 2, grows exponentially with variables</td><td>fixed weight count, grows linearly</td></tr>
+      <tr><td class="m">Generalises?</td><td><b style="color:var(--fail)">No.</b> Every row is independent.</td><td><b style="color:var(--live)">Yes.</b> Similar in &rarr; similar out, free.</td></tr>
+      <tr><td class="m">Unseen state</td><td>Returns 0. Knows nothing.</td><td>Returns a sensible interpolation.</td></tr>
+      <tr><td class="m">Update</td><td>Assign a blend: <code>Q += &alpha;&middot;TD</code></td><td>Gradient step shrinking the same TD error</td></tr>
+      <tr><td class="m">Guaranteed?</td><td>Yes, converges provably</td><td>No. The deadly triad.</td></tr>
+      <tr><td class="m">Scales to Atari?</td><td>Never</td><td>Yes &mdash; swap the input layer for a CNN</td></tr>
+    </table>
+
+    <h3 style="font-size:17px;margin:30px 0 8px">Every knob, and which way to turn it</h3>
+    <table class="tbl">
+      <tr><th>Knob</th><th>Turn it up</th><th>Turn it down</th></tr>
+      <tr><td class="m">&gamma; gamma</td><td>Values distant survival. Needed here &mdash; must be &ge;0.95 or the agent is short-sighted and never learns to plan.</td><td>Below ~0.9 the agent only cares about the next few steps and can never learn to keep the cart centred.</td></tr>
+      <tr><td class="m">&alpha; alpha<br>(table)</td><td>Reacts fast to new evidence but the table jitters and never settles.</td><td>Stable and smooth, but needs far more episodes to fill in.</td></tr>
+      <tr><td class="m">learning rate<br>(network)</td><td>Big weight jumps &mdash; can destroy good behaviour in one bad batch.</td><td>Steady but slow. Below 1e-4 you'll wait a long time.</td></tr>
+      <tr><td class="m">&epsilon; decay</td><td>Explores longer, more thorough, slower to look competent.</td><td>Commits early &mdash; risks locking onto a mediocre policy found by luck.</td></tr>
+      <tr><td class="m">bins per<br>variable</td><td>Finer distinctions possible, but coverage collapses and most rows stay empty.</td><td>Fast, dense coverage, hard ceiling on how good the policy can get.</td></tr>
+      <tr><td class="m">hidden units</td><td>More capacity for complex policies; slower per step, more prone to instability.</td><td>Under ~16 the network can't represent a good policy at all.</td></tr>
+    </table>
+
+    <h3 style="font-size:17px;margin:30px 0 8px">Where this goes next</h3>
+    <table class="tbl">
+      <tr><td class="m" style="width:150px">LunarLander-v3</td><td>Same DQN code, 8 state variables, 4 actions. Genuinely hard. The natural next environment.</td></tr>
+      <tr><td class="m">Double DQN</td><td>One-line fix for DQN systematically over-estimating Q-values. Cheap win.</td></tr>
+      <tr><td class="m">REINFORCE</td><td>Learn the policy directly instead of learning values and deriving a policy from them.</td></tr>
+      <tr><td class="m">Actor-Critic &rarr; PPO</td><td>Combines both. PPO is what actually trains modern agents, including RLHF for language models.</td></tr>
+      <tr><td class="m">Atari from pixels</td><td>Swap the 4-number input for a CNN over stacked frames. Same DQN otherwise.</td></tr>
+    </table>
+
+    <div class="note key" style="margin-top:28px">
+      <span class="lab">The sentence to remember</span>
+      Frozen Lake taught you the update rule. CartPole teaches you that the update rule was never the hard part &mdash; <b>representing the state</b> is.
+    </div>
+  </section>
+
+  </main>
+
+</div>
+</div>
+
+<footer>
+  <div class="wrap">CartPole-v1 physics reproduced from Gymnasium &mdash; gravity 9.8, cart 1.0&nbsp;kg, pole 0.1&nbsp;kg, half-length 0.5&nbsp;m, force 10&nbsp;N, &Delta;t 0.02&nbsp;s, Euler integration. Everything on this page runs locally in your browser: no libraries, no server.</div>
+</footer>
+
+<script>
+"use strict";
+/* ============================================================
+   CartPole-v1 physics — reproduced from Gymnasium
+   ============================================================ */
+const GRAV=9.8, MC=1.0, MP=0.1, MTOT=1.1, LEN=0.5, PML=0.05, FORCE=10.0, TAU=0.02;
+const X_LIM=2.4, TH_LIM=0.2095, CAP=500;
+
+function reset(){
+  const r=()=> (Math.random()*0.1-0.05);
+  return {x:r(), xd:r(), th:r(), thd:r()};
+}
+function physStep(s,a){
+  const f = a===1 ? FORCE : -FORCE;
+  const ct=Math.cos(s.th), st=Math.sin(s.th);
+  const temp=(f + PML*s.thd*s.thd*st)/MTOT;
+  const thacc=(GRAV*st - ct*temp)/(LEN*(4/3 - MP*ct*ct/MTOT));
+  const xacc=temp - PML*thacc*ct/MTOT;
+  return {x:s.x+TAU*s.xd, xd:s.xd+TAU*xacc, th:s.th+TAU*s.thd, thd:s.thd+TAU*thacc};
+}
+const dead = s => Math.abs(s.x)>X_LIM || Math.abs(s.th)>TH_LIM;
+
+/* ============================================================
+   Canvas helpers
+   ============================================================ */
+const R=2;
+function pen(c){
+  if(!c._init){ c._w=c.width; c._h=c.height; c.width*=R; c.height*=R; c._init=1; }
+  const ctx=c.getContext('2d');
+  ctx.setTransform(R,0,0,R,0,0);
+  return ctx;
+}
+const CLR={ink:'#0A1216',rule:'#263B47',rule2:'#33505F',chalk:'#E8F1F5',dim:'#8AA2AF',
+  dim2:'#5F7683',amber:'#FFB03A',signal:'#5AC8E8',fail:'#FF6E6E',live:'#7ED9A0',panel:'#15222A'};
+
+function drawSim(c, s, opts){
+  opts = opts||{};
+  const ctx=pen(c), W=c._w, H=c._h;
+  const accent = opts.accent||CLR.amber;
+  ctx.clearRect(0,0,W,H);
+
+  // graph-paper backdrop
+  ctx.strokeStyle='rgba(38,59,71,.45)'; ctx.lineWidth=1;
+  for(let gx=0;gx<W;gx+=28){ctx.beginPath();ctx.moveTo(gx+.5,0);ctx.lineTo(gx+.5,H);ctx.stroke();}
+  for(let gy=0;gy<H;gy+=28){ctx.beginPath();ctx.moveTo(0,gy+.5);ctx.lineTo(W,gy+.5);ctx.stroke();}
+
+  const groundY=Math.round(H*0.76);
+  const sx=(W-70)/(2*2.9);
+  const px=v=>W/2+v*sx;
+  const poleL=H*0.50, CW=Math.max(34,W*0.075), CH=Math.max(15,H*0.085);
+
+  // rail
+  ctx.strokeStyle=CLR.rule2; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(20,groundY+.5); ctx.lineTo(W-20,groundY+.5); ctx.stroke();
+
+  // x failure limits
+  ctx.strokeStyle='rgba(255,110,110,.55)'; ctx.lineWidth=2;
+  [-X_LIM,X_LIM].forEach(v=>{
+    ctx.beginPath(); ctx.moveTo(px(v),groundY-14); ctx.lineTo(px(v),groundY+12); ctx.stroke();
+  });
+  ctx.fillStyle='rgba(255,110,110,.6)'; ctx.font='10px IBM Plex Mono, monospace';
+  ctx.textAlign='center';
+  ctx.fillText('-2.4',px(-X_LIM),groundY+26); ctx.fillText('2.4',px(X_LIM),groundY+26);
+  ctx.textAlign='left';
+
+  // centre tick
+  ctx.strokeStyle='rgba(95,118,131,.5)';
+  ctx.beginPath(); ctx.moveTo(W/2,groundY-6); ctx.lineTo(W/2,groundY+8); ctx.stroke();
+
+  const cx=px(s.x), pivotY=groundY-CH;
+
+  // 12-degree failure wedge
+  if(opts.wedge!==false){
+    ctx.strokeStyle='rgba(255,110,110,.30)'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+    [-TH_LIM,TH_LIM].forEach(t=>{
+      ctx.beginPath(); ctx.moveTo(cx,pivotY);
+      ctx.lineTo(cx+Math.sin(t)*poleL*1.14, pivotY-Math.cos(t)*poleL*1.14); ctx.stroke();
+    });
+    ctx.setLineDash([]);
+  }
+
+  // force arrow
+  if(opts.action===0||opts.action===1){
+    const dir=opts.action===1?1:-1;
+    const ay=groundY-CH/2, ax=cx+dir*(CW/2+7);
+    ctx.strokeStyle=accent; ctx.fillStyle=accent; ctx.lineWidth=2.5; ctx.globalAlpha=.9;
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(ax+dir*20,ay); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ax+dir*26,ay); ctx.lineTo(ax+dir*17,ay-5); ctx.lineTo(ax+dir*17,ay+5);
+    ctx.closePath(); ctx.fill(); ctx.globalAlpha=1;
+  }
+
+  // cart
+  ctx.fillStyle=CLR.panel; ctx.strokeStyle=CLR.rule2; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  if(ctx.roundRect) ctx.roundRect(cx-CW/2, groundY-CH, CW, CH, 3);
+  else ctx.rect(cx-CW/2, groundY-CH, CW, CH);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle=CLR.dim2;
+  [-CW*0.26,CW*0.26].forEach(o=>{ctx.beginPath();ctx.arc(cx+o,groundY,3.2,0,7);ctx.fill();});
+
+  // pole
+  const tipX=cx+Math.sin(s.th)*poleL, tipY=pivotY-Math.cos(s.th)*poleL;
+  ctx.strokeStyle=opts.dying?CLR.fail:accent; ctx.lineWidth=6; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(cx,pivotY); ctx.lineTo(tipX,tipY); ctx.stroke();
+  ctx.lineCap='butt';
+  ctx.fillStyle=CLR.chalk; ctx.beginPath(); ctx.arc(cx,pivotY,3.6,0,7); ctx.fill();
+
+  if(opts.label){
+    ctx.fillStyle=CLR.dim2; ctx.font='11px IBM Plex Mono, monospace';
+    ctx.fillText(opts.label,12,18);
+  }
+}
+
+/* ---------- line chart ---------- */
+function drawChart(c, cfg){
+  const ctx=pen(c), W=c._w, H=c._h;
+  const PL=42,PR=12,PT=12,PB=22;
+  ctx.clearRect(0,0,W,H);
+  const ymax=cfg.ymax||500, xmax=Math.max(cfg.xmax||1,1);
+  const X=i=>PL+(i/xmax)*(W-PL-PR);
+  const Y=v=>H-PB-(Math.min(v,ymax)/ymax)*(H-PT-PB);
+
+  ctx.strokeStyle='rgba(38,59,71,.9)'; ctx.lineWidth=1;
+  ctx.fillStyle=CLR.dim2; ctx.font='10px IBM Plex Mono, monospace'; ctx.textAlign='right';
+  for(let k=0;k<=4;k++){
+    const v=ymax*k/4, y=Math.round(Y(v))+.5;
+    ctx.beginPath(); ctx.moveTo(PL,y); ctx.lineTo(W-PR,y); ctx.stroke();
+    ctx.fillText(Math.round(v),PL-6,y+3.5);
+  }
+  ctx.textAlign='left';
+  if(cfg.xlabel){ctx.fillStyle=CLR.dim2;ctx.fillText(cfg.xlabel,PL,H-5);}
+
+  (cfg.hlines||[]).forEach(h=>{
+    if(h.y>ymax) return;
+    ctx.strokeStyle=h.color; ctx.globalAlpha=.55; ctx.setLineDash([5,4]); ctx.lineWidth=1.4;
+    const y=Math.round(Y(h.y))+.5;
+    ctx.beginPath(); ctx.moveTo(PL,y); ctx.lineTo(W-PR,y); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+  });
+
+  (cfg.series||[]).forEach(se=>{
+    const d=se.data; if(!d||d.length<2) return;
+    ctx.strokeStyle=se.color; ctx.lineWidth=se.w||1.4; ctx.globalAlpha=se.alpha==null?1:se.alpha;
+    ctx.beginPath();
+    const stepN=Math.max(1,Math.floor(d.length/(W*1.2)));
+    for(let i=0;i<d.length;i+=stepN){
+      const x=X(i), y=Y(d[i]);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke(); ctx.globalAlpha=1;
+  });
+
+  if(cfg.empty){
+    ctx.fillStyle=CLR.dim2; ctx.font='12px IBM Plex Mono, monospace'; ctx.textAlign='center';
+    ctx.fillText(cfg.empty,W/2,H/2); ctx.textAlign='left';
+  }
+}
+const mean = a => a.length? a.reduce((x,y)=>x+y,0)/a.length : 0;
+function movAvg(arr,w){ const out=new Array(arr.length); let sum=0;
+  for(let i=0;i<arr.length;i++){ sum+=arr[i]; if(i>=w) sum-=arr[i-w];
+    out[i]=sum/Math.min(i+1,w); } return out; }
+const tail = (a,n) => a.slice(Math.max(0,a.length-n));
+const $ = id => document.getElementById(id);
+
+/* ============================================================
+   HERO — play it yourself
+   ============================================================ */
+(function(){
+  const c=$('heroC'), ov=$('heroOv');
+  let s=reset(), t=0, live=false, best=0, act=1, hold=0, dying=false;
+  const tel=(id,v,cls)=>{const e=$(id); e.textContent=v; e.className='v'+(cls?' '+cls:'');};
+  function paint(){
+    drawSim(c,s,{action:live?act:null,dying:dying,accent:CLR.amber});
+    tel('tel-x',s.x.toFixed(3), Math.abs(s.x)>1.8?'warn':'');
+    tel('tel-xd',s.xd.toFixed(3));
+    const tp=Math.abs(s.th)/TH_LIM;
+    tel('tel-th',s.th.toFixed(4), tp>0.8?'bad':tp>0.5?'warn':'');
+    tel('tel-thd',s.thd.toFixed(3));
+    tel('tel-t',t);
+  }
+  function frame(){
+    if(live){
+      if(hold!==0) act = hold>0?1:0;
+      s=physStep(s,act); t++;
+      if(dead(s)||t>=CAP){
+        live=false; dying=true;
+        if(t>best){best=t; $('heroBest').textContent=t;}
+        $('heroMsg').innerHTML='Your best: <b style="color:var(--amber)">'+(best||'—')+'</b> · '+
+          (t>=CAP?'you actually did it':'pole fell after '+t+' steps — press again');
+        setTimeout(()=>{ov.classList.remove('gone');dying=false;s=reset();t=0;paint();},900);
+      }
+    }
+    paint(); requestAnimationFrame(frame);
+  }
+  function start(){ ov.classList.add('gone'); s=reset(); t=0; dying=false; live=true; }
+  ov.addEventListener('click',start);
+  ov.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')start();});
+  ov.tabIndex=0;
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft'){hold=-1;if(live)e.preventDefault();}
+    if(e.key==='ArrowRight'){hold=1;if(live)e.preventDefault();}
+  });
+  addEventListener('keyup',e=>{
+    if((e.key==='ArrowLeft'&&hold<0)||(e.key==='ArrowRight'&&hold>0)) hold=0;
+  });
+  // touch: hold left or right half of the canvas
+  const zone=e=>{const r=c.getBoundingClientRect();
+    const p=(e.touches?e.touches[0].clientX:e.clientX)-r.left; return p<r.width/2?-1:1;};
+  c.addEventListener('pointerdown',e=>{if(!live)start();hold=zone(e);e.preventDefault();});
+  c.addEventListener('pointermove',e=>{if(hold!==0)hold=zone(e);});
+  addEventListener('pointerup',()=>{hold=0;});
+  paint(); frame();
+})();
+
+/* ============================================================
+   LEVEL 0 — anatomy of a step
+   ============================================================ */
+(function(){
+  const c=$('l0-c');
+  let s=reset(), t=0, run=false, a=1, over=false;
+  function show(){
+    drawSim(c,s,{action:over?null:a,dying:over});
+    $('l0-x').textContent=s.x.toFixed(3);
+    $('l0-xd').textContent=s.xd.toFixed(3);
+    $('l0-th').textContent=s.th.toFixed(4);
+    $('l0-thd').textContent=s.thd.toFixed(3);
+    $('l0-a').textContent=over?'—':(a===1?'1 · push right':'0 · push left');
+    $('l0-r').textContent=over?'0':'+1';
+    $('l0-ret').textContent=t;
+    const st=$('l0-st');
+    st.textContent = over ? (t>=CAP?'survived 500':'terminated') : (run?'running':'ready');
+    st.className='v '+(over?(t>=CAP?'live':'fail'):'');
+  }
+  function tick(){
+    if(run&&!over){
+      a=Math.random()<0.5?0:1;
+      s=physStep(s,a); t++;
+      if(dead(s)||t>=CAP){over=true;run=false;$('l0-play').textContent='Run physics';}
+    }
+    show(); requestAnimationFrame(tick);
+  }
+  $('l0-play').onclick=()=>{
+    if(over){s=reset();t=0;over=false;}
+    run=!run; $('l0-play').textContent=run?'Pause':'Run physics';
+  };
+  $('l0-reset').onclick=()=>{s=reset();t=0;over=false;run=false;$('l0-play').textContent='Run physics';show();};
+  tick();
+})();
+
+/* ============================================================
+   LEVEL 1 — random baseline
+   ============================================================ */
+(function(){
+  const c=$('l1-c'), ch=$('l1-chart');
+  let lens=[], s=reset(), t=0, watching=false, over=false, busy=false;
+  function stats(){
+    $('l1-n').textContent=lens.length;
+    $('l1-mean').textContent=lens.length?mean(lens).toFixed(1):'—';
+    $('l1-best').textContent=lens.length?Math.max(...lens):'—';
+    $('l1-worst').textContent=lens.length?Math.min(...lens):'—';
+    $('l1-solved').textContent=lens.filter(v=>v>=475).length;
+    const ma=movAvg(lens,30);
+    drawChart(ch,{ymax:Math.max(60,Math.max(...lens,0)*1.2), xmax:Math.max(lens.length-1,30),
+      xlabel:'episodes', empty:lens.length?null:'no episodes yet',
+      series:[{data:lens,color:CLR.amber,w:1,alpha:.55},{data:ma,color:CLR.chalk,w:2}]});
+  }
+  function runEp(){ let st=reset(),n=0;
+    while(!dead(st)&&n<CAP){st=physStep(st,Math.random()<.5?0:1);n++;} return n; }
+  function watch(){
+    if(!watching)return;
+    if(over){watching=false;drawSim(c,s,{dying:true});return;}
+    s=physStep(s,Math.random()<.5?0:1); t++;
+    if(dead(s)||t>=CAP){over=true;lens.push(t);stats();}
+    drawSim(c,s,{label:'random · step '+t});
+    requestAnimationFrame(watch);
+  }
+  $('l1-ep').onclick=()=>{ if(busy)return; s=reset();t=0;over=false;watching=true;watch(); };
+  $('l1-run').onclick=()=>{
+    if(busy)return; busy=true; $('l1-run').disabled=true;
+    let done=0;
+    (function chunk(){
+      for(let i=0;i<40&&done<300;i++,done++) lens.push(runEp());
+      stats();
+      if(done<300) requestAnimationFrame(chunk);
+      else { busy=false; $('l1-run').disabled=false; }
+    })();
+  };
+  $('l1-reset').onclick=()=>{lens=[];watching=false;s=reset();t=0;stats();drawSim(c,s,{});};
+  drawSim(c,s,{}); stats();
+})();
+
+/* ============================================================
+   Shared binning config (Level 2 controls it, 3 & 4 consume it)
+   ============================================================ */
+const BOUNDS=[[-X_LIM,X_LIM],[-3,3],[-TH_LIM,TH_LIM],[-2.5,2.5]];
+const BINS=[3,3,6,12];
+function binOf(v,d,bins){
+  const n=bins[d]; if(n<=1) return 0;
+  const [lo,hi]=BOUNDS[d];
+  const t=(v-lo)/(hi-lo);
+  return Math.min(n-1,Math.max(0,Math.floor(t*n)));
+}
+function bvec(s,bins){
+  return [binOf(s.x,0,bins),binOf(s.xd,1,bins),binOf(s.th,2,bins),binOf(s.thd,3,bins)];
+}
+function rowOf(s,bins){
+  const b=bvec(s,bins);
+  return ((b[0]*bins[1]+b[1])*bins[2]+b[2])*bins[3]+b[3];
+}
+const nRows = bins => bins[0]*bins[1]*bins[2]*bins[3];
+const fmt = n => n.toLocaleString('en-US').replace(/,/g,' ');
+
+/* ============================================================
+   LEVEL 2 — the tracer
+   ============================================================ */
+(function(){
+  const c=$('l2-c');
+  let s=reset(), run=false, over=false;
+  function buildBars(){
+    for(let d=0;d<4;d++){
+      const bar=$('bb-'+d); bar.innerHTML='';
+      for(let i=0;i<BINS[d];i++) bar.appendChild(document.createElement('span'));
+    }
+  }
+  function counts(){
+    $('l2-rows').textContent=fmt(nRows(BINS));
+    $('l2-mult').textContent=BINS.join(' × ');
+    $('l2-cells').textContent=fmt(nRows(BINS)*2);
+  }
+  function trace(){
+    const b=bvec(s,BINS), vals=[s.x,s.xd,s.th,s.thd];
+    for(let d=0;d<4;d++){
+      const kids=$('bb-'+d).children;
+      for(let i=0;i<kids.length;i++) kids[i].className = i===b[d]?'hit':'';
+      $('to-'+d).textContent='bin '+b[d];
+    }
+    const row=rowOf(s,BINS);
+    $('l2-rowcalc').innerHTML=
+      '<span>state ( '+vals.map(v=>v.toFixed(3)).join(', ')+' )</span>'+
+      '<span>&rarr; bins [ '+b.join(', ')+' ]</span>'+
+      '<span>&rarr; row <b>'+row+'</b> of '+fmt(nRows(BINS))+'</span>';
+  }
+  function show(){ drawSim(c,s,{dying:over,wedge:false}); trace(); }
+  function tick(){
+    if(run&&!over){
+      s=physStep(s,Math.random()<.5?0:1);
+      if(dead(s)){over=true;run=false;$('l2-play').textContent='Run physics';}
+    }
+    show(); requestAnimationFrame(tick);
+  }
+  $('l2-play').onclick=()=>{ if(over){s=reset();over=false;}
+    run=!run; $('l2-play').textContent=run?'Pause':'Run physics'; };
+  $('l2-step').onclick=()=>{ run=false; $('l2-play').textContent='Run physics';
+    if(over){s=reset();over=false;} s=physStep(s,Math.random()<.5?0:1);
+    if(dead(s))over=true; show(); };
+  $('l2-reset').onclick=()=>{s=reset();over=false;run=false;$('l2-play').textContent='Run physics';show();};
+
+  ['b0','b1','b2','b3'].forEach((id,d)=>{
+    const el=$(id);
+    el.oninput=()=>{ BINS[d]=+el.value; $('v-'+id).textContent=el.value;
+      buildBars(); counts(); trace(); if(window.__tabReset)window.__tabReset(); };
+  });
+  buildBars(); counts(); show(); tick();
+})();
+
+/* ============================================================
+   LEVEL 3 — tabular Q-learning on binned state
+   ============================================================ */
+const TAB = { Q:null, bins:null, visited:null };
+(function(){
+  const c=$('l3-c'), ch=$('l3-chart');
+  let lens=[], eps=1, ep=0, best=0, busy=false;
+  const P=()=>({a:+$('l3a').value, g:+$('l3g').value, d:+$('l3d').value,
+                f:+$('l3f').value, pen:$('l3pen').checked});
+
+  function fresh(){
+    TAB.bins=BINS.slice();
+    TAB.Q=new Float64Array(nRows(TAB.bins)*2);
+    TAB.visited=new Uint8Array(nRows(TAB.bins));
+    lens=[]; eps=1; ep=0; best=0; ui();
+  }
+  window.__tabReset=fresh;
+
+  function greedy(row){
+    const q0=TAB.Q[row*2], q1=TAB.Q[row*2+1];
+    return q0===q1 ? (Math.random()<.5?0:1) : (q1>q0?1:0);
+  }
+  function episode(learn){
+    const p=P(); let s=reset(), n=0;
+    while(n<CAP){
+      const row=rowOf(s,TAB.bins);
+      TAB.visited[row]=1;
+      const a = (learn && Math.random()<eps) ? (Math.random()<.5?0:1) : greedy(row);
+      const s2=physStep(s,a); n++;
+      const term=dead(s2), timeout=n>=CAP;
+      let r=1; if(term && p.pen) r=-10;
+      if(learn){
+        let target=r;
+        if(!term){ const r2=rowOf(s2,TAB.bins);
+          target = r + p.g*Math.max(TAB.Q[r2*2],TAB.Q[r2*2+1]); }
+        const i=row*2+a;
+        TAB.Q[i]+= p.a*(target-TAB.Q[i]);
+      }
+      s=s2; if(term||timeout) break;
+    }
+    if(learn){ ep++; lens.push(n); if(n>best)best=n;
+      eps=Math.max(p.f, eps*p.d); }
+    return n;
+  }
+  function ui(){
+    const rows=nRows(TAB.bins);
+    let vis=0; for(let i=0;i<rows;i++) vis+=TAB.visited[i];
+    let mq=0; for(let i=0;i<TAB.Q.length;i++) if(TAB.Q[i]>mq)mq=TAB.Q[i];
+    $('l3-n').textContent=ep;
+    $('l3-eps').textContent=eps.toFixed(3);
+    $('l3-last').textContent=lens.length?lens[lens.length-1]:'—';
+    const m30=lens.length?mean(tail(lens,30)):0;
+    $('l3-mean').textContent=lens.length?m30.toFixed(1):'—';
+    $('l3-best').textContent=best||'—';
+    $('l3-cov').textContent=fmt(vis)+' / '+fmt(rows);
+    $('l3-covpct').textContent=(100*vis/rows).toFixed(1)+'%';
+    $('l3-maxq').textContent=mq.toFixed(1);
+    if(m30>(window.BEST_TAB||0)) window.BEST_TAB=m30;
+    const ma=movAvg(lens,30);
+    drawChart(ch,{ymax:520,xmax:Math.max(lens.length-1,60),xlabel:'episodes',
+      empty:lens.length?null:'table is empty — press Train',
+      hlines:[{y:22,color:CLR.fail},{y:475,color:CLR.live}],
+      series:[{data:lens,color:CLR.amber,w:1,alpha:.45},{data:ma,color:CLR.chalk,w:2}]});
+  }
+  function watchGreedy(){
+    let s=reset(), n=0;
+    (function f(){
+      const a=greedy(rowOf(s,TAB.bins));
+      s=physStep(s,a); n++;
+      drawSim(c,s,{action:a,label:'greedy policy · step '+n,dying:dead(s)});
+      if(!dead(s)&&n<CAP) requestAnimationFrame(f);
+    })();
+  }
+  [['l3a','v-l3a',2],['l3g','v-l3g',3],['l3d','v-l3d',4],['l3f','v-l3f',2]].forEach(([id,vid,dp])=>{
+    const el=$(id);
+    el.oninput=()=>{ $(vid).textContent=(+el.value).toFixed(dp); };
+    el.oninput();
+  });
+  $('l3-ep').onclick=()=>{ if(busy)return; episode(true); ui(); };
+  $('l3-run').onclick=()=>{
+    if(busy)return; busy=true; $('l3-run').disabled=true; $('l3-run').textContent='Training…';
+    let done=0;
+    (function chunk(){
+      const t0=performance.now();
+      while(done<600 && performance.now()-t0<12){ episode(true); done++; }
+      ui();
+      if(done<600) requestAnimationFrame(chunk);
+      else{ busy=false; $('l3-run').disabled=false; $('l3-run').textContent='Train 600 episodes'; watchGreedy(); }
+    })();
+  };
+  $('l3-watch').onclick=()=>{ if(!busy) watchGreedy(); };
+  $('l3-reset').onclick=()=>{ fresh(); drawSim(c,reset(),{}); };
+  fresh(); drawSim(c,reset(),{});
+})();
+
+/* ============================================================
+   LEVEL 4 — diagnostics
+   ============================================================ */
+(function(){
+  const grid=$('l4-grid'), verdict=$('l4-verdict');
+  function cell(label,row,isSelf){
+    const rows=nRows(TAB.bins);
+    const ok = row>=0 && row<rows;
+    const seen = ok && TAB.visited[row];
+    const q0 = ok?TAB.Q[row*2]:0, q1=ok?TAB.Q[row*2+1]:0;
+    const bestA = q1>q0?'right':(q0>q1?'left':'—');
+    const d=document.createElement('div');
+    d.className='qcell'+(isSelf?' self':'');
+    d.innerHTML='<div class="qk">'+label+(ok?' · row '+row:'')+'</div>'+
+      '<div class="qv'+(seen?'':' zero')+'">'+(ok?Math.max(q0,q1).toFixed(1):'n/a')+'</div>'+
+      '<div class="qk" style="margin-top:3px">'+(seen?('prefers '+bestA):'never visited')+'</div>';
+    return d;
+  }
+  $('l4-sample').onclick=()=>{
+    // roll a live-ish state by simulating a short random episode
+    let s=reset(); const k=8+Math.floor(Math.random()*25);
+    for(let i=0;i<k&&!dead(s);i++) s=physStep(s,Math.random()<.5?0:1);
+    const bins=TAB.bins, b=bvec(s,bins), rows=nRows(bins);
+    const idx=v=>((v[0]*bins[1]+v[1])*bins[2]+v[2])*bins[3]+v[3];
+    grid.innerHTML='';
+    grid.appendChild(cell('this state',idx(b),true));
+    const names=['x','ẋ','θ','θ̇'];
+    let seen=0,tot=0,vals=[];
+    for(let d=0;d<4;d++){
+      for(const off of [-1,1]){
+        const nb=b.slice(); nb[d]+=off;
+        if(nb[d]<0||nb[d]>=bins[d]) continue;
+        const r=idx(nb); tot++;
+        if(TAB.visited[r]){seen++; vals.push(Math.max(TAB.Q[r*2],TAB.Q[r*2+1]));}
+        grid.appendChild(cell(names[d]+(off>0?' +1 bin':' −1 bin'),r,false));
+      }
+    }
+    const selfR=idx(b), selfV=Math.max(TAB.Q[selfR*2],TAB.Q[selfR*2+1]);
+    if(!TAB.visited[selfR]){
+      verdict.innerHTML='This exact state was <b style="color:'+CLR.fail+'">never visited</b> during training. '+
+        'The table returns 0 and the agent picks by coin flip — despite having seen thousands of nearly identical states.';
+    }else if(vals.length){
+      const spread=Math.max.apply(null,vals)-Math.min.apply(null,vals);
+      const scale=Math.max(1,Math.abs(selfV),...vals.map(Math.abs));
+      const rel=spread/scale;
+      verdict.innerHTML='Neighbours visited: <b>'+seen+' of '+tot+'</b>'+
+        (seen<tot?' — the other '+(tot-seen)+' return 0 and are guesses':'')+'. '+
+        'Value spread across the visited neighbours: <b style="color:'+CLR.amber+'">'+spread.toFixed(1)+
+        '</b>, against a typical magnitude of '+scale.toFixed(1)+' (this state: '+selfV.toFixed(1)+'). '+
+        (rel>0.35?'<b style="color:'+CLR.fail+'">That is a big disagreement</b> between states that are physically almost identical.':
+         'Fairly consistent here — resample a few times and you will find worse.');
+    }else{
+      verdict.innerHTML='None of the neighbouring rows were ever visited. Every one of them returns 0.';
+    }
+  };
+
+  /* ---- sweep ---- */
+  const CFGS=[[1,1,3,6],[3,3,6,12],[6,6,10,10],[10,10,12,12]];
+  const SEEDS=3, EPS_N=500;
+  $('l4-sweep').onclick=()=>{
+    const btn=$('l4-sweep'); btn.disabled=true;
+    const mk=b=>({lens:[],Q:new Float64Array(nRows(b)*2),vis:new Uint8Array(nRows(b)),eps:1});
+    const results=CFGS.map(b=>({bins:b,seeds:Array.from({length:SEEDS},()=>mk(b))}));
+    const jobs=[]; results.forEach(r=>r.seeds.forEach(sd=>jobs.push({bins:r.bins,sd:sd})));
+    let ji=0, done=0;
+    const TOT=jobs.length*EPS_N, A=0.2, G=0.99, D=0.995, F=0.01;
+
+    function ep(bins,rs){
+      let s=reset(), n=0;
+      while(n<CAP){
+        const row=rowOf(s,bins); rs.vis[row]=1;
+        const q0=rs.Q[row*2], q1=rs.Q[row*2+1];
+        const a=Math.random()<rs.eps?(Math.random()<.5?0:1)
+                :(q0===q1?(Math.random()<.5?0:1):(q1>q0?1:0));
+        const s2=physStep(s,a); n++;
+        const term=dead(s2), r2=term?0:rowOf(s2,bins);
+        const target = term ? -10 : 1 + G*Math.max(rs.Q[r2*2],rs.Q[r2*2+1]);
+        rs.Q[row*2+a]+=A*(target-rs.Q[row*2+a]);
+        s=s2; if(term||n>=CAP) break;
+      }
+      rs.lens.push(n); rs.eps=Math.max(F,rs.eps*D);
+    }
+    const cols=[CLR.dim2,CLR.amber,CLR.signal,CLR.fail];
+
+    function paint(){
+      const series=results.map((r,i)=>{
+        const L=Math.min.apply(null,r.seeds.map(sd=>sd.lens.length));
+        const mas=r.seeds.map(sd=>movAvg(sd.lens,30));
+        const avg=new Array(L);
+        for(let k=0;k<L;k++){ let acc=0; for(let q=0;q<SEEDS;q++) acc+=mas[q][k]; avg[k]=acc/SEEDS; }
+        return {data:avg,color:cols[i],w:2};
+      });
+      drawChart($('l4-chart'),{ymax:520,xmax:EPS_N-1,xlabel:'episodes (each curve averaged over '+SEEDS+' seeds)',
+        hlines:[{y:22,color:CLR.fail}],series:series});
+      let html='<table class="tbl"><tr><th>bins</th><th>rows</th>'+
+        '<th>mean of last 30</th><th>per-seed spread</th><th>coverage</th></tr>';
+      results.forEach((r,i)=>{
+        const rows=nRows(r.bins);
+        const fin=r.seeds.filter(sd=>sd.lens.length).map(sd=>mean(tail(sd.lens,30)));
+        let v=0; r.seeds.forEach(sd=>{ for(let k=0;k<rows;k++) v+=sd.vis[k]; }); v/=SEEDS;
+        html+='<tr><td class="m" style="color:'+cols[i]+'">'+r.bins.join(' × ')+'</td>'+
+          '<td class="m">'+fmt(rows)+'</td>'+
+          '<td class="m"><b style="color:'+cols[i]+'">'+(fin.length?mean(fin).toFixed(0):'—')+'</b></td>'+
+          '<td class="m" style="color:var(--dim2)">'+(fin.length?fin.map(x=>x.toFixed(0)).join(' / '):'—')+'</td>'+
+          '<td class="m">'+(100*v/rows).toFixed(1)+'%</td></tr>';
+      });
+      $('l4-sweeptbl').innerHTML=html+'</table>';
+    }
+
+    (function chunk(){
+      const t0=performance.now();
+      while(performance.now()-t0<14 && ji<jobs.length){
+        ep(jobs[ji].bins, jobs[ji].sd); done++;
+        if(jobs[ji].sd.lens.length>=EPS_N) ji++;
+      }
+      paint();
+      if(ji<jobs.length){ btn.textContent='Running… '+Math.round(100*done/TOT)+'%'; requestAnimationFrame(chunk); }
+      else { btn.disabled=false; btn.textContent='Run the sweep again'; }
+    })();
+  };
+  drawChart($('l4-chart'),{ymax:520,xmax:499,xlabel:'episodes',empty:'press Run the sweep'});
+})();
+
+/* ============================================================
+   LEVEL 5 — DQN: a tiny MLP written from scratch
+   ============================================================ */
+function randn(){let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+function adamStep(p,g,m,v,lr,t){
+  const b1=0.9,b2=0.999,e=1e-8;
+  const c1=1-Math.pow(b1,t), c2=1-Math.pow(b2,t);
+  for(let i=0;i<p.length;i++){
+    const gi=g[i];
+    m[i]=b1*m[i]+0.1*gi;
+    v[i]=b2*v[i]+0.001*gi*gi;
+    p[i]-=lr*(m[i]/c1)/(Math.sqrt(v[i]/c2)+e);
+  }
+}
+class Net{
+  constructor(nin,nh,nout){
+    this.nin=nin;this.nh=nh;this.nout=nout;this.t=0;
+    const s1=Math.sqrt(2/nin), s2=Math.sqrt(2/nh);
+    this.W1=new Float32Array(nin*nh); for(let i=0;i<this.W1.length;i++)this.W1[i]=randn()*s1;
+    this.B1=new Float32Array(nh);
+    this.W2=new Float32Array(nh*nout); for(let i=0;i<this.W2.length;i++)this.W2[i]=randn()*s2;
+    this.B2=new Float32Array(nout);
+    const z=n=>new Float32Array(n);
+    this.mW1=z(nin*nh);this.vW1=z(nin*nh);this.mB1=z(nh);this.vB1=z(nh);
+    this.mW2=z(nh*nout);this.vW2=z(nh*nout);this.mB2=z(nout);this.vB2=z(nout);
+  }
+  count(){ return this.nin*this.nh+this.nh+this.nh*this.nout+this.nout; }
+  forward(X,B){
+    const {nin,nh,nout}=this, z=new Float32Array(B*nh), o=new Float32Array(B*nout);
+    for(let b=0;b<B;b++){
+      const xo=b*nin, zo=b*nh;
+      for(let j=0;j<nh;j++){
+        let s=this.B1[j];
+        for(let i=0;i<nin;i++) s+=X[xo+i]*this.W1[i*nh+j];
+        z[zo+j]=s>0?s:0;
+      }
+      const oo=b*nout;
+      for(let k=0;k<nout;k++){
+        let s=this.B2[k];
+        for(let j=0;j<nh;j++) s+=z[zo+j]*this.W2[j*nout+k];
+        o[oo+k]=s;
+      }
+    }
+    this._X=X;this._z=z;this._B=B;
+    return o;
+  }
+  backward(dO,lr){
+    const {nin,nh,nout}=this, X=this._X, z=this._z, B=this._B;
+    const gW2=new Float32Array(nh*nout), gB2=new Float32Array(nout), dz=new Float32Array(B*nh);
+    for(let b=0;b<B;b++){
+      const zo=b*nh, oo=b*nout;
+      for(let k=0;k<nout;k++){
+        const d=dO[oo+k]; if(d===0) continue;
+        gB2[k]+=d;
+        for(let j=0;j<nh;j++){ gW2[j*nout+k]+=z[zo+j]*d; dz[zo+j]+=this.W2[j*nout+k]*d; }
+      }
+    }
+    const gW1=new Float32Array(nin*nh), gB1=new Float32Array(nh);
+    for(let b=0;b<B;b++){
+      const zo=b*nh, xo=b*nin;
+      for(let j=0;j<nh;j++){
+        if(z[zo+j]<=0) continue;
+        const d=dz[zo+j]; if(d===0) continue;
+        gB1[j]+=d;
+        for(let i=0;i<nin;i++) gW1[i*nh+j]+=X[xo+i]*d;
+      }
+    }
+    this.t++;
+    adamStep(this.W1,gW1,this.mW1,this.vW1,lr,this.t);
+    adamStep(this.B1,gB1,this.mB1,this.vB1,lr,this.t);
+    adamStep(this.W2,gW2,this.mW2,this.vW2,lr,this.t);
+    adamStep(this.B2,gB2,this.mB2,this.vB2,lr,this.t);
+  }
+  copyFrom(o){ this.W1.set(o.W1);this.B1.set(o.B1);this.W2.set(o.W2);this.B2.set(o.B2); }
+}
+
+(function(){
+  const c=$('l5-c'), ch=$('l5-chart');
+  const NORM=[X_LIM,3.0,TH_LIM,3.0];
+  const enc=(s,out,off)=>{ out[off]=s.x/NORM[0]; out[off+1]=s.xd/NORM[1];
+                           out[off+2]=s.th/NORM[2]; out[off+3]=s.thd/NORM[3]; };
+  const BUF=20000, BATCH=64, WARM=500, SYNC=300;
+
+  let net,tgt,bS,bA,bR,bS2,bD,bn,bi,lens,epsN,steps,ep,best,s,t,lossAvg,running,spf;
+  const P=()=>({lr:+$('l5lr').value,g:+$('l5g').value,dec:+$('l5d').value,
+                rep:$('l5rep').checked,tg:$('l5tgt').checked});
+
+  function fresh(){
+    const nh=+$('l5h').value;
+    net=new Net(4,nh,2); tgt=new Net(4,nh,2); tgt.copyFrom(net);
+    bS=new Float32Array(BUF*4); bA=new Uint8Array(BUF); bR=new Float32Array(BUF);
+    bS2=new Float32Array(BUF*4); bD=new Uint8Array(BUF); bn=0; bi=0;
+    lens=[]; epsN=1; steps=0; ep=0; best=0; s=reset(); t=0; lossAvg=0; spf=24;
+    $('l5-params').textContent=fmt(net.count());
+    ui();
+  }
+  function qOf(st){
+    const x=new Float32Array(4); enc(st,x,0);
+    return net.forward(x,1);
+  }
+  function act(st){
+    if(Math.random()<epsN) return Math.random()<.5?0:1;
+    const q=qOf(st); return q[1]>q[0]?1:0;
+  }
+  function store(s1,a,r,s2,d){
+    enc(s1,bS,bi*4); bA[bi]=a; bR[bi]=r; enc(s2,bS2,bi*4); bD[bi]=d?1:0;
+    bi=(bi+1)%BUF; if(bn<BUF)bn++;
+  }
+  function train(p){
+    const useRep=p.rep, B=useRep?Math.min(BATCH,bn):1;
+    if(useRep && bn<Math.max(BATCH,WARM)) return;
+    const X=new Float32Array(B*4), X2=new Float32Array(B*4);
+    const acts=new Uint8Array(B), rew=new Float32Array(B), dn=new Uint8Array(B);
+    for(let b=0;b<B;b++){
+      const k = useRep ? (Math.random()*bn|0) : ((bi-1+BUF)%BUF);
+      X.set(bS.subarray(k*4,k*4+4),b*4);
+      X2.set(bS2.subarray(k*4,k*4+4),b*4);
+      acts[b]=bA[k]; rew[b]=bR[k]; dn[b]=bD[k];
+    }
+    const qn = (p.tg?tgt:net).forward(X2,B);
+    const target=new Float32Array(B);
+    for(let b=0;b<B;b++){
+      const mx=Math.max(qn[b*2],qn[b*2+1]);
+      target[b]= rew[b] + (dn[b]?0:p.g*mx);
+    }
+    const q=net.forward(X,B);
+    const dO=new Float32Array(B*2);
+    let loss=0;
+    for(let b=0;b<B;b++){
+      const i=b*2+acts[b];
+      let d=q[i]-target[b];
+      loss+=Math.min(Math.abs(d),1)*Math.abs(d);
+      if(d>1)d=1; else if(d<-1)d=-1;
+      dO[i]=d/B;
+    }
+    net.backward(dO,p.lr);
+    lossAvg=lossAvg*0.99+(loss/B)*0.01;
+    if(p.tg && steps%SYNC===0) tgt.copyFrom(net);
+  }
+  function envStep(p){
+    const a=act(s);
+    const s2=physStep(s,a); t++; steps++;
+    const term=dead(s2), timeout=t>=CAP;
+    store(s,a,1,s2,term);
+    s=s2; train(p);
+    epsN=Math.max(0.05, 1 - steps/p.dec*0.95);
+    if(term||timeout){
+      ep++; lens.push(t); if(t>best)best=t;
+      s=reset(); t=0;
+    }
+  }
+  function ui(){
+    $('l5-n').textContent=ep;
+    $('l5-steps').textContent=fmt(steps);
+    $('l5-eps').textContent=epsN.toFixed(3);
+    $('l5-last').textContent=lens.length?lens[lens.length-1]:'—';
+    $('l5-mean').textContent=lens.length?mean(tail(lens,30)).toFixed(1):'—';
+    $('l5-best').textContent=best||'—';
+    $('l5-buf').textContent=fmt(bn);
+    $('l5-loss').textContent=lossAvg?lossAvg.toFixed(3):'—';
+    const ma=movAvg(lens,30);
+    const hl=[{y:475,color:CLR.live}];
+    if(window.BEST_TAB) hl.push({y:window.BEST_TAB,color:CLR.amber});
+    drawChart(ch,{ymax:520,xmax:Math.max(lens.length-1,60),xlabel:'episodes',
+      empty:lens.length?null:'network is untrained — press Train',
+      hlines:hl,
+      series:[{data:lens,color:CLR.signal,w:1,alpha:.45},{data:ma,color:CLR.chalk,w:2}]});
+  }
+  function loop(){
+    if(!running) return;
+    const p=P(), t0=performance.now();
+    for(let i=0;i<spf;i++) envStep(p);
+    const dt=performance.now()-t0;
+    if(dt<9) spf=Math.min(200,spf+3); else if(dt>15) spf=Math.max(4,spf-3);
+    drawSim(c,s,{accent:CLR.signal,label:'training · ε '+epsN.toFixed(2)+' · step '+fmt(steps)});
+    ui();
+    requestAnimationFrame(loop);
+  }
+  $('l5-run').onclick=()=>{ if(running)return; running=true;
+    $('l5-run').disabled=true; $('l5-stop').disabled=false; loop(); };
+  $('l5-stop').onclick=()=>{ running=false; $('l5-run').disabled=false; $('l5-stop').disabled=true; };
+  $('l5-reset').onclick=()=>{ running=false; $('l5-run').disabled=false; $('l5-stop').disabled=true;
+    fresh(); drawSim(c,s,{accent:CLR.signal}); };
+  $('l5-watch').onclick=()=>{
+    if(running)return;
+    let st=reset(), n=0;
+    (function f(){
+      const q=qOf(st), a=q[1]>q[0]?1:0;
+      st=physStep(st,a); n++;
+      drawSim(c,st,{accent:CLR.signal,action:a,label:'greedy policy · step '+n,dying:dead(st)});
+      if(!dead(st)&&n<CAP) requestAnimationFrame(f);
+    })();
+  };
+  [['l5lr','v-l5lr',4],['l5g','v-l5g',3],['l5h','v-l5h',0],['l5d','v-l5d',0]].forEach(([id,vid,dp])=>{
+    const el=$(id);
+    el.oninput=()=>{ $(vid).textContent = dp?(+el.value).toFixed(dp):el.value;
+      if(id==='l5h'){ running=false; $('l5-run').disabled=false; $('l5-stop').disabled=true; fresh(); } };
+  });
+  fresh(); drawSim(c,s,{accent:CLR.signal});
+})();
+
+/* ============================================================
+   Rail scroll-spy
+   ============================================================ */
+(function(){
+  const links=[...document.querySelectorAll('.rail a')];
+  const secs=links.map(a=>$(a.getAttribute('href').slice(1))).filter(Boolean);
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting) return;
+      links.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id));
+    });
+  },{rootMargin:'-15% 0px -70% 0px'});
+  secs.forEach(s=>io.observe(s));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Triangles — Linear Systems, Elementary Matrices &amp; LU / LDU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDF2F5;
+  --paper-2:#E2EAEF;
+  --card:#F8FAFB;
+  --grid:#D5DFE7;
+  --rule:#C2D0DA;
+  --ink:#11202A;
+  --ink-2:#3A4E5E;
+  --muted:#6C8291;
+  --pivot:#A96E06;
+  --pivot-bg:#F6E6C4;
+  --mult:#6238CE;
+  --mult-bg:#E6DEFB;
+  --keep:#0C6F68;
+  --keep-bg:#D4EBE8;
+  --warn:#A32E3F;
+  --warn-bg:#F6DCDF;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --disp:'Bricolage Grotesque','Helvetica Neue',sans-serif;
+  --body:'Source Serif 4',Georgia,serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:26px 26px;
+  background-position:-1px -1px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px;display:grid;grid-template-columns:198px 1fr;gap:44px;align-items:start}
+main{min-width:0;padding-bottom:120px}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;padding:34px 0;max-height:100vh;overflow-y:auto}
+nav .brand{font-family:var(--disp);font-weight:800;font-size:15px;letter-spacing:-.01em;line-height:1.2;margin-bottom:18px}
+nav .brand span{display:block;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+nav ol{list-style:none;margin:0;padding:0;border-left:1px solid var(--rule)}
+nav a{display:block;padding:5px 0 5px 12px;margin-left:-1px;border-left:2px solid transparent;
+  font-family:var(--mono);font-size:11.5px;line-height:1.35;color:var(--muted);text-decoration:none;letter-spacing:.01em}
+nav a b{font-weight:500;color:var(--ink-2);display:block}
+nav a:hover{color:var(--ink);border-left-color:var(--rule)}
+nav a.on{border-left-color:var(--mult);color:var(--mult)}
+nav a.on b{color:var(--mult)}
+
+/* ---------- hero ---------- */
+header.hero{padding:70px 0 46px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-weight:800;font-size:clamp(38px,6.6vw,68px);line-height:.98;letter-spacing:-.035em;margin:16px 0 0}
+h1 em{font-style:normal;color:var(--mult)}
+.hero p.lede{font-size:19.5px;max-width:52ch;color:var(--ink-2);margin:20px 0 0}
+.heroeq{margin:38px 0 0;display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+.heroeq .op{font-family:var(--disp);font-size:26px;font-weight:700;color:var(--muted)}
+
+/* ---------- sections ---------- */
+section{padding:62px 0 10px;border-bottom:1px solid var(--rule)}
+section:last-of-type{border-bottom:none}
+.snum{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--mult);text-transform:uppercase}
+h2{font-family:var(--disp);font-weight:700;font-size:clamp(27px,3.6vw,38px);line-height:1.05;letter-spacing:-.025em;margin:10px 0 14px;max-width:22ch}
+h3{font-family:var(--disp);font-weight:700;font-size:19px;letter-spacing:-.01em;margin:34px 0 8px}
+h4{font-family:var(--mono);font-weight:600;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+p{max-width:66ch;margin:0 0 15px}
+ul,ol.body{max-width:66ch;padding-left:20px}
+li{margin-bottom:7px}
+strong{font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--paper-2);padding:1px 5px;border-radius:3px}
+a.inline{color:var(--mult)}
+
+/* callouts */
+.why{border-left:3px solid var(--pivot);background:linear-gradient(90deg,var(--pivot-bg),transparent 88%);
+  padding:14px 18px;margin:22px 0;max-width:70ch;border-radius:0 5px 5px 0}
+.why h4{color:var(--pivot);margin-bottom:6px}
+.why p{margin:0;font-size:16px}
+.gain{border-left:3px solid var(--keep);background:linear-gradient(90deg,var(--keep-bg),transparent 88%);
+  padding:14px 18px;margin:22px 0;max-width:70ch;border-radius:0 5px 5px 0}
+.gain h4{color:var(--keep);margin-bottom:6px}
+.gain p{margin:0;font-size:16px}
+.trap{border-left:3px solid var(--warn);background:linear-gradient(90deg,var(--warn-bg),transparent 88%);
+  padding:14px 18px;margin:22px 0;max-width:70ch;border-radius:0 5px 5px 0}
+.trap h4{color:var(--warn);margin-bottom:6px}
+.trap p{margin:0;font-size:16px}
+
+/* ---------- panels ---------- */
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:20px;margin:26px 0;
+  box-shadow:0 1px 0 rgba(17,32,42,.04),0 10px 30px -24px rgba(17,32,42,.5)}
+.panel-hd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.panel-hd .t{font-family:var(--disp);font-weight:700;font-size:16px}
+.panel-hd .s{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* ---------- matrices ---------- */
+.mrow{display:flex;flex-wrap:wrap;gap:22px;align-items:center}
+.mblock{display:flex;flex-direction:column;gap:6px;align-items:center}
+.mlabel{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.mtx{position:relative;padding:7px 13px;display:inline-block}
+.mtx::before,.mtx::after{content:"";position:absolute;top:0;bottom:0;width:7px;
+  border-top:1.6px solid var(--ink-2);border-bottom:1.6px solid var(--ink-2)}
+.mtx::before{left:0;border-left:1.6px solid var(--ink-2)}
+.mtx::after{right:0;border-right:1.6px solid var(--ink-2)}
+.mtx table{border-collapse:collapse}
+.mtx td{font-family:var(--mono);font-size:14.5px;font-variant-numeric:tabular-nums;
+  padding:3px 8px;text-align:right;min-width:40px;border-radius:3px;transition:background .28s,color .28s}
+.mtx.sm td{font-size:12.5px;padding:2px 6px;min-width:32px}
+td.piv{background:var(--pivot-bg);color:var(--pivot);font-weight:600}
+td.mult{background:var(--mult-bg);color:var(--mult);font-weight:600}
+td.keep{color:var(--keep)}
+td.tgt{background:#E9EEF2}
+td.zap{color:#9DAEBA}
+td.aug{border-left:1.6px dashed var(--rule)}
+td.flash{animation:flash .85s ease}
+@keyframes flash{0%{background:var(--mult);color:#fff;transform:scale(1.18)}100%{background:var(--mult-bg);color:var(--mult)}}
+.eq{font-family:var(--disp);font-size:22px;font-weight:700;color:var(--muted);padding:0 2px}
+.chip{position:fixed;z-index:99;font-family:var(--mono);font-weight:600;font-size:14px;color:#fff;
+  background:var(--mult);padding:3px 9px;border-radius:5px;pointer-events:none;
+  box-shadow:0 6px 18px -6px rgba(98,56,206,.8)}
+
+/* ---------- controls ---------- */
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
+button{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.02em;
+  background:var(--card);color:var(--ink);border:1px solid var(--rule);border-radius:5px;
+  padding:7px 13px;cursor:pointer;transition:.15s}
+button:hover:not(:disabled){border-color:var(--mult);color:var(--mult)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--ink);color:var(--card);border-color:var(--ink)}
+button.primary:hover:not(:disabled){background:var(--mult);border-color:var(--mult);color:#fff}
+button.on{background:var(--mult);color:#fff;border-color:var(--mult)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--mult);outline-offset:2px}
+select,input[type=text],input[type=number]{font-family:var(--mono);font-size:13px;padding:6px 8px;
+  border:1px solid var(--rule);border-radius:5px;background:var(--card);color:var(--ink)}
+input[type=range]{accent-color:var(--mult);width:150px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.pills button{font-size:11.5px;padding:6px 11px}
+
+.log{font-family:var(--mono);font-size:12.5px;line-height:1.75;background:var(--paper-2);
+  border-radius:6px;padding:12px 14px;margin-top:14px;max-height:210px;overflow-y:auto}
+.log div{padding:2px 0;border-bottom:1px dotted var(--rule)}
+.log div:last-child{border-bottom:none}
+.log .hi{color:var(--mult);font-weight:600}
+.log .pv{color:var(--pivot);font-weight:600}
+.log .done{color:var(--keep)}
+.readout{font-family:var(--mono);font-size:13px;background:var(--paper-2);border-radius:6px;padding:11px 14px;margin-top:12px}
+.readout b{color:var(--mult)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+.mini{background:var(--card);border:1px solid var(--rule);border-radius:7px;padding:15px}
+.mini h5{font-family:var(--disp);font-size:15px;margin:0 0 4px;font-weight:700}
+.mini p{font-size:14.5px;margin:0;color:var(--ink-2)}
+.mini .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:7px}
+
+table.data{border-collapse:collapse;width:100%;font-size:14.5px;margin:18px 0}
+table.data th{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1.5px solid var(--ink-2)}
+table.data td{padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+table.data td:first-child{font-family:var(--mono);font-size:13px}
+
+canvas{display:block;max-width:100%;border-radius:6px;background:var(--card);border:1px solid var(--rule)}
+
+.quiz .q{border-bottom:1px solid var(--rule);padding:16px 0}
+.quiz .q:last-child{border-bottom:none}
+.quiz .qt{font-weight:600;margin-bottom:9px}
+.quiz .opt{display:block;width:100%;text-align:left;margin-bottom:5px;font-family:var(--body);font-size:15px}
+.quiz .opt.right{background:var(--keep-bg);border-color:var(--keep);color:var(--keep)}
+.quiz .opt.wrong{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.quiz .exp{display:none;font-size:15px;color:var(--ink-2);margin-top:9px;padding-left:12px;border-left:2px solid var(--keep)}
+.quiz .exp.show{display:block}
+
+.card-sum{background:var(--ink);color:var(--paper);border-radius:9px;padding:22px 24px;margin:20px 0}
+.card-sum h3{color:#fff;margin-top:0}
+.card-sum p,.card-sum li{color:#C9D6DE;max-width:none}
+.card-sum code{background:rgba(255,255,255,.1);color:#F0D9A8}
+.steps-num{counter-reset:st;list-style:none;padding-left:0;max-width:66ch}
+.steps-num li{counter-increment:st;position:relative;padding-left:38px;margin-bottom:12px}
+.steps-num li::before{content:counter(st,decimal-leading-zero);position:absolute;left:0;top:2px;
+  font-family:var(--mono);font-size:11px;color:var(--mult);font-weight:600;letter-spacing:.06em}
+
+footer{padding:44px 0 90px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.scroller{overflow-x:auto;padding-bottom:6px}
+
+@media(max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  nav{position:static;max-height:none;padding:22px 0 0;border-bottom:1px solid var(--rule)}
+  nav ol{display:flex;flex-wrap:wrap;gap:2px;border-left:none;padding-bottom:14px}
+  nav a{border-left:none;border-bottom:2px solid transparent;padding:4px 9px}
+  nav a.on{border-left-color:transparent;border-bottom-color:var(--mult)}
+  header.hero{padding:34px 0 34px}
+  body{font-size:16.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav>
+  <div class="brand">Two Triangles<span>Linear algebra · module</span></div>
+  <ol id="nav"></ol>
+</nav>
+
+<main>
+
+<header class="hero">
+  <div class="eyebrow">Systems · Elimination · Elementary matrices · LU · LDU</div>
+  <h1>Every square matrix wants to be <em>two triangles</em>.</h1>
+  <p class="lede">Solving <code>Ax = b</code> is hard. Solving it when A is triangular is almost free. So the whole game is: take the hard matrix apart into triangles once, and reuse them forever. Here is that idea, built up one move at a time, with everything you can click through yourself.</p>
+  <div class="heroeq" id="heroeq"></div>
+  <div class="ctl"><button class="primary" id="heroPlay">Watch it split</button><button id="heroReset">Reset</button></div>
+</header>
+
+<section id="s1">
+  <div class="snum">01 — the problem</div>
+  <h2>What a linear system actually is</h2>
+  <p>A linear equation is one where every unknown appears alone, to the first power, multiplied by a number. No <code>x²</code>, no <code>xy</code>, no <code>sin x</code>. That restriction is what makes the whole theory work.</p>
+  <p>Three equations in three unknowns:</p>
+  <div class="panel">
+    <div class="mrow" id="s1sys"></div>
+    <p style="margin-top:16px">The numbers in front of the unknowns form a matrix <b>A</b>. The unknowns stack into a vector <b>x</b>. The right-hand sides stack into <b>b</b>. The entire system is then one statement: <code>Ax = b</code>.</p>
+  </div>
+  <div class="why"><h4>Why bother rewriting it as a matrix</h4><p>Because the unknowns stop mattering. Every operation you would do to the equations — scale one, swap two, subtract one from another — is an operation on <em>rows of numbers</em>. Dropping the letters means you can hand the job to a fixed procedure, and later to a machine.</p></div>
+  <h3>Two readings of the same equation</h3>
+  <div class="grid2">
+    <div class="mini"><span class="tag">Row picture</span><h5>Intersecting flats</h5><p>Each equation is a line (2D) or a plane (3D). A solution is a point lying on all of them at once. Good for seeing <em>how many</em> solutions exist.</p></div>
+    <div class="mini"><span class="tag">Column picture</span><h5>Mixing columns</h5><p><code>Ax</code> is a weighted sum of A's columns. Solving asks: what mix of the columns produces b? Good for seeing <em>why</em> a solution can fail to exist.</p></div>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="snum">02 — outcomes</div>
+  <h2>A system has one, none, or infinitely many solutions. Never two.</h2>
+  <p>Before learning a method, know what the method can return. Two straight lines can cross once, never, or lie on top of each other. There is no fourth option, and that stays true in any number of dimensions.</p>
+  <p>Drag the coefficients and watch the two lines respond. The classifier below reports what elimination would find.</p>
+  <div class="panel" id="p-lines"></div>
+  <div class="why"><h4>Why this comes first</h4><p>Elimination doesn't "fail" on a bad system — it happily produces a row like <code>0 0 | 5</code> (impossible, so no solution) or <code>0 0 | 0</code> (no information, so infinitely many). If you don't know these outcomes exist, you'll read those rows as a bug in your arithmetic.</p></div>
+</section>
+
+<section id="s3">
+  <div class="snum">03 — the one move</div>
+  <h2>Gaussian elimination: subtract rows until the bottom-left is empty</h2>
+  <p>You are allowed exactly three moves, because each one is reversible and so none of them changes the solution set:</p>
+  <ol class="body">
+    <li><b>Swap</b> two rows. The equations were never in any order.</li>
+    <li><b>Scale</b> a row by a nonzero number. Doubling both sides of an equation changes nothing.</li>
+    <li><b>Add a multiple of one row to another.</b> If two statements are both true, so is their combination.</li>
+  </ol>
+  <p>Move 3 is the workhorse. Pick the first nonzero entry of a row — the <b class="pv" style="color:var(--pivot)">pivot</b> — and use it to knock out everything below it in that column. Work left to right. When you're done, the matrix is <b>upper triangular</b> and the last equation has one unknown in it.</p>
+  <div class="panel" id="p-gauss"></div>
+  <div class="gain"><h4>What we gained</h4><p>An upper triangular system is solvable by <em>reading it backwards</em>: the bottom row gives you one variable outright, substitute it up one row to get the next, and so on. No searching, no guessing — <code>n</code> divisions and some multiplications.</p></div>
+</section>
+
+<section id="s4">
+  <div class="snum">04 — the trick</div>
+  <h2>Elementary matrices: a row operation is just a matrix you multiply by</h2>
+  <p>Here is the pivot of the whole subject. Take the identity matrix and perform <em>one</em> row operation on it. The result is called an <b>elementary matrix</b>, <code>E</code>. Multiplying <code>E·A</code> performs that same operation on A.</p>
+  <p>Build one and watch it act:</p>
+  <div class="panel" id="p-elem"></div>
+  <div class="why"><h4>Why turn operations into matrices</h4><p>Because matrices compose. A sequence of eight row operations becomes a single product <code>E₈…E₂E₁A = U</code>. And products can be moved across the equals sign by inverting them — which is exactly how the L in LU appears. Without this step, elimination is a procedure. With it, elimination is an <em>equation</em>.</p></div>
+  <h3>Every elementary matrix is trivially invertible</h3>
+  <p>Undoing a row operation is another row operation, so <code>E⁻¹</code> is another elementary matrix, and you can write it down by inspection — no inversion algorithm needed:</p>
+  <div class="scroller"><table class="data">
+    <tr><th>Operation</th><th>E</th><th>Inverse operation</th><th>E⁻¹</th></tr>
+    <tr><td>Rᵢ ↔ Rⱼ</td><td>identity with rows i, j swapped</td><td>swap them back</td><td>same matrix (E⁻¹ = E)</td></tr>
+    <tr><td>Rᵢ → c·Rᵢ</td><td>identity with c at (i,i)</td><td>divide by c</td><td>identity with 1/c at (i,i)</td></tr>
+    <tr><td>Rᵢ → Rᵢ − ℓ·Rⱼ</td><td>identity with −ℓ at (i,j)</td><td>add it back</td><td>identity with <b>+ℓ</b> at (i,j)</td></tr>
+  </table></div>
+  <div class="trap"><h4>Order matters, and the side matters</h4><p><code>E·A</code> acts on <b>rows</b>; <code>A·E</code> acts on <b>columns</b>. And <code>E₂E₁ ≠ E₁E₂</code> in general — the elimination order is baked into the product. Read <code>E₃E₂E₁A</code> right to left: E₁ happened first.</p></div>
+</section>
+
+<section id="s5">
+  <div class="snum">05 — the factorisation</div>
+  <h2>From elimination to A = LU</h2>
+  <p>Elimination gave you <code>Eₖ … E₂E₁ A = U</code>. Multiply both sides on the left by the inverses, in reverse order, and everything on the left collapses onto A:</p>
+  <div class="panel" style="text-align:center"><code style="font-size:16px;background:none">A = E₁⁻¹ E₂⁻¹ … Eₖ⁻¹ · U = <b style="color:var(--mult)">L</b> · <b style="color:var(--keep)">U</b></code></div>
+  <p>That product of inverses is <b>L</b>: lower triangular, ones on the diagonal. And it has a property that feels like cheating.</p>
+  <div class="gain"><h4>The free lunch</h4><p>You never multiply those inverse matrices. Each multiplier ℓᵢⱼ you used in "Rᵢ → Rᵢ − ℓᵢⱼ·Rⱼ" simply <b>drops into position (i, j) of L</b>, sign unchanged. The numbers you were already computing and throwing away <em>are</em> L. Recording the factorisation costs nothing beyond the elimination you were doing anyway.</p></div>
+  <p>The machine below is the heart of this page. Step through elimination on the left and watch L fill in on the right — each multiplier physically moves into its slot.</p>
+  <div class="panel" id="p-lu"></div>
+  <div class="why"><h4>Why ones on L's diagonal</h4><p>Convention, and it makes the factorisation unique. All the scaling information is left inside U's pivots. Section 08 pulls that scaling out into its own matrix, which is where LDU comes from.</p></div>
+</section>
+
+<section id="s6">
+  <div class="snum">06 — the payoff</div>
+  <h2>Solving with L and U: two easy sweeps</h2>
+  <p>Now <code>Ax = b</code> becomes <code>L(Ux) = b</code>. Name the inner part <code>y = Ux</code> and you have two triangular systems, each solvable by substitution:</p>
+  <ol class="body">
+    <li><b>Forward substitution</b> — solve <code>Ly = b</code> downwards, starting from the top row.</li>
+    <li><b>Back substitution</b> — solve <code>Ux = y</code> upwards, starting from the bottom row.</li>
+  </ol>
+  <p>Step through both, one arithmetic line at a time. Change b and the solve re-runs against the same L and U — which is the entire point.</p>
+  <div class="panel" id="p-solve"></div>
+  <div class="gain"><h4>What we gained, in numbers</h4><p>Factoring costs roughly <code>⅔n³</code> operations. Each solve afterwards costs about <code>2n²</code>. For n = 500 and 100 right-hand sides, redoing elimination each time costs about 8.3 billion operations; factoring once and substituting costs about 133 million. Same answers, roughly 60× less work — and the gap widens with every extra b.</p></div>
+  <div class="panel" id="p-cost"></div>
+</section>
+
+<section id="s7">
+  <div class="snum">07 — when it breaks</div>
+  <h2>A zero pivot, and the P in PA = LU</h2>
+  <p>Elimination assumes you can divide by the pivot. If the pivot is zero, you can't. Two different things may have happened, and they need different responses:</p>
+  <div class="grid2">
+    <div class="mini"><span class="tag">Fixable</span><h5>A nonzero sits below</h5><p>Swap the rows and carry on. Record the swap in a permutation matrix P. The result is <code>PA = LU</code> — the factorisation of a re-ordered A.</p></div>
+    <div class="mini"><span class="tag">Not fixable</span><h5>The whole column below is zero</h5><p>No swap helps. That column contributes no pivot: A is <b>singular</b>, det A = 0, and <code>Ax = b</code> has either no solution or infinitely many.</p></div>
+  </div>
+  <p>Try the presets <em>Needs a row swap</em> and <em>Singular</em> in the machine above to watch both happen live.</p>
+  <div class="trap"><h4>In real software, pivots swap even when they're not zero</h4><p>A pivot of 0.0000001 is legal but disastrous: dividing by it produces enormous multipliers and destroys precision. Library code (LAPACK's <code>dgetrf</code>, NumPy's <code>scipy.linalg.lu</code>) uses <b>partial pivoting</b> — always move the largest available entry in the column into the pivot seat. It's for numerical stability, not correctness.</p></div>
+</section>
+
+<section id="s8">
+  <div class="snum">08 — the refinement</div>
+  <h2>LDU: separating the scale from the shape</h2>
+  <p>Look at the U you produced. Its diagonal holds the pivots, and they're carrying two jobs at once: shape (which variables couple to which) and scale (how big each pivot is). Pull the scale out into a diagonal matrix <b>D</b>, and divide each row of U by its pivot:</p>
+  <div class="panel" style="text-align:center"><code style="font-size:16px;background:none">A = L · D · U′&nbsp;&nbsp;&nbsp;where D = diag(pivots), U′ = D⁻¹U</code></div>
+  <p>Now <b>L</b> and <b>U′</b> both have ones on the diagonal, and every scaling factor lives in one obvious place.</p>
+  <div class="panel" id="p-ldu"></div>
+  <div class="gain"><h4>What LDU buys you</h4><p><b>Uniqueness</b> — for an invertible A with no swaps needed, L, D and U′ are the only such matrices. <b>Determinant by inspection</b> — det A = product of D's diagonal. <b>Symmetry becomes visible</b> — if A = Aᵀ then U′ = Lᵀ exactly, which halves both the work and the storage.</p></div>
+  <h3>The symmetric case: A = LDLᵀ, and Cholesky</h3>
+  <p>When A is symmetric, the factorisation folds in half: <code>A = LDLᵀ</code>. If additionally every pivot is positive (A is <b>positive definite</b>), you can push the square root of D into both sides and get <code>A = R Rᵀ</code> — the <b>Cholesky factorisation</b>, twice as fast as LU and unconditionally stable. This is what actually runs inside least-squares fitting, Gaussian processes, and Kalman filters.</p>
+  <p>Load the <em>Symmetric</em> preset in the machine and check the U′ = Lᵀ readout for yourself.</p>
+</section>
+
+<section id="s9">
+  <div class="snum">09 — gallery</div>
+  <h2>Worked cases, computed live</h2>
+  <p>Every case below is run through the same engine, so the numbers are exact fractions, not rounded. Read them as finished examples; load any of them into the machine in section 05 to see the steps.</p>
+  <div id="p-gallery"></div>
+</section>
+
+<section id="s10">
+  <div class="snum">10 — in the wild</div>
+  <h2>Where this is actually used</h2>
+  <p>LU is not a classroom exercise that gets replaced later. It is the default dense linear solver in essentially every numerical stack — <code>numpy.linalg.solve</code>, MATLAB's backslash, Eigen, LAPACK — all of them factor and then substitute.</p>
+  <div class="grid2" id="p-apps"></div>
+</section>
+
+<section id="s11">
+  <div class="snum">11 — check yourself</div>
+  <h2>Six questions worth getting right</h2>
+  <div class="panel quiz" id="p-quiz"></div>
+</section>
+
+<section id="s12">
+  <div class="snum">12 — summary</div>
+  <h2>The whole module on one screen</h2>
+  <div id="p-summary"></div>
+</section>
+
+<footer>Built as a self-contained study module · exact fraction arithmetic throughout · no dependencies</footer>
+
+</main>
+</div>
+<script>
+/* ============================================================
+   1. EXACT RATIONAL ARITHMETIC
+   Floating point would show 0.30000000000000004 in the middle
+   of a lesson about exactness, so everything here is a fraction.
+   ============================================================ */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=b;b=a%b;a=t;}return a||1;}
+class F{
+  constructor(n,d=1){
+    if(d===0){n=0;d=1;}
+    if(d<0){n=-n;d=-d;}
+    const g=gcd(n,d);
+    this.n=n/g; this.d=d/g;
+  }
+  add(o){return new F(this.n*o.d+o.n*this.d,this.d*o.d);}
+  sub(o){return new F(this.n*o.d-o.n*this.d,this.d*o.d);}
+  mul(o){return new F(this.n*o.n,this.d*o.d);}
+  div(o){return o.n===0?new F(0):new F(this.n*o.d,this.d*o.n);}
+  neg(){return new F(-this.n,this.d);}
+  isZero(){return this.n===0;}
+  eq(o){return this.n===o.n&&this.d===o.d;}
+  val(){return this.n/this.d;}
+  toString(){return this.d===1?''+this.n:this.n+'/'+this.d;}
+}
+const f=(n,d=1)=>new F(n,d);
+const ZERO=()=>f(0), ONE=()=>f(1);
+
+const M = {
+  from:g=>g.map(r=>r.map(v=>Array.isArray(v)?f(v[0],v[1]):f(v))),
+  clone:A=>A.map(r=>r.map(v=>f(v.n,v.d))),
+  eye:n=>Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?ONE():ZERO())),
+  zeros:(r,c)=>Array.from({length:r},()=>Array.from({length:c},()=>ZERO())),
+  mul(A,B){
+    const r=A.length,k=B.length,c=B[0].length,C=M.zeros(r,c);
+    for(let i=0;i<r;i++)for(let j=0;j<c;j++){let s=ZERO();for(let t=0;t<k;t++)s=s.add(A[i][t].mul(B[t][j]));C[i][j]=s;}
+    return C;
+  },
+  T:A=>A[0].map((_,j)=>A.map(r=>r[j])),
+  eq(A,B){
+    if(!A||!B||A.length!==B.length)return false;
+    return A.every((r,i)=>r.every((v,j)=>v.eq(B[i][j])));
+  },
+  isSym:A=>M.eq(A,M.T(A))
+};
+
+/* ============================================================
+   2. THE FACTORISATION ITSELF
+   Records every intermediate state so the UI can step through
+   forwards and backwards without recomputing.
+   ============================================================ */
+function factor(A0){
+  const n=A0.length;
+  let A=M.clone(A0), L=M.eye(n), P=M.eye(n);
+  const steps=[];
+  let swaps=0, singular=false;
+
+  const snap=(extra)=>Object.assign({A:M.clone(A),L:M.clone(L),P:M.clone(P)},extra);
+  steps.push(snap({kind:'start',text:'Starting matrix. Nothing eliminated yet, L is the identity.',focus:null}));
+
+  for(let k=0;k<n;k++){
+    // --- pivot check ---
+    if(A[k][k].isZero()){
+      let r=-1;
+      for(let i=k+1;i<n;i++) if(!A[i][k].isZero()){r=i;break;}
+      if(r>=0){
+        [A[k],A[r]]=[A[r],A[k]];
+        [P[k],P[r]]=[P[r],P[k]];
+        for(let c=0;c<k;c++){const t=L[k][c];L[k][c]=L[r][c];L[r][c]=t;}
+        swaps++;
+        steps.push(snap({kind:'swap',i:k,j:r,pivot:k,
+          text:`Pivot at position (${k+1},${k+1}) is 0 — cannot divide by it. Row ${r+1} has a nonzero entry there, so swap R${k+1} \u2194 R${r+1} and record it in P.`,
+          focus:{rows:[k,r],col:k}}));
+      }else{
+        singular=true;
+        steps.push(snap({kind:'dead',pivot:k,
+          text:`Column ${k+1} is entirely zero from row ${k+1} down. No swap can fix this — the matrix is singular, so this column yields no pivot.`,
+          focus:{rows:[k],col:k}}));
+        continue;
+      }
+    }
+    // --- eliminate below ---
+    for(let i=k+1;i<n;i++){
+      if(A[i][k].isZero()){
+        steps.push(snap({kind:'already',i,k,pivot:k,
+          text:`Entry (${i+1},${k+1}) is already 0 — nothing to eliminate. The multiplier is 0, so L[${i+1},${k+1}] stays 0.`,
+          focus:{rows:[i],col:k}}));
+        continue;
+      }
+      const m=A[i][k].div(A[k][k]);
+      const rowBefore=A[i].map(v=>v.toString());
+      for(let j=0;j<n;j++) A[i][j]=A[i][j].sub(m.mul(A[k][j]));
+      L[i][k]=m;
+      steps.push(snap({kind:'elim',i,k,pivot:k,m,rowBefore,
+        text:`Multiplier \u2113 = ${rowBefore[k]} \u00f7 ${A[k][k].toString()} = ${m.toString()}. Apply R${i+1} \u2192 R${i+1} \u2212 (${m.toString()})\u00b7R${k+1}, then store ${m.toString()} in L[${i+1},${k+1}].`,
+        focus:{rows:[i],prow:k,col:k}}));
+    }
+  }
+  steps.push(snap({kind:'done',
+    text:singular
+      ? 'Elimination finished. U has a zero on its diagonal, so A is singular — LU exists but cannot be used to solve for a unique x.'
+      : 'Elimination finished. Everything below the diagonal is zero: A on the left is now U, and L on the right holds every multiplier used.',
+    focus:null}));
+
+  // determinant = sign * product of U's diagonal
+  let det=ONE();
+  for(let i=0;i<n;i++) det=det.mul(A[i][i]);
+  if(swaps%2===1) det=det.neg();
+
+  return {steps,L,U:A,P,det,swaps,singular,permuted:swaps>0,n};
+}
+
+/* LDU split: D holds the pivots, U' = D^-1 U */
+function ldu(U){
+  const n=U.length;
+  const D=M.eye(n), Up=M.clone(U);
+  let ok=true;
+  for(let i=0;i<n;i++){
+    const p=U[i][i];
+    if(p.isZero()){ok=false;continue;}
+    D[i][i]=f(p.n,p.d);
+    for(let j=0;j<n;j++) Up[i][j]=U[i][j].div(p);
+  }
+  return {D,Up,ok};
+}
+
+/* forward: Ly = b   |   back: Ux = y  — with per-line arithmetic strings */
+function forwardSub(L,b){
+  const n=L.length,y=[],lines=[];
+  for(let i=0;i<n;i++){
+    let s=ZERO(); const terms=[];
+    for(let j=0;j<i;j++){ if(!L[i][j].isZero()){ s=s.add(L[i][j].mul(y[j])); terms.push(`(${L[i][j]})\u00b7${y[j]}`);} }
+    y.push(b[i].sub(s).div(L[i][i]));
+    lines.push({i,expr:terms.length?`y${i+1} = ${b[i]} \u2212 [${terms.join(' + ')}] = ${y[i]}`:`y${i+1} = ${b[i]} = ${y[i]}`,val:y[i]});
+  }
+  return {y,lines};
+}
+function backSub(U,y){
+  const n=U.length,x=new Array(n),lines=[];
+  for(let i=n-1;i>=0;i--){
+    if(U[i][i].isZero()) return {x:null,lines,fail:i};
+    let s=ZERO(); const terms=[];
+    for(let j=i+1;j<n;j++){ if(!U[i][j].isZero()){ s=s.add(U[i][j].mul(x[j])); terms.push(`(${U[i][j]})\u00b7${x[j]}`);} }
+    x[i]=y[i].sub(s).div(U[i][i]);
+    lines.push({i,expr:terms.length
+      ? `x${i+1} = (${y[i]} \u2212 [${terms.join(' + ')}]) \u00f7 ${U[i][i]} = ${x[i]}`
+      : `x${i+1} = ${y[i]} \u00f7 ${U[i][i]} = ${x[i]}`,val:x[i]});
+  }
+  return {x,lines};
+}
+
+/* ============================================================
+   3. RENDERING HELPERS
+   ============================================================ */
+function mtx(A,opt={}){
+  const cls=opt.cell||(()=>'');
+  const small=opt.small?' sm':'';
+  let h=`<div class="mtx${small}"><table>`;
+  A.forEach((row,i)=>{
+    h+='<tr>';
+    row.forEach((v,j)=>{ h+=`<td class="${cls(i,j,v)}" data-r="${i}" data-c="${j}">${v.toString()}</td>`; });
+    h+='</tr>';
+  });
+  return h+'</table></div>';
+}
+function vec(v,opt={}){ return mtx(v.map(x=>[x]),opt); }
+function block(label,inner){ return `<div class="mblock"><div class="mlabel">${label}</div>${inner}</div>`; }
+function op(s){ return `<div class="eq">${s}</div>`; }
+const el=id=>document.getElementById(id);
+
+/* ============================================================
+   4. NAV + HERO
+   ============================================================ */
+const SECTIONS=[
+ ['s1','01','Linear systems'],['s2','02','One, none, many'],['s3','03','Elimination'],
+ ['s4','04','Elementary matrices'],['s5','05','A = LU'],['s6','06','Solving fast'],
+ ['s7','07','PA = LU'],['s8','08','LDU & LDLᵀ'],['s9','09','Gallery'],
+ ['s10','10','Applications'],['s11','11','Self-check'],['s12','12','Summary']
+];
+el('nav').innerHTML=SECTIONS.map(([id,n,t])=>
+  `<li><a href="#${id}" data-t="${id}"><b>${t}</b>${n}</a></li>`).join('');
+const navLinks=[...document.querySelectorAll('#nav a')];
+const spy=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ navLinks.forEach(a=>a.classList.toggle('on',a.dataset.t===e.target.id)); }});
+},{rootMargin:'-15% 0px -70% 0px'});
+SECTIONS.forEach(([id])=>{const n=el(id);if(n)spy.observe(n);});
+
+const HERO_A=M.from([[2,1,1],[4,-6,0],[-2,7,2]]);
+const heroF=factor(HERO_A);
+function drawHero(state){
+  const box=el('heroeq');
+  if(state==='split'){
+    box.innerHTML=block('A',mtx(HERO_A))+op('=')+
+      block('L',mtx(heroF.L,{cell:(i,j)=>i>j&&!heroF.L[i][j].isZero()?'mult':(i===j?'':'zap')}))+
+      op('\u00d7')+
+      block('U',mtx(heroF.U,{cell:(i,j)=>i===j?'piv':(i<j?'keep':'zap')}));
+  }else{
+    box.innerHTML=block('A',mtx(HERO_A))+op('=')+block('?',mtx(M.zeros(3,3).map(r=>r.map(()=>f(0)))))+
+      op('\u00d7')+block('?',mtx(M.zeros(3,3)));
+    box.querySelectorAll('.mblock:not(:first-child) td').forEach(t=>{t.textContent='\u00b7';t.style.color='#B7C4CE';});
+  }
+}
+drawHero('closed');
+el('heroPlay').onclick=()=>drawHero('split');
+el('heroReset').onclick=()=>drawHero('closed');
+
+/* ---- section 01: the system written three ways ---- */
+(function(){
+  const A=M.from([[2,1,1],[4,-6,0],[-2,7,2]]), b=[f(5),f(-2),f(9)].map(v=>[v]);
+  el('s1sys').innerHTML=
+    `<div class="mblock"><div class="mlabel">as equations</div>
+     <div style="font-family:var(--mono);font-size:14.5px;line-height:2">
+     &nbsp;2x&nbsp;+&nbsp;&nbsp;y&nbsp;+&nbsp;z&nbsp;=&nbsp;&nbsp;5<br>
+     &nbsp;4x&nbsp;\u2212&nbsp;6y&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;\u22122<br>
+     \u22122x&nbsp;+&nbsp;7y&nbsp;+&nbsp;2z&nbsp;=&nbsp;&nbsp;9</div></div>`
+    +op('\u2261')+block('A',mtx(A))+block('x',`<div class="mtx"><table>
+      <tr><td>x</td></tr><tr><td>y</td></tr><tr><td>z</td></tr></table></div>`)
+    +op('=')+block('b',mtx(b));
+})();
+
+/* ============================================================
+   5. SECTION 02 — how many solutions (2x2 line explorer)
+   ============================================================ */
+(function(){
+  const P=el('p-lines');
+  const presets={
+    'One solution':[1,1,3,1,-1,1],
+    'No solution':[1,2,4,2,4,3],
+    'Infinitely many':[1,2,4,2,4,8],
+    'Parallel & steep':[3,-1,2,-6,2,5],
+    'One is degenerate':[1,1,2,0,0,0]
+  };
+  let c=[...presets['One solution']];
+  const names=['a\u2081','b\u2081','c\u2081','a\u2082','b\u2082','c\u2082'];
+  P.innerHTML=`
+    <div class="panel-hd"><div class="t">Two lines, six numbers</div>
+      <div class="s">a\u2081x + b\u2081y = c\u2081 &nbsp;\u00b7&nbsp; a\u2082x + b\u2082y = c\u2082</div></div>
+    <div class="pills" id="ln-pills">${Object.keys(presets).map(k=>`<button data-k="${k}">${k}</button>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;align-items:start">
+      <div id="ln-sliders"></div>
+      <div><canvas id="ln-canvas" width="440" height="330"></canvas></div>
+    </div>
+    <div class="readout" id="ln-out"></div>`;
+  const cv=el('ln-canvas'), ctx=cv.getContext('2d');
+
+  function sliders(){
+    el('ln-sliders').innerHTML=c.map((v,i)=>
+      `<div class="ctl" style="margin:4px 0;gap:10px">
+        <span style="font-family:var(--mono);font-size:12.5px;width:22px;color:${i<3?'var(--mult)':'var(--pivot)'}">${names[i]}</span>
+        <input type="range" min="-6" max="6" step="1" value="${v}" data-i="${i}" aria-label="${names[i]}">
+        <span style="font-family:var(--mono);font-size:12.5px;width:24px" id="lnv${i}">${v}</span>
+      </div>`).join('');
+    el('ln-sliders').oninput=e=>{
+      const i=+e.target.dataset.i; c[i]=+e.target.value; el('lnv'+i).textContent=c[i]; draw();
+    };
+  }
+  function classify(){
+    const [a1,b1,c1,a2,b2,c2]=c;
+    const deg1=(a1===0&&b1===0), deg2=(a2===0&&b2===0);
+    if(deg1||deg2){
+      const bad=(deg1&&c1!==0)||(deg2&&c2!==0);
+      return bad?{t:'No solution',d:'A row reads 0 = nonzero, which is impossible. Elimination produces exactly this row.'}
+                :{t:'Infinitely many',d:'A row reads 0 = 0 — it carries no information, leaving fewer real equations than unknowns.'};
+    }
+    const det=a1*b2-a2*b1;
+    if(det!==0) return {t:'Exactly one solution',d:`det = a\u2081b\u2082 \u2212 a\u2082b\u2081 = ${det} \u2260 0, so both pivots survive elimination and the lines cross at one point.`};
+    const prop=(a1*c2===a2*c1)&&(b1*c2===b2*c1);
+    return prop?{t:'Infinitely many',d:'det = 0 and the right-hand sides scale the same way: the second equation is a copy of the first. The lines lie on top of each other.'}
+               :{t:'No solution',d:'det = 0 but the right-hand sides do not match: same slope, different intercept. Elimination ends with 0 = nonzero.'};
+  }
+  function draw(){
+    const R=6, W=cv.width, H=cv.height;
+    const X=x=>(x+R)/(2*R)*W, Y=y=>H-(y+R)/(2*R)*H;
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#DDE5EB';ctx.lineWidth=1;
+    for(let g=-R;g<=R;g++){ctx.beginPath();ctx.moveTo(X(g),0);ctx.lineTo(X(g),H);ctx.moveTo(0,Y(g));ctx.lineTo(W,Y(g));ctx.stroke();}
+    ctx.strokeStyle='#8FA3B0';ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(X(-R),Y(0));ctx.lineTo(X(R),Y(0));ctx.moveTo(X(0),Y(-R));ctx.lineTo(X(0),Y(R));ctx.stroke();
+    const line=(a,b,k,col)=>{
+      if(a===0&&b===0)return;
+      ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.beginPath();
+      if(b!==0){ctx.moveTo(X(-R),Y((k-a*-R)/b));ctx.lineTo(X(R),Y((k-a*R)/b));}
+      else{ctx.moveTo(X(k/a),Y(-R));ctx.lineTo(X(k/a),Y(R));}
+      ctx.stroke();
+    };
+    line(c[0],c[1],c[2],'#6238CE');
+    line(c[3],c[4],c[5],'#A96E06');
+    const det=c[0]*c[4]-c[3]*c[1];
+    if(det!==0){
+      const x=(c[2]*c[4]-c[5]*c[1])/det, y=(c[0]*c[5]-c[3]*c[2])/det;
+      if(Math.abs(x)<=R&&Math.abs(y)<=R){
+        ctx.fillStyle='#11202A';ctx.beginPath();ctx.arc(X(x),Y(y),5,0,7);ctx.fill();
+        ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(X(x),Y(y),2,0,7);ctx.fill();
+      }
+    }
+    const r=classify();
+    const det2=c[0]*c[4]-c[3]*c[1];
+    el('ln-out').innerHTML=`<b>${r.t}</b> &nbsp;\u00b7&nbsp; ${r.d}<br>
+      <span style="color:var(--muted)">Coefficient matrix determinant: ${det2}</span>`;
+  }
+  el('ln-pills').onclick=e=>{
+    const k=e.target.dataset.k; if(!k||!presets[k])return;
+    [...el('ln-pills').children].forEach(b=>b.classList.remove('on'));
+    e.target.classList.add('on');
+    c=[...presets[k]]; sliders(); draw();
+  };
+  el('ln-pills').firstElementChild.classList.add('on');
+  sliders(); draw();
+})();
+
+/* ============================================================
+   6. SECTION 03 — Gaussian elimination on an augmented matrix
+   ============================================================ */
+(function(){
+  const presets={
+    'Unique solution':{m:[[2,1,1,5],[4,-6,0,-2],[-2,7,2,9]],n:3},
+    'No solution':{m:[[1,1,1,3],[2,2,2,7],[1,-1,0,1]],n:3},
+    'Infinitely many':{m:[[1,2,-1,3],[2,4,-2,6],[1,1,1,4]],n:3},
+    'Needs a row swap':{m:[[0,2,1,4],[1,1,1,3],[2,3,0,5]],n:3},
+    'Homogeneous (b = 0)':{m:[[1,2,3,0],[2,4,6,0],[1,1,1,0]],n:3},
+    'Small 2\u00d72':{m:[[1,1,3],[1,-1,1]],n:2}
+  };
+  const P=el('p-gauss');
+  P.innerHTML=`<div class="panel-hd"><div class="t">Elimination, one row operation at a time</div>
+      <div class="s">the bar marks the right-hand side</div></div>
+    <div class="pills" id="g-pills">${Object.keys(presets).map(k=>`<button data-k="${k}">${k}</button>`).join('')}</div>
+    <div class="mrow" id="g-mtx" style="margin:16px 0"></div>
+    <div class="ctl">
+      <button id="g-prev">\u2190 Back</button>
+      <button class="primary" id="g-next">Next step \u2192</button>
+      <button id="g-all">Run to the end</button>
+      <button id="g-reset">Reset</button>
+      <span style="font-family:var(--mono);font-size:12px;color:var(--muted)" id="g-count"></span>
+    </div>
+    <div class="log" id="g-log"></div>
+    <div class="readout" id="g-out"></div>`;
+
+  let S=[], at=0, verdict='';
+
+  function build(key){
+    const {m,n}=presets[key];
+    let A=M.from(m);
+    const nv=n, rows=A.length;
+    S=[]; 
+    const snap=(t,fo)=>S.push({A:M.clone(A),text:t,focus:fo||null});
+    snap('Augmented matrix [A | b]. Only row operations from here on — they never change the solution set.');
+    let r=0;
+    for(let c=0;c<nv&&r<rows;c++){
+      let p=-1;
+      for(let i=r;i<rows;i++) if(!A[i][c].isZero()){p=i;break;}
+      if(p<0){ snap(`Column ${c+1} has no pivot available at or below row ${r+1} — this variable is <b>free</b>. Move to the next column without advancing the pivot row.`,{col:c}); continue; }
+      if(p!==r){ [A[r],A[p]]=[A[p],A[r]]; snap(`Pivot slot (${r+1},${c+1}) is 0, so swap R${r+1} \u2194 R${p+1} to bring a nonzero entry up.`,{rows:[r,p],col:c}); }
+      for(let i=r+1;i<rows;i++){
+        if(A[i][c].isZero()) continue;
+        const mul=A[i][c].div(A[r][c]), was=A[i][c].toString();
+        for(let j=0;j<=nv;j++) A[i][j]=A[i][j].sub(mul.mul(A[r][j]));
+        snap(`Kill the ${was} at (${i+1},${c+1}): multiplier ${was} \u00f7 ${A[r][c]} = <span class="hi">${mul}</span>, so R${i+1} \u2192 R${i+1} \u2212 (${mul})\u00b7R${r+1}.`,{rows:[i],prow:r,col:c});
+      }
+      r++;
+    }
+    // verdict
+    let bad=false, piv=0;
+    for(let i=0;i<rows;i++){
+      let allz=true;
+      for(let j=0;j<nv;j++) if(!A[i][j].isZero()){allz=false;piv++;break;}
+      if(allz&&!A[i][nv].isZero()) bad=true;
+    }
+    if(bad) verdict=`<b style="color:var(--warn)">No solution.</b> A row now reads 0 = nonzero. The equations contradict each other.`;
+    else if(piv<nv) verdict=`<b style="color:var(--pivot)">Infinitely many solutions.</b> ${piv} pivot${piv===1?'':'s'} for ${nv} unknowns \u2014 ${nv-piv} free variable${nv-piv===1?'':'s'}, so the solution set is a line or plane, not a point.`;
+    else {
+      const U=A.map(row=>row.slice(0,nv)), y=A.map(row=>row[nv]);
+      const bs=backSub(U.slice(0,nv),y.slice(0,nv));
+      verdict=`<b style="color:var(--keep)">Exactly one solution.</b> Row echelon form reached with ${nv} pivots. Back-substituting: `+
+        (bs.x?bs.x.map((v,i)=>`x${i+1} = ${v}`).join(', '):'\u2014');
+    }
+    snap('Row echelon form reached. Everything below each pivot is zero.');
+    at=0; render();
+  }
+  function render(){
+    const s=S[at], fo=s.focus, nv=presets[cur].n;
+    el('g-mtx').innerHTML=block('[ A | b ]',mtx(s.A,{cell:(i,j)=>{
+      let c=j===nv?'aug ':'';
+      if(fo){ if(fo.rows&&fo.rows.includes(i)) c+='tgt '; if(fo.prow===i&&j>=fo.col) c+='keep '; if(fo.prow===i&&j===fo.col) c+='piv '; }
+      return c.trim();
+    }}));
+    el('g-log').innerHTML=S.slice(0,at+1).map((x,i)=>`<div${i===at?' class="hi"':''}>${i}. ${x.text}</div>`).join('');
+    el('g-log').scrollTop=1e6;
+    el('g-count').textContent=`step ${at} of ${S.length-1}`;
+    el('g-out').innerHTML = at===S.length-1?verdict:'<span style="color:var(--muted)">Keep stepping to reach the verdict.</span>';
+    el('g-prev').disabled=at===0; el('g-next').disabled=at===S.length-1;
+  }
+  let cur=Object.keys(presets)[0];
+  el('g-pills').onclick=e=>{const k=e.target.dataset.k;if(!k||!presets[k])return;
+    [...el('g-pills').children].forEach(b=>b.classList.remove('on'));e.target.classList.add('on');cur=k;build(k);};
+  el('g-next').onclick=()=>{if(at<S.length-1){at++;render();}};
+  el('g-prev').onclick=()=>{if(at>0){at--;render();}};
+  el('g-all').onclick=()=>{at=S.length-1;render();};
+  el('g-reset').onclick=()=>{at=0;render();};
+  el('g-pills').firstElementChild.classList.add('on');
+  build(cur);
+})();
+
+/* ============================================================
+   7. SECTION 04 — elementary matrix playground
+   ============================================================ */
+(function(){
+  const A=M.from([[2,1,1],[4,-6,0],[-2,7,2]]);
+  const P=el('p-elem');
+  P.innerHTML=`<div class="panel-hd"><div class="t">Build an elementary matrix, then watch it act</div>
+    <div class="s">E is the identity with one operation applied</div></div>
+    <div class="ctl">
+      <select id="e-type">
+        <option value="add">R\u1d62 \u2192 R\u1d62 \u2212 \u2113\u00b7R\u2c7c &nbsp;(elimination)</option>
+        <option value="swap">R\u1d62 \u2194 R\u2c7c &nbsp;(swap)</option>
+        <option value="scale">R\u1d62 \u2192 c\u00b7R\u1d62 &nbsp;(scale)</option>
+      </select>
+      <span style="font-family:var(--mono);font-size:12px">i =</span><select id="e-i"><option>1</option><option selected>2</option><option>3</option></select>
+      <span style="font-family:var(--mono);font-size:12px" id="e-jl">j =</span><select id="e-j"><option selected>1</option><option>2</option><option>3</option></select>
+      <span style="font-family:var(--mono);font-size:12px" id="e-cl">\u2113 =</span><input type="number" id="e-c" value="2" step="1" style="width:66px">
+    </div>
+    <div class="ctl" style="margin-top:2px">
+      <button id="e-side" class="on">Left: E\u00b7A (row op)</button>
+      <button id="e-side2">Right: A\u00b7E (column op)</button>
+    </div>
+    <div class="scroller"><div class="mrow" id="e-mtx" style="margin:18px 0"></div></div>
+    <div class="readout" id="e-out"></div>`;
+
+  let side='L';
+  function makeE(){
+    const t=el('e-type').value, i=+el('e-i').value-1, j=+el('e-j').value-1, c=+el('e-c').value||0;
+    const E=M.eye(3);
+    let desc='';
+    if(t==='add'){
+      if(i===j) return {E,desc:'Pick i \u2260 j — a row cannot eliminate itself.',bad:true};
+      E[i][j]=f(-c);
+      desc=`R${i+1} \u2192 R${i+1} \u2212 ${c}\u00b7R${j+1}. The multiplier appears as <b>\u2212${c}</b> at position (${i+1},${j+1}) of E.`;
+    }else if(t==='swap'){
+      if(i===j) return {E,desc:'Pick two different rows to swap.',bad:true};
+      [E[i],E[j]]=[E[j],E[i]];
+      desc=`R${i+1} \u2194 R${j+1}. E is the identity with those two rows exchanged. Note E\u00b7E = I, so E is its own inverse.`;
+    }else{
+      if(c===0) return {E,desc:'Scaling by 0 is not allowed — it destroys information and cannot be undone.',bad:true};
+      E[i][i]=f(c);
+      desc=`R${i+1} \u2192 ${c}\u00b7R${i+1}. E is the identity with ${c} in the (${i+1},${i+1}) slot.`;
+    }
+    return {E,desc,t,i,j,c};
+  }
+  function inverseE(o){
+    const E=M.eye(3);
+    if(o.t==='add'){ E[o.i][o.j]=f(o.c); }
+    else if(o.t==='swap'){ [E[o.i],E[o.j]]=[E[o.j],E[o.i]]; }
+    else { E[o.i][o.i]=f(1,o.c); }
+    return E;
+  }
+  function render(){
+    const t=el('e-type').value;
+    el('e-j').style.display=el('e-jl').style.display=(t==='scale')?'none':'';
+    el('e-c').style.display=el('e-cl').style.display=(t==='swap')?'none':'';
+    el('e-cl').textContent=(t==='scale')?'c =':'\u2113 =';
+    const o=makeE();
+    if(o.bad){ el('e-mtx').innerHTML=''; el('e-out').innerHTML=`<span style="color:var(--warn)">${o.desc}</span>`; return; }
+    const R = side==='L' ? M.mul(o.E,A) : M.mul(A,o.E);
+    const changed=(i,j)=>R[i][j].eq(A[i][j])?'':'mult';
+    el('e-mtx').innerHTML = side==='L'
+      ? block('E',mtx(o.E,{cell:(i,j)=>o.E[i][j].eq(M.eye(3)[i][j])?'zap':'piv'}))+op('\u00d7')+block('A',mtx(A))+op('=')+block('E\u00b7A',mtx(R,{cell:changed}))
+        +op('&nbsp;')+block('E\u207b\u00b9',mtx(inverseE(o),{cell:(i,j)=>i===j&&inverseE(o)[i][j].eq(f(1))?'zap':'keep'}))
+      : block('A',mtx(A))+op('\u00d7')+block('E',mtx(o.E,{cell:(i,j)=>o.E[i][j].eq(M.eye(3)[i][j])?'zap':'piv'}))+op('=')+block('A\u00b7E',mtx(R,{cell:changed}));
+    el('e-out').innerHTML = o.desc + '<br><span style="color:var(--muted)">'+
+      (side==='L'
+        ? 'Multiplying on the <b>left</b> rearranges rows. Highlighted entries in the product are the ones that changed.'
+        : 'Multiplying on the <b>right</b> does the same thing to <b>columns</b> instead. This is why elimination is always written as E\u00b7A.')
+      +'</span>';
+  }
+  P.addEventListener('input',render); P.addEventListener('change',render);
+  el('e-side').onclick=()=>{side='L';el('e-side').classList.add('on');el('e-side2').classList.remove('on');render();};
+  el('e-side2').onclick=()=>{side='R';el('e-side2').classList.add('on');el('e-side').classList.remove('on');render();};
+  render();
+})();
+
+/* ============================================================
+   8. SECTION 05 — THE LU MACHINE  (shared state for 06 and 08)
+   ============================================================ */
+const PRESETS={
+  'Textbook 3\u00d73':[[2,1,1],[4,-6,0],[-2,7,2]],
+  'Fractions appear':[[3,1,2],[2,5,1],[1,2,4]],
+  'Needs a row swap':[[0,1,2],[1,3,1],[2,8,5]],
+  'Symmetric \u2192 LDL\u1d40':[[4,12,-16],[12,37,-43],[-16,-43,98]],
+  'Singular (det = 0)':[[1,2,3],[2,4,6],[1,1,1]],
+  'Tridiagonal 4\u00d74':[[2,-1,0,0],[-1,2,-1,0],[0,-1,2,-1],[0,0,-1,2]]
+};
+const STATE={A:M.from(PRESETS['Textbook 3\u00d73']),F:null,name:'Textbook 3\u00d73'};
+const listeners=[];
+function setMatrix(A,name){
+  STATE.A=A; STATE.name=name||'Custom'; STATE.F=factor(A);
+  listeners.forEach(fn=>fn());
+}
+
+(function(){
+  const P=el('p-lu');
+  P.innerHTML=`<div class="panel-hd"><div class="t">The LU machine</div>
+      <div class="s"><span style="color:var(--pivot)">pivot</span> \u00b7 <span style="color:var(--mult)">multiplier \u2192 L</span> \u00b7 <span style="color:var(--keep)">finished row</span></div></div>
+    <div class="pills" id="lu-pills">${Object.keys(PRESETS).map(k=>`<button data-k="${k}">${k}</button>`).join('')}
+      <button data-k="__edit">Type my own\u2026</button></div>
+    <div id="lu-editor" style="display:none;margin:14px 0"></div>
+    <div class="scroller"><div class="mrow" id="lu-mtx" style="margin:18px 0;min-height:132px"></div></div>
+    <div class="ctl">
+      <button id="lu-prev">\u2190 Back</button>
+      <button class="primary" id="lu-next">Next step \u2192</button>
+      <button id="lu-play">Auto-run</button>
+      <button id="lu-all">Skip to result</button>
+      <button id="lu-reset">Reset</button>
+      <span style="font-family:var(--mono);font-size:12px;color:var(--muted)" id="lu-count"></span>
+    </div>
+    <div class="log" id="lu-log"></div>
+    <div class="readout" id="lu-out"></div>`;
+
+  let at=0, timer=null;
+
+  function editor(){
+    const n=STATE.A.length;
+    el('lu-editor').innerHTML=`<div class="ctl">
+      <span style="font-family:var(--mono);font-size:12px">size</span>
+      <select id="lu-size">${[2,3,4].map(s=>`<option ${s===n?'selected':''}>${s}</option>`).join('')}</select>
+      <button id="lu-rand">Randomise</button><button class="primary" id="lu-apply">Use this matrix</button></div>
+      <div id="lu-grid" style="display:inline-grid;grid-template-columns:repeat(${n},58px);gap:5px"></div>`;
+    const g=el('lu-grid');
+    g.innerHTML=STATE.A.map((r,i)=>r.map((v,j)=>
+      `<input type="number" value="${v.val()}" data-r="${i}" data-c="${j}" style="width:58px;text-align:center">`).join('')).join('');
+    el('lu-size').onchange=()=>{
+      const s=+el('lu-size').value, old=STATE.A;
+      const A=Array.from({length:s},(_,i)=>Array.from({length:s},(_,j)=>(old[i]&&old[i][j])?old[i][j]:(i===j?f(1):f(0))));
+      setMatrix(A,'Custom'); at=0; editor(); render();
+    };
+    el('lu-rand').onclick=()=>{
+      const s=+el('lu-size').value;
+      const A=Array.from({length:s},()=>Array.from({length:s},()=>f(Math.floor(Math.random()*11)-5)));
+      setMatrix(A,'Random'); at=0; editor(); render();
+    };
+    el('lu-apply').onclick=()=>{
+      const s=+el('lu-size').value, A=M.zeros(s,s);
+      g.querySelectorAll('input').forEach(inp=>{const r=+inp.dataset.r,c=+inp.dataset.c;
+        if(Number.isInteger(r)&&Number.isInteger(c)&&A[r]) A[r][c]=f(Math.round(+inp.value||0));});
+      setMatrix(A,'Custom'); at=0; render();
+    };
+  }
+
+  function render(anim){
+    const F=STATE.F, s=F.steps[at], n=F.n, fo=s.focus;
+    const isDone=at===F.steps.length-1;
+    const workCell=(i,j)=>{
+      let c='';
+      if(fo){
+        if(fo.prow===i&&j===fo.col) c+='piv ';
+        else if(fo.prow===i) c+='keep ';
+        if(fo.rows&&fo.rows.includes(i)) c+='tgt ';
+      }
+      if(i>j&&s.A[i][j].isZero()) c+='zap ';
+      if(isDone) c=(i===j?'piv ':(i<j?'keep ':'zap '));
+      return c.trim();
+    };
+    const lCell=(i,j)=>{
+      if(i===j) return 'zap';
+      if(i>j&&!s.L[i][j].isZero()) return 'mult';
+      return 'zap';
+    };
+    let html=block(isDone?'U (result)':'working on A',`<div id="lu-work">${mtx(s.A,{cell:workCell})}</div>`)
+      +op('&nbsp;')+block('L (being filled)',`<div id="lu-Lm">${mtx(s.L,{cell:lCell})}</div>`);
+    if(F.permuted) html+=op('&nbsp;')+block('P (row swaps)',mtx(s.P,{cell:(i,j)=>s.P[i][j].isZero()?'zap':'keep',small:true}));
+    el('lu-mtx').innerHTML=html;
+
+    el('lu-log').innerHTML=F.steps.slice(0,at+1).map((x,i)=>
+      `<div${i===at?' class="hi"':''}>${i}. ${x.text}</div>`).join('');
+    el('lu-log').scrollTop=1e6;
+    el('lu-count').textContent=`step ${at} of ${F.steps.length-1}`;
+    el('lu-prev').disabled=at===0; el('lu-next').disabled=at===F.steps.length-1;
+
+    if(isDone){
+      const LU=M.mul(F.L,F.U), PA=M.mul(F.P,STATE.A);
+      const ok=M.eq(LU,PA);
+      el('lu-out').innerHTML=
+        `<b>${F.permuted?'P\u00b7A = L\u00b7U':'A = L\u00b7U'}</b> \u2014 check: ${ok?'<span style="color:var(--keep)">\u2713 the product reproduces A exactly</span>':'mismatch'}<br>
+         Pivots: ${Array.from({length:n},(_,i)=>F.U[i][i].toString()).join(', ')}
+         &nbsp;\u00b7&nbsp; row swaps: ${F.swaps}
+         &nbsp;\u00b7&nbsp; <b>det A = ${F.det}</b> (product of pivots${F.swaps%2?', sign flipped by the odd number of swaps':''})
+         ${F.singular?'<br><span style="color:var(--warn)">A zero pivot means A is singular: no unique solution exists.</span>':''}
+         ${M.isSym(STATE.A)?'<br><span style="color:var(--keep)">A is symmetric \u2014 see section 08 for the LDL\u1d40 shortcut.</span>':''}`;
+    } else {
+      el('lu-out').innerHTML='<span style="color:var(--muted)">Each multiplier you compute lands in L and stays there. Keep stepping.</span>';
+    }
+    if(anim&&s.kind==='elim') flyChip(s);
+  }
+
+  /* the signature moment: the multiplier physically moves into L */
+  function flyChip(s){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const src=document.querySelector(`#lu-work td[data-r="${s.i}"][data-c="${s.k}"]`);
+    const dst=document.querySelector(`#lu-Lm td[data-r="${s.i}"][data-c="${s.k}"]`);
+    if(!src||!dst) return;
+    const a=src.getBoundingClientRect(), b=dst.getBoundingClientRect();
+    const chip=document.createElement('div');
+    chip.className='chip'; chip.textContent=s.m.toString();
+    chip.style.left=a.left+'px'; chip.style.top=a.top+'px';
+    document.body.appendChild(chip);
+    requestAnimationFrame(()=>{
+      chip.style.transition='transform .62s cubic-bezier(.5,-0.2,.3,1.2),opacity .62s';
+      chip.style.transform=`translate(${b.left-a.left}px,${b.top-a.top}px)`;
+    });
+    setTimeout(()=>{chip.style.opacity='0';dst.classList.add('flash');},600);
+    setTimeout(()=>{chip.remove();dst.classList.remove('flash');},1400);
+  }
+
+  el('lu-pills').onclick=e=>{
+    const k=e.target.dataset.k; if(!k||(k!=='__edit'&&!PRESETS[k]))return;
+    [...el('lu-pills').children].forEach(b=>b.classList.remove('on')); e.target.classList.add('on');
+    if(k==='__edit'){ el('lu-editor').style.display='block'; editor(); return; }
+    el('lu-editor').style.display='none';
+    setMatrix(M.from(PRESETS[k]),k); at=0; render();
+  };
+  el('lu-next').onclick=()=>{ if(at<STATE.F.steps.length-1){at++;render(true);} };
+  el('lu-prev').onclick=()=>{ if(at>0){at--;render();} };
+  el('lu-all').onclick=()=>{ clearInterval(timer);timer=null;el('lu-play').textContent='Auto-run'; at=STATE.F.steps.length-1; render(); };
+  el('lu-reset').onclick=()=>{ at=0; render(); };
+  el('lu-play').onclick=()=>{
+    if(timer){clearInterval(timer);timer=null;el('lu-play').textContent='Auto-run';return;}
+    el('lu-play').textContent='Pause';
+    timer=setInterval(()=>{
+      if(at>=STATE.F.steps.length-1){clearInterval(timer);timer=null;el('lu-play').textContent='Auto-run';return;}
+      at++; render(true);
+    },1500);
+  };
+  el('lu-pills').firstElementChild.classList.add('on');
+  listeners.push(()=>{ at=0; render(); });
+  setMatrix(STATE.A,STATE.name);
+})();
+
+/* ============================================================
+   9. SECTION 06 — forward + back substitution
+   ============================================================ */
+(function(){
+  const P=el('p-solve');
+  P.innerHTML=`<div class="panel-hd"><div class="t">Solve Ax = b with the L and U from above</div>
+      <div class="s">step 1 solves Ly = b downwards, step 2 solves Ux = y upwards</div></div>
+    <div class="ctl" id="sv-bwrap"></div>
+    <div class="ctl"><button id="sv-step" class="primary">Next line \u2192</button><button id="sv-all">Solve it</button><button id="sv-reset">Reset</button>
+      <button id="sv-rand">New b</button></div>
+    <div class="scroller"><div class="mrow" id="sv-mtx" style="margin:16px 0"></div></div>
+    <div class="log" id="sv-log"></div>
+    <div class="readout" id="sv-out"></div>`;
+
+  let b=[], at=0, lines=[], fw=null, bk=null;
+
+  function refresh(keepB){
+    const n=STATE.F.n;
+    if(!keepB||b.length!==n) b=Array.from({length:n},(_,i)=>f([5,-2,9,3][i]!==undefined?[5,-2,9,3][i]:1));
+    const Pb=M.mul(STATE.F.P,b.map(v=>[v])).map(r=>r[0]);
+    fw=forwardSub(STATE.F.L,Pb);
+    bk=backSub(STATE.F.U,fw.y);
+    lines=[...fw.lines.map(l=>({...l,phase:'f'})),...bk.lines.map(l=>({...l,phase:'b'}))];
+    at=0;
+    el('sv-bwrap').innerHTML=`<span style="font-family:var(--mono);font-size:12px">b =</span>`+
+      b.map((v,i)=>`<input type="number" value="${v.val()}" data-i="${i}" style="width:62px;text-align:center">`).join('');
+    el('sv-bwrap').oninput=e=>{ b[+e.target.dataset.i]=f(Math.round(+e.target.value||0)); refresh(true); };
+    render();
+  }
+  function render(){
+    const F=STATE.F, n=F.n;
+    const shown=lines.slice(0,at);
+    const yv=Array.from({length:n},(_,i)=>{const l=shown.find(l=>l.phase==='f'&&l.i===i);return l?l.val:null;});
+    const xv=Array.from({length:n},(_,i)=>{const l=shown.find(l=>l.phase==='b'&&l.i===i);return l?l.val:null;});
+    const q=arr=>arr.map(v=>[v===null?f(0):v]);
+    const dim=arr=>(i)=>arr[i]===null?'zap':'mult';
+    el('sv-mtx').innerHTML=
+      block('L',mtx(F.L,{cell:(i,j)=>i>j&&!F.L[i][j].isZero()?'mult':(i===j?'':'zap'),small:true}))
+      +op('\u00d7')+block('y',`<div class="mtx sm"><table>${yv.map((v,i)=>`<tr><td class="${v===null?'zap':'mult'}">${v===null?'?':v}</td></tr>`).join('')}</table></div>`)
+      +op('=')+block(F.permuted?'Pb':'b',mtx(M.mul(F.P,b.map(v=>[v])),{small:true}))
+      +op('&nbsp;&nbsp;')
+      +block('U',mtx(F.U,{cell:(i,j)=>i===j?'piv':(i<j?'keep':'zap'),small:true}))
+      +op('\u00d7')+block('x',`<div class="mtx sm"><table>${xv.map(v=>`<tr><td class="${v===null?'zap':'piv'}">${v===null?'?':v}</td></tr>`).join('')}</table></div>`)
+      +op('=')+block('y',`<div class="mtx sm"><table>${yv.map(v=>`<tr><td class="${v===null?'zap':'mult'}">${v===null?'?':v}</td></tr>`).join('')}</table></div>`);
+    el('sv-log').innerHTML = shown.length? shown.map((l,i)=>
+      `<div${i===shown.length-1?' class="hi"':''}><span class="${l.phase==='f'?'hi':'pv'}">${l.phase==='f'?'forward':'back '}</span> &nbsp;${l.expr}</div>`).join('')
+      : '<div style="color:var(--muted)">Press "Next line" to run forward substitution, then back substitution.</div>';
+    el('sv-log').scrollTop=1e6;
+    el('sv-step').disabled=at>=lines.length;
+    if(at>=lines.length){
+      if(bk.x){
+        const Ax=M.mul(STATE.A,bk.x.map(v=>[v])).map(r=>r[0]);
+        const ok=Ax.every((v,i)=>v.eq(b[i]));
+        el('sv-out').innerHTML=`<b>x = (${bk.x.map(v=>v.toString()).join(', ')})</b> &nbsp;\u00b7&nbsp; check A\u00b7x = (${Ax.map(v=>v.toString()).join(', ')}) ${ok?'<span style="color:var(--keep)">\u2713 matches b</span>':'<span style="color:var(--warn)">\u2260 b</span>'}
+        <br><span style="color:var(--muted)">Change b above and only these two substitution sweeps re-run \u2014 L and U are untouched.</span>`;
+      } else {
+        el('sv-out').innerHTML=`<span style="color:var(--warn)">Back substitution stalls: U has a zero pivot, so this A is singular and no unique x exists. Try a different preset.</span>`;
+      }
+    } else el('sv-out').innerHTML='<span style="color:var(--muted)">Forward first (top to bottom), then back (bottom to top).</span>';
+  }
+  el('sv-step').onclick=()=>{ if(at<lines.length){at++;render();} };
+  el('sv-all').onclick=()=>{ at=lines.length; render(); };
+  el('sv-reset').onclick=()=>{ at=0; render(); };
+  el('sv-rand').onclick=()=>{ b=b.map(()=>f(Math.floor(Math.random()*13)-6)); refresh(true); };
+  listeners.push(()=>refresh(false));
+  refresh(false);
+})();
+
+/* ---- cost calculator ---- */
+(function(){
+  const P=el('p-cost');
+  P.innerHTML=`<div class="panel-hd"><div class="t">Factor once, or start over every time?</div>
+    <div class="s">approximate floating-point operation counts</div></div>
+    <div class="ctl">
+      <span style="font-family:var(--mono);font-size:12px;width:190px">matrix size n = <b id="c-n">300</b></span>
+      <input type="range" id="c-nr" min="10" max="2000" step="10" value="300"></div>
+    <div class="ctl">
+      <span style="font-family:var(--mono);font-size:12px;width:190px">right-hand sides = <b id="c-k">50</b></span>
+      <input type="range" id="c-kr" min="1" max="500" step="1" value="50"></div>
+    <div id="c-bars" style="margin-top:16px"></div>
+    <div class="readout" id="c-out"></div>`;
+  const fmt=v=>v>1e9?(v/1e9).toFixed(1)+' billion':v>1e6?(v/1e6).toFixed(1)+' million':v>1e3?(v/1e3).toFixed(1)+' thousand':Math.round(v);
+  function draw(){
+    const n=+el('c-nr').value, k=+el('c-kr').value;
+    el('c-n').textContent=n; el('c-k').textContent=k;
+    const naive=k*(2/3)*n**3;
+    const lu=(2/3)*n**3 + k*2*n*n;
+    const w=v=>Math.max(2,v/naive*100);
+    el('c-bars').innerHTML=`
+      <div style="font-family:var(--mono);font-size:12px;margin-bottom:4px">Re-run elimination for every b</div>
+      <div style="height:22px;background:var(--warn);width:${w(naive)}%;border-radius:4px;margin-bottom:10px"></div>
+      <div style="font-family:var(--mono);font-size:12px;margin-bottom:4px">Factor once, then substitute</div>
+      <div style="height:22px;background:var(--keep);width:${w(lu)}%;border-radius:4px;min-width:3px"></div>`;
+    el('c-out').innerHTML=`Elimination each time: <b>${fmt(naive)}</b> operations &nbsp;\u00b7&nbsp;
+      LU once + ${k} solve${k>1?'s':''}: <b>${fmt(lu)}</b> &nbsp;\u00b7&nbsp;
+      <span style="color:var(--keep)">${(naive/lu).toFixed(1)}\u00d7 faster</span>`;
+  }
+  P.addEventListener('input',draw); draw();
+})();
+
+/* ============================================================
+   10. SECTION 08 — LDU / LDL^T
+   ============================================================ */
+(function(){
+  const P=el('p-ldu');
+  P.innerHTML=`<div class="panel-hd"><div class="t">Pull the pivots out into D</div>
+      <div class="s">follows whichever matrix is loaded in section 05</div></div>
+    <div class="pills" id="d-pills">${Object.keys(PRESETS).map(k=>`<button data-k="${k}">${k}</button>`).join('')}</div>
+    <div class="scroller"><div class="mrow" id="d-mtx" style="margin:18px 0"></div></div>
+    <div class="readout" id="d-out"></div>`;
+  function render(){
+    const F=STATE.F, {D,Up,ok}=ldu(F.U), n=F.n;
+    [...el('d-pills').children].forEach(b=>b.classList.toggle('on',b.dataset.k===STATE.name));
+    if(!ok){
+      el('d-mtx').innerHTML=block('U',mtx(F.U,{cell:(i,j)=>i===j&&F.U[i][j].isZero()?'tgt':(i<j?'keep':'zap')}));
+      el('d-out').innerHTML=`<span style="color:var(--warn)">This U has a zero pivot, so you cannot divide that row by it \u2014 LDU does not exist for a singular matrix.</span>
+        Every other factorisation on this page still works; only the D-split fails.`;
+      return;
+    }
+    el('d-mtx').innerHTML=
+      block(F.permuted?'P\u00b7A':'A',mtx(M.mul(F.P,STATE.A)))+op('=')
+      +block('L',mtx(F.L,{cell:(i,j)=>i>j&&!F.L[i][j].isZero()?'mult':(i===j?'':'zap')}))+op('\u00d7')
+      +block('D',mtx(D,{cell:(i,j)=>i===j?'piv':'zap'}))+op('\u00d7')
+      +block("U\u2032",mtx(Up,{cell:(i,j)=>i<j?'keep':(i===j?'':'zap')}));
+    const back=M.mul(M.mul(F.L,D),Up), ok2=M.eq(back,M.mul(F.P,STATE.A));
+    const sym=M.isSym(STATE.A), symOk=M.eq(Up,M.T(F.L));
+    let extra='';
+    if(sym) extra = symOk
+      ? `<br><span style="color:var(--keep)">A is symmetric and U\u2032 = L\u1d40 exactly \u2014 so A = L\u00b7D\u00b7L\u1d40. You only need to store L and D, which halves the memory and the work.</span>`
+      : `<br>A is symmetric but row swaps were needed, so the clean LDL\u1d40 form does not appear here.`;
+    const allPos=Array.from({length:n},(_,i)=>D[i][i].val()>0).every(Boolean);
+    if(sym&&symOk&&allPos) extra+=`<br><span style="color:var(--keep)">Every pivot is positive \u2192 A is positive definite \u2192 the Cholesky factorisation A = R\u00b7R\u1d40 also exists, with R = L\u00b7\u221aD.</span>`;
+    el('d-out').innerHTML=`Diagonal of D = the pivots: <b>${Array.from({length:n},(_,i)=>D[i][i].toString()).join(', ')}</b>
+      &nbsp;\u00b7&nbsp; det A = their product = <b>${F.det}</b>${F.swaps%2?' (sign flipped by an odd number of swaps)':''}
+      &nbsp;\u00b7&nbsp; rebuild check: ${ok2?'<span style="color:var(--keep)">\u2713 L\u00b7D\u00b7U\u2032 gives A back</span>':'mismatch'}
+      <br><span style="color:var(--muted)">L and U\u2032 now both have ones on the diagonal. All the scale lives in D.</span>${extra}`;
+  }
+  el('d-pills').onclick=e=>{const k=e.target.dataset.k;if(!k||!PRESETS[k])return;setMatrix(M.from(PRESETS[k]),k);
+    document.querySelectorAll('#lu-pills button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));};
+  listeners.push(render); render();
+})();
+
+/* ============================================================
+   11. SECTION 09 — worked gallery, computed by the same engine
+   ============================================================ */
+(function(){
+  const notes={
+    'Textbook 3\u00d73':'The clean case: three nonzero pivots, no swaps, integer multipliers. det \u2260 0, so a unique solution exists for any b.',
+    'Fractions appear':'Nothing special happened \u2014 fractions are the normal output of exact elimination. Software stores decimals here, which is where rounding error enters.',
+    'Needs a row swap':'The (1,1) entry is 0, so a swap is forced. The factorisation is of PA, not A. Always apply P to b before the forward sweep.',
+    'Symmetric \u2192 LDL\u1d40':'Symmetric and every pivot positive. U\u2032 comes out as L\u1d40, so this factors as L\u00b7D\u00b7L\u1d40 and Cholesky applies. This is the shape of a covariance matrix.',
+    'Singular (det = 0)':'Row 2 is exactly twice row 1. A swap is attempted, but the last column still runs out of pivots. U gets a zero on the diagonal, det = 0, LU exists but cannot solve for a unique x, and LDU does not exist.',
+    'Tridiagonal 4\u00d74':'Only the diagonal and its neighbours are nonzero. Notice L and U inherit that narrow band \u2014 no fill-in. This is why LU on banded matrices costs O(n) instead of O(n\u00b3), and why it powers PDE solvers.'
+  };
+  el('p-gallery').innerHTML=Object.entries(PRESETS).map(([k,m])=>{
+    const A=M.from(m), F=factor(A), {D,Up,ok}=ldu(F.U);
+    return `<div class="panel">
+      <div class="panel-hd"><div class="t">${k}</div>
+        <div class="s">det = ${F.det} \u00b7 swaps = ${F.swaps} \u00b7 ${F.singular?'singular':'invertible'}</div></div>
+      <div class="scroller"><div class="mrow">
+        ${block(F.permuted?'P\u00b7A':'A',mtx(M.mul(F.P,A),{small:true}))}${op('=')}
+        ${block('L',mtx(F.L,{cell:(i,j)=>i>j&&!F.L[i][j].isZero()?'mult':(i===j?'':'zap'),small:true}))}${op('\u00d7')}
+        ${block('U',mtx(F.U,{cell:(i,j)=>i===j?'piv':(i<j?'keep':'zap'),small:true}))}
+        ${ok?op('&nbsp;&nbsp;')+block('D',mtx(D,{cell:(i,j)=>i===j?'piv':'zap',small:true}))+op('\u00d7')+
+             block("U\u2032",mtx(Up,{cell:(i,j)=>i<j?'keep':(i===j?'':'zap'),small:true})):
+             `<div class="mblock"><div class="mlabel">LDU</div><div style="font-family:var(--mono);font-size:12px;color:var(--warn);max-width:150px">does not exist \u2014 zero pivot</div></div>`}
+      </div></div>
+      <p style="font-size:15px;color:var(--ink-2);margin:12px 0 0">${notes[k]}</p>
+    </div>`;
+  }).join('');
+})();
+
+/* ============================================================
+   12. SECTION 10 — applications
+   ============================================================ */
+el('p-apps').innerHTML=[
+  ['Circuits','Nodal analysis','Kirchhoff\u2019s laws give one equation per node. The conductance matrix is symmetric and sparse, so SPICE factors it once and reuses the factors across thousands of timesteps.'],
+  ['Engineering','Structural analysis','Finite element models produce a stiffness matrix K in <code>Ku = f</code>. K is symmetric positive definite, so Cholesky \u2014 the LDL\u1d40 special case \u2014 does the work.'],
+  ['Statistics / ML','Least squares','Fitting a linear model means solving the normal equations <code>X\u1d40X \u03b2 = X\u1d40y</code>. X\u1d40X is symmetric positive definite: Cholesky again. The same factor reappears in Gaussian processes and Kalman filters.'],
+  ['Graphics','Transform inversion','Undoing a chain of model-view transforms means solving small dense systems repeatedly with one fixed matrix \u2014 exactly the factor-once, solve-many pattern.'],
+  ['Simulation','Implicit PDE solvers','Heat diffusion and fluid solvers produce banded matrices each timestep. LU on a tridiagonal matrix is the Thomas algorithm and costs O(n).'],
+  ['Everywhere','The library call itself','<code>numpy.linalg.solve</code>, MATLAB\u2019s <code>\\</code>, and Eigen\u2019s <code>PartialPivLU</code> all run LAPACK\u2019s <code>dgetrf</code> \u2014 partially pivoted LU \u2014 then two triangular sweeps.']
+].map(([tag,h,p])=>`<div class="mini"><span class="tag">${tag}</span><h5>${h}</h5><p>${p}</p></div>`).join('');
+
+/* ============================================================
+   13. SECTION 11 — quiz
+   ============================================================ */
+(function(){
+  const Q=[
+   ['During elimination you use R\u2083 \u2192 R\u2083 \u2212 3\u00b7R\u2081. What ends up in L?',
+    ['\u22123 at position (3,1)','+3 at position (3,1)','+3 at position (1,3)','Nothing \u2014 L only stores pivots'],1,
+    'The elementary matrix E has \u22123 there, but L is built from E\u207b\u00b9, which flips the sign. So the multiplier goes into L with the sign you used when subtracting: +3 at (3,1).'],
+   ['A pivot is zero and every entry below it in that column is also zero. What follows?',
+    ['Swap rows and continue','A is singular \u2014 det A = 0','Scale the row by 1/0','LU cannot be written at all'],1,
+    'No swap can supply a pivot for that column, so the column is dependent on the earlier ones. det A = 0 and Ax = b has either no solution or infinitely many. An LU still exists; it just has a zero on U\u2019s diagonal.'],
+   ['Why is LU worth computing if you only ever solve Ax = b once?',
+    ['It is not much faster for a single solve','It halves the memory','It removes rounding error','It makes A symmetric'],0,
+    'Honest answer: for one right-hand side, LU costs the same as plain elimination \u2014 it is the same arithmetic, just recorded. The win appears with repeated right-hand sides, determinants, inverses, and condition estimates.'],
+   ['A is symmetric and A = LDU\u2032. What is U\u2032?',
+    ['D\u207b\u00b9','L','L\u1d40','The identity'],2,
+    'Uniqueness of the factorisation plus A = A\u1d40 forces U\u2032 = L\u1d40, giving A = LDL\u1d40. Storing only L and D halves both the work and the storage.'],
+   ['Which row operation changes the determinant, and how?',
+    ['Subtracting a multiple of a row \u2014 scales it','Swapping two rows \u2014 flips the sign','Both change it','Neither changes it'],1,
+    'Subtracting a multiple of another row leaves det untouched, which is exactly why det A is the product of U\u2019s pivots. Swaps flip the sign, so det A = (\u22121)^swaps \u00d7 product of pivots. Scaling a row by c multiplies det by c.'],
+   ['Real libraries swap rows even when the pivot is nonzero. Why?',
+    ['To make L lower triangular','To keep the multipliers small and limit rounding error','It is required for correctness','To reduce the number of steps'],1,
+    'Exact arithmetic does not need it. In floating point, a tiny pivot produces huge multipliers that swamp the other digits. Partial pivoting moves the largest available entry into the pivot seat, keeping every multiplier \u2264 1 in magnitude.']
+  ];
+  el('p-quiz').innerHTML=Q.map(([q,opts,ans,exp],i)=>
+    `<div class="q"><div class="qt">${i+1}. ${q}</div>
+      ${opts.map((o,j)=>`<button class="opt" data-q="${i}" data-j="${j}" data-a="${ans}">${o}</button>`).join('')}
+      <div class="exp" id="exp${i}">${exp}</div></div>`).join('');
+  el('p-quiz').onclick=e=>{
+    const b=e.target.closest('.opt'); if(!b)return;
+    const qi=+b.dataset.q, ans=+b.dataset.a;
+    document.querySelectorAll(`.opt[data-q="${qi}"]`).forEach(o=>{
+      o.classList.remove('right','wrong');
+      if(+o.dataset.j===ans) o.classList.add('right');
+    });
+    if(+b.dataset.j!==ans) b.classList.add('wrong');
+    el('exp'+qi).classList.add('show');
+  };
+})();
+
+/* ============================================================
+   14. SECTION 12 — summary
+   ============================================================ */
+el('p-summary').innerHTML=`
+<div class="card-sum">
+  <h3>The procedure, start to finish</h3>
+  <ol class="steps-num">
+    <li>Write the system as <code>Ax = b</code>. Keep A and b separate; A is the part you factor.</li>
+    <li>Run elimination on A. For each column, use the pivot to clear everything below it. If the pivot is 0, swap a lower row up and record the swap in <code>P</code>.</li>
+    <li>Whenever you do <code>R\u1d62 \u2192 R\u1d62 \u2212 \u2113\u00b7R\u2c7c</code>, write <code>\u2113</code> into <code>L[i][j]</code>. Sign unchanged. Put ones on L's diagonal.</li>
+    <li>When elimination stops, the remaining matrix is <code>U</code>. You now have <code>PA = LU</code> (with <code>P = I</code> if no swaps happened).</li>
+    <li>Optionally split <code>U = D\u00b7U\u2032</code> where D holds the pivots. That gives <code>A = LDU\u2032</code>, and <code>A = LDL\u1d40</code> when A is symmetric.</li>
+    <li>To solve: forward-substitute <code>Ly = Pb</code> top to bottom, then back-substitute <code>Ux = y</code> bottom to top.</li>
+  </ol>
+</div>
+
+<div class="grid2">
+  <div class="mini"><span class="tag">Identity</span><h5>What each piece holds</h5><p>
+    <b>P</b> \u2014 which rows were swapped.<br>
+    <b>L</b> \u2014 every multiplier you used, ones on the diagonal.<br>
+    <b>U</b> \u2014 what elimination left behind; pivots on the diagonal.<br>
+    <b>D</b> \u2014 the pivots alone, pulled out of U.<br>
+    <b>U\u2032</b> \u2014 U with each row divided by its pivot.</p></div>
+  <div class="mini"><span class="tag">Reading off results</span><h5>Free consequences</h5><p>
+    <b>det A</b> = (\u22121)<sup>swaps</sup> \u00d7 product of pivots.<br>
+    <b>Singular</b> \u21d4 some pivot is zero.<br>
+    <b>Rank</b> = number of nonzero pivots.<br>
+    <b>A\u207b\u00b9</b> = solve <code>Ax = e\u1d62</code> for each unit vector, reusing L and U.</p></div>
+  <div class="mini"><span class="tag">Cost</span><h5>Where the time goes</h5><p>
+    Factorisation: about <code>\u2154n\u00b3</code> operations, done once.<br>
+    Each solve after that: about <code>2n\u00b2</code>.<br>
+    Cholesky (symmetric positive definite): half of LU.<br>
+    Banded or tridiagonal: linear in n.</p></div>
+  <div class="mini"><span class="tag">When to reach for what</span><h5>Choosing a factorisation</h5><p>
+    General square A \u2192 <b>LU with partial pivoting</b>.<br>
+    Symmetric A \u2192 <b>LDL\u1d40</b>.<br>
+    Symmetric positive definite \u2192 <b>Cholesky</b>.<br>
+    Tall / least squares \u2192 <b>QR</b>, not LU.<br>
+    Rank-deficient or noisy \u2192 <b>SVD</b>.</p></div>
+</div>
+
+<h3>Five mistakes that cost marks</h3>
+<div class="scroller"><table class="data">
+  <tr><th>Mistake</th><th>What to do instead</th></tr>
+  <tr><td>Flipping the sign of \u2113 in L</td><td>E holds \u2212\u2113; L holds <b>+\u2113</b>. If you subtracted 3\u00b7R\u2081, write +3 in L.</td></tr>
+  <tr><td>Forgetting to permute b</td><td>With swaps you factored PA, not A. Solve <code>Ly = Pb</code>, never <code>Ly = b</code>.</td></tr>
+  <tr><td>Multiplying the E matrices together</td><td>Never necessary. Read L straight off the multipliers.</td></tr>
+  <tr><td>Writing E\u2081E\u2082E\u2083A for "E\u2081 first"</td><td>Products apply right to left: <code>E\u2083E\u2082E\u2081A</code> means E\u2081 acted first.</td></tr>
+  <tr><td>Assuming every matrix has an LU</td><td>Some need row swaps first. <code>PA = LU</code> always exists for square A; <code>A = LU</code> does not.</td></tr>
+</table></div>
+
+<h3>One sentence to remember</h3>
+<p style="font-size:19px;color:var(--ink)"><b>Elimination is not just a way to solve a system \u2014 it is a factorisation, and the numbers you were already throwing away are the second factor.</b></p>`;
+
+</script>
+</body>
+</html>
